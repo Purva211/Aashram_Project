@@ -1,6 +1,37 @@
 const Donation = require("../models/Donation");
 const Event = require("../models/Event");
 const Document = require("../models/Document");
+const BranchManager = require("../models/BranchManager");
+
+exports.updateProfile = async (req, res) => {
+  try {
+    const { name, email, mobile, password, address } = req.body;
+    
+    const manager = await BranchManager.findById(req.user._id);
+    if (!manager) {
+      return res.status(404).json({ success: false, message: "Branch Manager not found" });
+    }
+
+    if (name !== undefined) manager.name = name;
+    if (email !== undefined) manager.email = email;
+    if (mobile !== undefined) manager.mobile = mobile;
+    if (address !== undefined) manager.address = address;
+    if (password !== undefined) manager.password = password; // Will be hashed by pre-save hook
+
+    if (req.file) {
+      manager.profilePhoto = `/uploads/${req.file.filename}`;
+    }
+
+    await manager.save();
+
+    const userResponse = manager.toObject();
+    delete userResponse.password;
+
+    res.status(200).json({ success: true, message: "Profile updated successfully", user: userResponse });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
 
 exports.getStats = async (req, res) => {
   try {

@@ -10,7 +10,10 @@ const {
 const verifyDocumentAdmin = require("../middleware/verifyDocumentAdmin");
 const documentUpload = require("../middleware/documentUpload");
 
-// All routes require authentication as document admin
+// Public route
+router.get("/public", require("../controllers/documentController").getPublicDocuments);
+
+// All routes below require authentication as document admin
 router.use(verifyDocumentAdmin);
 
 router.route("/")

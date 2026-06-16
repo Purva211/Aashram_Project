@@ -178,7 +178,7 @@ const ManageBranchManagers = () => {
           </div>
           <button
             onClick={() => handleOpenModal('add')}
-            className="flex items-center gap-2 bg-saffron-600 hover:bg-saffron-500 text-white px-6 py-3 rounded-xl shadow-lg transition-colors font-black whitespace-nowrap"
+            className="flex items-center gap-2 bg-gray-900 hover:bg-black text-white px-6 py-3 rounded-xl shadow-lg transition-colors font-black whitespace-nowrap"
           >
             <FaPlus /> Add Manager
           </button>

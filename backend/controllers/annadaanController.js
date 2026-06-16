@@ -171,26 +171,18 @@ const getStats = async (req, res) => {
     const matchQuery = buildAnnadaanFilterQuery(req);
     const totalRecords = await Annadaan.countDocuments(matchQuery);
     
-    // Calculate total beneficiaries and expenses
-    const aggregation = await Annadaan.aggregate([
-      { $match: matchQuery },
-      {
-        $group: {
-          _id: null,
-          totalBeneficiaries: { $sum: { $ifNull: ["$beneficiaryCount", 0] } },
-          totalExpenses: { $sum: { $ifNull: ["$expenseAmount", 0] } }
-        }
-      }
-    ]);
-    
-    const stats = aggregation.length > 0 ? aggregation[0] : { totalBeneficiaries: 0, totalExpenses: 0 };
+    // Calculate total approved and rejected
+    const approvedRecords = await Annadaan.countDocuments({ ...matchQuery, status: 'approved' });
+    const rejectedRecords = await Annadaan.countDocuments({ ...matchQuery, status: 'rejected' });
+    const pendingRecords = await Annadaan.countDocuments({ ...matchQuery, status: 'pending' });
     
     res.status(200).json({
       success: true,
       data: {
         totalRecords,
-        totalBeneficiaries: stats.totalBeneficiaries,
-        totalExpenses: stats.totalExpenses
+        totalApproved: approvedRecords,
+        totalRejected: rejectedRecords,
+        totalPending: pendingRecords
       }
     });
   } catch (error) {

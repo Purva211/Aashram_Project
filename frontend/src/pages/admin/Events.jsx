@@ -20,14 +20,14 @@ const AdminEvents = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [branches, setBranches] = useState([]);
-  const [filterCategory, setFilterCategory] = useState("");
+  const [filterBranch, setFilterBranch] = useState("");
+  const [filterDate, setFilterDate] = useState("");
   const [showFilters, setShowFilters] = useState(false);
-
-  const categories = ["Spiritual", "Festival", "Community", "Social", "Donation", "Trust", "Education", "Medical"];
 
   const filteredByCustom = events.filter((e) => {
     let match = true;
-    if (filterCategory && e.category !== filterCategory) match = false;
+    if (filterBranch && (typeof e.branch === 'object' ? e.branch?._id : e.branch) !== filterBranch) match = false;
+    if (filterDate && e.eventDate && new Date(e.eventDate).toISOString().split('T')[0] !== filterDate) match = false;
     return match;
   });
 
@@ -102,7 +102,6 @@ const AdminEvents = () => {
             <option value="">Sort By...</option>
             <option value="title">Title</option>
             <option value="eventDate">Date</option>
-            <option value="category">Category</option>
           </select>
           <button onClick={() => setShowFilters(!showFilters)} className={`flex items-center gap-2 px-4 py-2 bg-white border ${showFilters ? 'border-saffron-500 text-saffron-600' : 'border-gray-200 text-gray-700'} hover:bg-gray-50 rounded-xl text-sm font-bold shadow-sm transition-colors`}>
             <FiFilter /> Filter
@@ -114,15 +113,19 @@ const AdminEvents = () => {
         <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Category</label>
-              <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-saffron-500">
-                <option value="">All Categories</option>
-                {categories.map(c => <option key={c} value={c}>{c}</option>)}
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Branch</label>
+              <select value={filterBranch} onChange={(e) => setFilterBranch(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-saffron-500">
+                <option value="">All Branches</option>
+                {branches.map(b => <option key={b._id} value={b._id}>{b.name}</option>)}
               </select>
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Date</label>
+              <input type="date" value={filterDate} onChange={(e) => setFilterDate(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-saffron-500" />
             </div>
           </div>
           <div className="flex justify-end mt-4">
-            <button onClick={() => { setFilterCategory(''); }} className="text-sm font-bold text-gray-500 hover:text-gray-700">Clear Filters</button>
+            <button onClick={() => { setFilterBranch(''); setFilterDate(''); }} className="text-sm font-bold text-gray-500 hover:text-gray-700">Clear Filters</button>
           </div>
         </div>
       )}
@@ -150,7 +153,7 @@ const AdminEvents = () => {
               </div>
 
               <div className="p-5 flex flex-col flex-1 z-10 relative">
-                <p className="text-saffron-600 text-[10px] font-bold uppercase tracking-[0.2em] mb-1">{event.category}</p>
+                <p className="text-saffron-600 text-[10px] font-bold uppercase tracking-[0.2em] mb-1">{event.branch?.name || "Global"}</p>
                 <h2 className="text-slate-900 text-lg font-bold line-clamp-1 mb-2">{event.title}</h2>
                 <p className="text-gray-500 text-sm line-clamp-2 mb-4 flex-1">{event.shortDescription || event.fullDescription}</p>
                 

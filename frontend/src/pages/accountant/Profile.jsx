@@ -10,26 +10,48 @@ const Profile = () => {
   const [formData, setFormData] = useState({
     fullName: '',
     phone: '',
-    address: '',
-    profilePhoto: ''
+    address: ''
   });
+  const [profileImageFile, setProfileImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   useEffect(() => {
     if (user) {
       setFormData({
         fullName: user.fullName || user.name || '',
         phone: user.phone || '',
-        address: user.address || '',
-        profilePhoto: user.profilePhoto || ''
+        address: user.address || ''
       });
+      if (user.profilePhoto) {
+        setImagePreview(`${API_URL}${user.profilePhoto}`);
+      }
     }
   }, [user]);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProfileImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await api.put('/accountants/profile/me', formData);
+      const dataToUpdate = new FormData();
+      dataToUpdate.append('fullName', formData.fullName);
+      dataToUpdate.append('phone', formData.phone);
+      dataToUpdate.append('address', formData.address);
+      if (profileImageFile) {
+        dataToUpdate.append('profileImage', profileImageFile);
+      }
+
+      const res = await api.put('/accountants/profile/me', dataToUpdate, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
       toast.success("Profile updated successfully");
       
       // Update AuthContext user
@@ -52,15 +74,14 @@ const Profile = () => {
         <div className="bg-indigo-50/50 p-6 border-b border-indigo-100 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="relative w-20 h-20 bg-white rounded-full border-4 border-indigo-100 shadow-sm flex items-center justify-center overflow-hidden">
-              {formData.profilePhoto ? (
-                <img src={formData.profilePhoto} alt="Profile" className="w-full h-full object-cover" />
+              {(imagePreview || user?.profilePhoto) ? (
+                <img src={imagePreview || `${API_URL}${user.profilePhoto}`} alt="Profile" className="w-full h-full object-cover" />
               ) : (
                 <span className="text-3xl font-bold text-indigo-300">{formData.fullName.charAt(0) || 'A'}</span>
               )}
-              {/* Optional: Add image upload input here */}
               <label className="absolute bottom-0 right-0 bg-indigo-600 text-white p-1.5 rounded-full cursor-pointer hover:bg-indigo-700 transition">
                  <Camera size={12} />
-                 <input type="file" className="hidden" accept="image/*" />
+                 <input type="file" onChange={handleImageChange} className="hidden" accept="image/*" />
               </label>
             </div>
             <div>

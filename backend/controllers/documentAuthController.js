@@ -8,7 +8,7 @@ const sendEmail = require("../utils/sendEmail");
 
 
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET || "default_secret", {
+  return jwt.sign({ id }, process.env.JWT_SECRET || "default_secret_key", {
     expiresIn: "30d"
   });
 };
@@ -174,5 +174,58 @@ exports.updateAdmin = async (req, res) => {
     res.status(200).json({ success: true, data: updatedAdmin, message: "Admin updated successfully" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Document Handler self-update methods
+exports.updateProfile = async (req, res) => {
+  try {
+    const { contactNo } = req.body;
+    
+    // Check for either req.user._id or req.user.id depending on auth middleware
+    const adminId = req.user._id || req.user.id;
+
+    const admin = await DocumentAdmin.findById(adminId);
+    if (!admin) {
+      return res.status(404).json({ success: false, message: "Admin not found" });
+    }
+
+    if (contactNo !== undefined) admin.contactNo = contactNo;
+
+    if (req.file) {
+      admin.profilePhoto = `/uploads/${req.file.filename}`;
+    }
+
+    await admin.save();
+    
+    const response = admin.toObject();
+    delete response.password;
+    res.status(200).json({ success: true, message: "Profile updated successfully", data: response });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+exports.updatePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const adminId = req.user._id || req.user.id;
+
+    const admin = await DocumentAdmin.findById(adminId);
+    if (!admin) {
+      return res.status(404).json({ success: false, message: "Admin not found" });
+    }
+
+    const isMatch = await admin.matchPassword(currentPassword);
+    if (!isMatch) {
+      return res.status(400).json({ success: false, message: "Incorrect current password" });
+    }
+
+    admin.password = newPassword;
+    await admin.save();
+
+    res.status(200).json({ success: true, message: "Password updated successfully" });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
 };

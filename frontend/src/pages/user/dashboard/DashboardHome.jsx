@@ -286,7 +286,7 @@ export const DashboardHome = () => {
             <div className="space-y-3">
 
               <button 
-                onClick={() => navigate('/donations')} 
+                onClick={() => navigate('/donate')} 
                 className="w-full text-left p-3.5 rounded-lg border border-transparent bg-slate-900 hover:bg-slate-800 transition-all text-sm font-black text-white flex items-center justify-between shadow-md"
               >
                 <span>Make a Donation</span>

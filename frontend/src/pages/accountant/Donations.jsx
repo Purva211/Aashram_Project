@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FiDollarSign, FiDownload, FiFilter, FiTrendingUp, FiUsers, FiSearch, FiChevronUp, FiChevronDown } from 'react-icons/fi';
 import api from "../../utils/api";
@@ -133,10 +133,10 @@ const Donations = () => {
               className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 w-48 lg:w-64 shadow-sm transition-all"
             />
           </div>
-          <button onClick={() => setShowFilters(!showFilters)} className={`flex items-center gap-2 px-4 py-2 bg-white border ${showFilters ? 'border-blue-500 text-blue-600' : 'border-gray-200 text-gray-700'} hover:bg-gray-50 rounded-xl text-sm font-bold shadow-sm transition-colors`}>
+          <button onClick={() => setShowFilters(!showFilters)} className={`flex items-center gap-2 px-4 py-2.5 bg-transparent text-black hover:bg-gray-100 rounded-xl text-sm font-black transition-colors`}>
             <FiFilter /> Filter
           </button>
-          <button onClick={handleExport} className="flex items-center gap-2 px-4 py-2.5 bg-blue-900 hover:bg-blue-800 text-white rounded-xl text-sm font-black shadow-md transition-colors">
+          <button onClick={handleExport} className="flex items-center gap-2 px-4 py-2.5 bg-gray-900 hover:bg-black text-white rounded-xl text-sm font-black shadow-md transition-colors">
             <FiDownload /> Export
           </button>
           <button onClick={handleGenerateReport} className="flex items-center gap-2 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-black shadow-md transition-colors">

@@ -95,7 +95,7 @@ const Devotees = () => {
           {!isBranchManager && (
             <button 
               onClick={() => handleOpenModal()} 
-              className="bg-saffron-600 hover:bg-saffron-700 text-white px-6 py-2.5 rounded-xl text-sm font-black transition-colors flex items-center gap-2 shadow-md whitespace-nowrap"
+              className="bg-gray-900 hover:bg-black text-white px-6 py-2.5 rounded-xl text-sm font-black transition-colors flex items-center gap-2 shadow-md whitespace-nowrap"
             >
               <FiPlus /> Add Devotee
             </button>

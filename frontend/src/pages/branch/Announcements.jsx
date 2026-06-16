@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiPlus, FiTrash2, FiBell, FiX, FiCheckCircle, FiClock, FiSend, FiFileText, FiBarChart2, FiUsers, FiMapPin, FiMessageCircle, FiMail, FiSmartphone, FiSearch, FiUser, FiEye } from 'react-icons/fi';
+import { FiPlus, FiTrash2, FiEdit2, FiBell, FiX, FiCheckCircle, FiClock, FiSend, FiFileText, FiBarChart2, FiUsers, FiMapPin, FiMessageCircle, FiMail, FiSmartphone, FiSearch, FiUser, FiEye } from 'react-icons/fi';
 import api from "../../utils/api";
 import { useTableFeatures } from '../../hooks/useTableFeatures';
 import TablePagination from '../../components/TablePagination';
@@ -268,10 +268,24 @@ const Announcements = () => {
                 {paginatedData.map((ann, index) => {
                   const isHighlighted = newlyAddedId ? ann._id === newlyAddedId : (index === 0 && new Date() - new Date(ann.createdAt) < 60000);
                   
-                  // Priority-based background colors
-                  const priorityBg = ann.priority === 'Urgent' ? 'bg-rose-50/80 border-rose-200' : 
-                                     ann.priority === 'Important' ? 'bg-amber-50/80 border-amber-200' : 
-                                     'bg-white border-slate-100';
+                  // Same background for all to keep a standard clean UI, only left stripe shows priority
+                  const priorityBg = 'bg-white border-slate-100';
+
+                  const timeAgo = (date) => {
+                    if (!date) return '';
+                    const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+                    let interval = seconds / 31536000;
+                    if (interval > 1) return Math.floor(interval) + "y ago";
+                    interval = seconds / 2592000;
+                    if (interval > 1) return Math.floor(interval) + "mo ago";
+                    interval = seconds / 86400;
+                    if (interval > 1) return Math.floor(interval) + "d ago";
+                    interval = seconds / 3600;
+                    if (interval > 1) return Math.floor(interval) + "h ago";
+                    interval = seconds / 60;
+                    if (interval > 1) return Math.floor(interval) + "m ago";
+                    return Math.floor(seconds) + "s ago";
+                  };
 
                   return (
                     <motion.div 
@@ -279,82 +293,82 @@ const Announcements = () => {
                       initial={isHighlighted ? { scale: 0.95, opacity: 0 } : {}}
                       animate={isHighlighted ? { scale: 1, opacity: 1 } : {}}
                       transition={{ duration: 0.4 }}
-                      className={`rounded-2xl border ${isHighlighted ? 'border-saffron-300 shadow-saffron-100 bg-saffron-50/50 ring-2 ring-saffron-400' : priorityBg} p-6 flex flex-col md:flex-row gap-6 shadow-sm hover:shadow-md transition-all relative overflow-hidden group`}
+                      className={`rounded-xl border ${isHighlighted ? 'border-saffron-300 shadow-saffron-100 bg-saffron-50/50 ring-2 ring-saffron-400' : 'bg-white border-slate-200'} p-5 flex flex-col shadow-sm hover:shadow-md transition-all relative group`}
                     >
-                      <div className={`absolute top-0 left-0 bottom-0 w-1.5 ${ann.priority === 'Urgent' ? 'bg-rose-500' : ann.priority === 'Important' ? 'bg-amber-500' : 'bg-blue-500'}`}></div>
-                      
-                      <div className="flex-1 pl-4">
-                        <div className="flex flex-wrap items-center gap-2 mb-3">
-                          {isHighlighted && (
-                            <span className="px-2.5 py-1 text-[10px] font-black uppercase tracking-widest rounded-md bg-saffron-500 text-white shadow-sm animate-pulse">
-                              NEW
-                            </span>
-                          )}
-                          <span className={`px-2.5 py-1 text-[10px] font-black uppercase tracking-widest rounded-md ${
-                            ann.status === 'Published' ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 
-                            ann.status === 'Scheduled' ? 'bg-blue-50 text-blue-600 border border-blue-200' : 
-                            'bg-slate-100 text-slate-500 border border-slate-200'
-                          }`}>
-                            {ann.status === 'Published' ? <FiCheckCircle className="inline mr-1" /> : <FiClock className="inline mr-1" />}
-                            {ann.status}
-                          </span>
-                          <span className="px-2.5 py-1 text-[10px] font-bold uppercase rounded-md bg-purple-50 text-purple-700 border border-purple-100">
-                            <FiUsers className="inline mr-1" /> {ann.audienceType}
-                          </span>
-                          <span className="text-xs text-slate-400 font-medium ml-2">{new Date(ann.publishDate).toLocaleDateString()}</span>
-                        </div>
-                        <h3 className="text-xl font-bold text-slate-900 mb-1">{ann.title}</h3>
-                        <p className="text-sm text-slate-500 mb-4 font-medium">{ann.subject || 'No Subject Provided'}</p>
-                        
-                        {/* Display Targeting Summary */}
-                        <div className="flex flex-wrap gap-2 mb-4">
-                          {ann.targetBranches && ann.targetBranches.length > 0 && (
-                            <span className="text-[10px] bg-slate-100 text-slate-700 px-2 py-1 rounded font-bold border border-slate-200">
-                              {ann.targetBranches.length} Branches
-                            </span>
-                          )}
-                          {ann.targetRoles && ann.targetRoles.length > 0 && (
-                            <span className="text-[10px] bg-indigo-50 text-indigo-700 px-2 py-1 rounded font-bold border border-indigo-200">
-                              {ann.targetRoles.length} Roles
-                            </span>
-                          )}
-                          {ann.targetUsers && ann.targetUsers.length > 0 && (
-                            <span className="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-1 rounded font-bold border border-emerald-200">
-                              {ann.targetUsers.length} Users
-                            </span>
-                          )}
-                        </div>
-
-                        <div className="text-sm text-slate-600 whitespace-pre-wrap">{ann.message}</div>
-                        
-                        {/* Channels & Author */}
-                        <div className="flex flex-wrap items-center justify-between gap-4 mt-6 pt-4 border-t border-slate-50">
-                          <div className="flex items-center gap-4">
-                            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Channels:</span>
-                            <div className="flex gap-2">
-                              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${ann.dashboardNotification ? 'bg-blue-50 text-blue-500' : 'bg-gray-50 text-gray-300'}`} title="Dashboard"><FiBell /></div>
-                              
-                              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${ann.emailIntegration ? 'bg-indigo-50 text-indigo-500' : 'bg-gray-50 text-gray-300'}`} title="Email"><FiMail /></div>
-                              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${ann.smsIntegration ? 'bg-orange-50 text-orange-500' : 'bg-gray-50 text-gray-300'}`} title="SMS"><FiSmartphone /></div>
-                            </div>
-                          </div>
-                          
-                          <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-2 text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100">
-                              <FiEye /> {ann.totalRead || 0} Reads
-                            </div>
-                            {ann.createdBy && (
-                              <div className="flex items-center gap-2 text-xs font-bold text-slate-500 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
-                                <FiUser className="text-slate-400" /> By Admin
-                              </div>
+                      {/* Author Header */}
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="flex gap-3 items-center">
+                          <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 font-bold overflow-hidden border border-slate-200 shrink-0">
+                            {ann.createdBy?.profilePhoto ? (
+                               <img src={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${ann.createdBy.profilePhoto}`} className="w-full h-full object-cover" />
+                            ) : (
+                               <img src="/logo.png" className="w-full h-full object-contain p-1.5" />
                             )}
                           </div>
+                          <div>
+                            <h4 className="text-sm font-bold text-slate-900 leading-tight">
+                              {ann.createdBy?.name || 'System Admin'}
+                              {ann.createdBy?.role && <span className="text-slate-500 font-normal ml-1">• {ann.createdBy.role}</span>}
+                            </h4>
+                            <div className="text-xs text-slate-500 mt-1 flex flex-wrap items-center gap-1.5">
+                               <span>{timeAgo(ann.publishDate || ann.createdAt)}</span>
+                               •
+                               <span className="flex items-center gap-1"><FiUsers size={10} /> {ann.audienceType}</span>
+                               • 
+                               <span className={`px-1.5 py-0 text-[9px] font-bold uppercase rounded ${ann.priority === 'Urgent' ? 'bg-rose-100 text-rose-700' : ann.priority === 'Important' ? 'bg-amber-100 text-amber-700' : 'bg-blue-50 text-blue-600'}`}>{ann.priority}</span>
+                               
+                               {isHighlighted && <span className="px-1.5 py-0 text-[9px] font-black uppercase tracking-widest rounded bg-saffron-500 text-white shadow-sm animate-pulse ml-1">NEW</span>}
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                          <button onClick={() => handleEdit(ann)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors" title="Edit"><FiEdit2 size={16} /></button>
+                          <button onClick={() => handleDelete(ann._id)} className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-full transition-colors" title="Delete"><FiTrash2 size={16} /></button>
                         </div>
                       </div>
-                      
-                      <div className="md:w-32 flex flex-row md:flex-col items-center justify-center border-t md:border-t-0 md:border-l border-slate-100 gap-2 pt-4 md:pt-0">
-                        <button onClick={() => handleEdit(ann)} className="w-full py-2.5 rounded-lg text-sm font-bold text-slate-600 hover:bg-slate-50 transition-colors">Edit</button>
-                        <button onClick={() => handleDelete(ann._id)} className="w-full py-2.5 rounded-lg text-sm font-bold text-rose-500 hover:bg-rose-50 transition-colors">Delete</button>
+
+                      {/* Content Body */}
+                      <div className="pl-1 md:pl-[60px] mb-2">
+                        <h3 className="text-base font-bold text-slate-900 mb-1">{ann.title}</h3>
+                        {ann.subject && <p className="text-sm text-slate-600 font-semibold mb-2">{ann.subject}</p>}
+                        
+                        <div className="text-sm text-slate-800 whitespace-pre-wrap leading-relaxed mt-2">
+                          {ann.message}
+                        </div>
+                      </div>
+
+                      {/* Footer Stats & Tags */}
+                      <div className="mt-3 pt-3 pl-1 md:pl-[60px] border-t border-slate-100 flex flex-wrap items-center justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                          <div className="text-[11px] font-bold text-slate-500 flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded-md border border-slate-100">
+                            <FiEye /> {ann.totalRead || 0} views
+                          </div>
+                          <div className={`text-[10px] font-bold uppercase px-2 py-1 rounded-md border flex items-center gap-1 ${
+                            ann.status === 'Published' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 
+                            ann.status === 'Scheduled' ? 'bg-blue-50 text-blue-600 border-blue-100' : 
+                            'bg-slate-100 text-slate-500 border-slate-200'
+                          }`}>
+                            {ann.status === 'Published' ? <FiCheckCircle size={10} /> : <FiClock size={10} />}
+                            {ann.status}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                           <div className="flex gap-1.5">
+                              {ann.dashboardNotification && <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] bg-slate-100 text-slate-500 hover:bg-blue-50 hover:text-blue-500 transition-colors" title="Dashboard"><FiBell /></div>}
+                              {ann.emailIntegration && <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] bg-slate-100 text-slate-500 hover:bg-indigo-50 hover:text-indigo-500 transition-colors" title="Email"><FiMail /></div>}
+                              {ann.smsIntegration && <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] bg-slate-100 text-slate-500 hover:bg-orange-50 hover:text-orange-500 transition-colors" title="SMS"><FiSmartphone /></div>}
+                           </div>
+                           
+                           {(ann.targetBranches?.length > 0 || ann.targetRoles?.length > 0 || ann.targetUsers?.length > 0) && (
+                              <div className="flex gap-1.5 border-l border-slate-200 pl-3">
+                                {ann.targetBranches?.length > 0 && <span className="text-[10px] font-medium text-slate-500 bg-slate-50 px-1.5 py-0.5 rounded">{ann.targetBranches.length} Branches</span>}
+                                {ann.targetRoles?.length > 0 && <span className="text-[10px] font-medium text-slate-500 bg-slate-50 px-1.5 py-0.5 rounded">{ann.targetRoles.length} Roles</span>}
+                                {ann.targetUsers?.length > 0 && <span className="text-[10px] font-medium text-slate-500 bg-slate-50 px-1.5 py-0.5 rounded">{ann.targetUsers.length} Users</span>}
+                              </div>
+                           )}
+                        </div>
                       </div>
                     </motion.div>
                   )

@@ -305,3 +305,6 @@ exports.getAllDocuments = async (req, res) => {
   }
 };
 
+
+
+exports.getAllAdmins = async (req, res) => { try { const admins = await require('../models/Admin').find().select('-password'); res.json({ success: true, data: admins }); } catch (err) { res.status(500).json({ success: false }); } };

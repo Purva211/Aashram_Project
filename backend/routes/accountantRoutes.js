@@ -11,6 +11,7 @@ const {
 } = require("../controllers/accountantController");
 const authMiddleware = require("../middleware/authMiddleware");
 const checkRole = require("../middleware/roleMiddleware");
+const upload = require("../middleware/uploadMiddleware");
 
 router.use(authMiddleware);
 
@@ -23,6 +24,6 @@ router.put("/:id", checkRole(["Trustee"]), updateAccountant);
 router.delete("/:id", checkRole(["Trustee"]), deleteAccountant);
 
 // Accountant Self Route
-router.put("/profile/me", checkRole(["Accountant"]), updateProfile);
+router.put("/profile/me", checkRole(["Accountant"]), upload.single("profileImage"), updateProfile);
 
 module.exports = router;

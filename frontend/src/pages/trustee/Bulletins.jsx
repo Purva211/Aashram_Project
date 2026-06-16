@@ -126,7 +126,7 @@ const Bulletins = () => {
                 setFormData({ headline: '', messages: [''], isActive: true });
               }
             }}
-            className="flex items-center gap-2 bg-primary text-white px-6 py-2 rounded-xl shadow-md hover:bg-gold transition-colors font-semibold"
+            className="flex items-center gap-2 bg-gray-900 hover:bg-black text-white px-6 py-2.5 rounded-xl shadow-md transition-colors font-black"
           >
             {showAddForm ? <><FaTimes /> Cancel</> : <><FaPlus /> Add Update</>}
           </button>

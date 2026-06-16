@@ -128,7 +128,7 @@ const ManageGallery = () => {
           <h1 className="text-4xl font-black mb-2 text-slate-900">Gallery Management</h1>
           <p className="text-gray-500">Upload and manage images and video links for the public gallery.</p>
         </div>
-        <button onClick={() => openModal()} className="bg-saffron-500 hover:bg-saffron-600 transition-colors px-6 py-3 rounded-xl text-white font-bold flex items-center gap-2 shadow-lg shadow-saffron-500/30">
+        <button onClick={() => openModal()} className="bg-gray-900 hover:bg-black transition-colors px-6 py-3 rounded-xl text-white font-black flex items-center gap-2 shadow-lg">
           <FaPlus /> Add Media
         </button>
       </div>

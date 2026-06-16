@@ -15,10 +15,9 @@ const processSingleEvent = (event) => {
 // ADMIN: Get all events (with filters)
 exports.getAllEventsAdmin = async (req, res) => {
   try {
-    const { category, search } = req.query;
+    const { search } = req.query;
     
     let query = {};
-    if (category) query.category = category;
     if (req.query.branchId) query.branch = req.query.branchId;
     if (search) {
       query.$or = [
@@ -181,10 +180,9 @@ exports.toggleFeatured = async (req, res) => {
 // USER: Get Published Events (with optional filters)
 exports.getPublishedEvents = async (req, res) => {
   try {
-    const { category, search, limit = 10, page = 1, branchId, filterStatus } = req.query;
+    const { search, limit = 10, page = 1, branchId, filterStatus } = req.query;
     let query = { isPublished: true };
     
-    if (category) query.category = category;
     if (branchId) query.branch = branchId;
     if (search) {
       query.$or = [

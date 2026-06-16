@@ -13,7 +13,7 @@ module.exports = async (req, res, next) => {
       return res.status(401).json({ message: "No token provided, authorization denied" });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || "default_secret");
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || "default_secret_key");
 
     const adminUser = await DocumentAdmin.findById(decoded.id).select("-password");
 

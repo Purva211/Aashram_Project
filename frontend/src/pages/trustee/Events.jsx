@@ -36,11 +36,10 @@ const AdminEvents = () => {
 
   const [formData, setFormData] = useState({
     title: "",
-    category: "Spiritual",
     description: "",
     location: "",
     eventDate: "",
-    eventTime: "",
+    eventTime: "12:00 AM",
     status: "upcoming",
     branch: "",
     isPublished: true
@@ -48,7 +47,6 @@ const AdminEvents = () => {
   const [imageFile, setImageFile] = useState(null);
   const [videoFile, setVideoFile] = useState(null);
 
-  const categories = ["Spiritual", "Festival", "Community", "Social", "Donation", "Trust", "Education", "Medical"];
 
   useEffect(() => {
     fetchBranches();
@@ -169,11 +167,10 @@ const AdminEvents = () => {
       setEditingEvent(event);
       setFormData({
         title: event.title || "",
-        category: event.category ? event.category.charAt(0).toUpperCase() + event.category.slice(1) : "Spiritual",
         description: event.fullDescription || event.description || "",
         location: event.location || "",
         eventDate: event.eventDate ? new Date(event.eventDate).toISOString().split('T')[0] : "",
-        eventTime: event.eventTime || "",
+        eventTime: event.eventTime || "12:00 AM",
         status: event.status || "upcoming",
         branch: event.branch ? (event.branch._id || event.branch) : "",
         isPublished: event.isPublished !== undefined ? event.isPublished : true
@@ -181,7 +178,7 @@ const AdminEvents = () => {
     } else {
       setEditingEvent(null);
       setFormData({
-        title: "", category: "Spiritual", description: "", location: "", eventDate: "", eventTime: "", status: "upcoming", branch: "", isPublished: true
+        title: "", description: "", location: "", eventDate: "", eventTime: "12:00 AM", status: "upcoming", branch: "", isPublished: true
       });
     }
     setImageFile(null);
@@ -207,8 +204,6 @@ const AdminEvents = () => {
         if (key === 'description') {
           data.append('shortDescription', formData[key].substring(0, 195));
           data.append('fullDescription', formData[key]);
-        } else if (key === 'category') {
-          data.append('category', formData[key].toLowerCase());
         } else if (key === 'isPublished') {
           data.append('isPublished', formData.isPublished);
         } else {
@@ -253,7 +248,16 @@ const AdminEvents = () => {
     }
   };
 
-  const filteredEvents = events.filter((e) => e.title.toLowerCase().includes(search.toLowerCase()));
+  const [branchFilter, setBranchFilter] = useState("");
+  const [dateFilter, setDateFilter] = useState("");
+
+  const filteredEvents = events.filter((e) => {
+    let match = true;
+    if (search && !e.title.toLowerCase().includes(search.toLowerCase())) match = false;
+    if (branchFilter && (typeof e.branch === 'object' ? e.branch?._id : e.branch) !== branchFilter) match = false;
+    if (dateFilter && e.eventDate && new Date(e.eventDate).toISOString().split('T')[0] !== dateFilter) match = false;
+    return match;
+  });
 
   return (
     <div className="min-h-screen bg-transparent text-gray-900 pb-12 font-sans">
@@ -285,10 +289,23 @@ const AdminEvents = () => {
 
       {activeTab === 'upcoming' && (
         <>
-          {/* SEARCH */}
-          <div className="relative mb-10">
-            <FaSearch className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 text-lg" />
-            <input type="text" placeholder="Search events..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full max-w-2xl bg-white border border-gray-100 rounded-3xl pl-14 pr-6 py-4 outline-none focus:border-gray-300 shadow-sm transition-all text-gray-900 font-medium" />
+          <div className="flex flex-col md:flex-row gap-4 mb-10">
+            <div className="relative flex-1">
+              <FaSearch className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 text-lg" />
+              <input type="text" placeholder="Search events by title..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full bg-white border border-gray-100 rounded-3xl pl-14 pr-6 py-4 outline-none focus:border-gray-300 shadow-sm transition-all text-gray-900 font-medium" />
+            </div>
+            <div className="w-full md:w-64">
+              <select value={branchFilter} onChange={(e) => setBranchFilter(e.target.value)} className="w-full bg-white border border-gray-100 rounded-3xl px-6 py-4 outline-none focus:border-gray-300 shadow-sm transition-all text-gray-900 font-medium">
+                <option value="">All Branches</option>
+                {branches.map(b => <option key={b._id} value={b._id}>{b.name}</option>)}
+              </select>
+            </div>
+            <div className="w-full md:w-48">
+              <input type="date" value={dateFilter} onChange={(e) => setDateFilter(e.target.value)} className="w-full bg-white border border-gray-100 rounded-3xl px-6 py-4 outline-none focus:border-gray-300 shadow-sm transition-all text-gray-900 font-medium" />
+            </div>
+            {(search || branchFilter || dateFilter) && (
+              <button onClick={() => { setSearch(""); setBranchFilter(""); setDateFilter(""); }} className="px-6 py-4 rounded-3xl bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold transition-colors">Clear</button>
+            )}
           </div>
 
           {/* EVENTS GRID */}
@@ -316,7 +333,7 @@ const AdminEvents = () => {
                     
                     <div className="absolute bottom-6 left-6 right-6">
                       <span className="inline-block px-3 py-1 mb-3 bg-blue-500/20 text-blue-100 backdrop-blur-sm rounded-full text-[10px] font-bold uppercase tracking-widest border border-blue-400/30">
-                        {event.category}
+                        {event.branch?.name || "Global"}
                       </span>
                       <h2 className="text-white text-2xl font-bold line-clamp-1">{event.title}</h2>
                     </div>
@@ -490,12 +507,6 @@ const AdminEvents = () => {
                     <input type="text" name="title" required value={formData.title} onChange={handleInputChange} className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-saffron-500 focus:ring-1 focus:ring-saffron-500" />
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-1">Category</label>
-                    <select name="category" required value={formData.category} onChange={handleInputChange} className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-saffron-500 focus:ring-1 focus:ring-saffron-500">
-                      {categories.map(c => <option key={c} value={c}>{c}</option>)}
-                    </select>
-                  </div>
 
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-1">Branch *</label>
@@ -519,7 +530,33 @@ const AdminEvents = () => {
 
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-1">Event Time</label>
-                    <input type="time" name="eventTime" required value={formData.eventTime} onChange={handleInputChange} className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-saffron-500 focus:ring-1 focus:ring-saffron-500" />
+                    <div className="flex gap-2">
+                      <select required value={(formData.eventTime || "12:00 AM").split(':')[0] || '12'} onChange={(e) => {
+                         const [, minAmpm] = (formData.eventTime || "12:00 AM").split(':');
+                         const min = minAmpm ? minAmpm.split(' ')[0] : '00';
+                         const ampm = minAmpm ? minAmpm.split(' ')[1] : 'AM';
+                         setFormData({...formData, eventTime: `${e.target.value}:${min} ${ampm}`});
+                      }} className="w-full bg-white border border-gray-300 rounded-xl px-2 py-3 outline-none focus:border-saffron-500 text-center">
+                         {Array.from({length: 12}, (_, i) => String(i+1).padStart(2, '0')).map(h => <option key={h} value={h}>{h}</option>)}
+                      </select>
+                      <span className="self-center font-bold text-gray-500">:</span>
+                      <select required value={(formData.eventTime || "12:00 AM").split(':')[1]?.split(' ')[0] || '00'} onChange={(e) => {
+                         const [h, minAmpm] = (formData.eventTime || "12:00 AM").split(':');
+                         const hour = h || '12';
+                         const ampm = minAmpm ? minAmpm.split(' ')[1] : 'AM';
+                         setFormData({...formData, eventTime: `${hour}:${e.target.value} ${ampm}`});
+                      }} className="w-full bg-white border border-gray-300 rounded-xl px-2 py-3 outline-none focus:border-saffron-500 text-center">
+                         {Array.from({length: 60}, (_, i) => String(i).padStart(2, '0')).map(m => <option key={m} value={m}>{m}</option>)}
+                      </select>
+                      <select required value={(formData.eventTime || "12:00 AM").split(' ')[1] || 'AM'} onChange={(e) => {
+                         const [timeStr] = (formData.eventTime || "12:00 AM").split(' ');
+                         const time = timeStr || '12:00';
+                         setFormData({...formData, eventTime: `${time} ${e.target.value}`});
+                      }} className="w-full bg-white border border-gray-300 rounded-xl px-2 py-3 outline-none focus:border-saffron-500 font-bold text-center">
+                         <option value="AM">AM</option>
+                         <option value="PM">PM</option>
+                      </select>
+                    </div>
                   </div>
 
                   <div>

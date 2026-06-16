@@ -39,33 +39,19 @@ const UserDocuments = () => {
   const fetchDocuments = async (branchId) => {
     try {
       setLoading(true);
-      let url = '/documents/public'; // Fallback to /documents if public is not setup
+      let url = '/documents/public';
       if (branchId !== 'All') {
         url += `?branchId=${branchId}`;
       }
-      try {
-        const res = await api.get(url);
-        if (res.data && res.data.documents) {
-          setDocuments(res.data.documents);
-          return;
-        }
-      } catch(e) {
-        // Fallback to protected route just in case for demo
-        const res2 = await api.get(branchId !== 'All' ? `/documents?branchId=${branchId}` : `/documents`);
-        if (res2.data && res2.data.documents) {
-          setDocuments(res2.data.documents);
-          return;
-        }
+      const res = await api.get(url);
+      if (res.data && res.data.documents) {
+        setDocuments(res.data.documents);
+      } else {
+        setDocuments([]);
       }
     } catch (error) {
-      console.warn("Could not fetch documents from API. Using mock data for UI presentation.", error);
-      // Mock data to demonstrate the premium UI
-      setDocuments([
-        { _id: '1', title: 'Trust Annual Report 2025', description: 'Comprehensive report of all trust activities, donations, and social work done in the year 2025.', category: 'Reports', fileUrl: '#' },
-        { _id: '2', title: 'Temple Construction Plan', description: 'Detailed architectural and spiritual plans for the upcoming new temple wing.', category: 'Plans', fileUrl: '#' },
-        { _id: '3', title: 'Spiritual Magazine - Jan 2026', description: 'Monthly magazine containing teachings, articles, and devotee experiences.', category: 'Publications', fileUrl: '#' },
-        { _id: '4', title: 'Financial Audit Summary', description: 'Audited financial statements for transparency and trust building among donors.', category: 'Financials', fileUrl: '#' },
-      ]);
+      console.error("Could not fetch documents from API", error);
+      setDocuments([]);
     } finally {
       setLoading(false);
     }

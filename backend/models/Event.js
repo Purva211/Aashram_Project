@@ -52,15 +52,7 @@ const eventSchema = new mongoose.Schema({
   organizerContact: {
     type: String
   },
-  category: {
-    type: String,
-    required: true,
-    enum: [
-      'spiritual', 'trust', 'donation', 'social', 
-      'festival', 'education', 'medical', 'community'
-    ],
-    default: 'spiritual'
-  },
+
   tags: [{
     type: String,
     trim: true

@@ -91,7 +91,7 @@ const EventDetails = () => {
             
             <div className="flex flex-wrap items-center gap-4 mb-6">
               <span className="px-5 py-2 bg-gradient-to-r from-primary to-orange-500 text-caramel-deep text-xs font-black rounded-full uppercase tracking-[0.2em] shadow-[0_0_20px_rgba(255,122,0,0.4)]">
-                {event.category}
+                {event.branch?.name || "Global"}
               </span>
               <span className={`px-5 py-2 backdrop-blur-md border border-white/20 text-caramel-deep text-xs font-black rounded-full uppercase tracking-[0.2em] shadow-lg flex items-center gap-2 ${event.status === 'ongoing' ? 'bg-green-500/20 text-green-300 border-green-500/30' : 'bg-white/10'}`}>
                 {event.status === 'ongoing' && <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>}

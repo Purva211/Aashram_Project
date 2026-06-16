@@ -152,7 +152,7 @@ const ManageDocumentAdmins = () => {
           </div>
           <button
             onClick={handleOpenModal}
-            className="flex items-center gap-2 bg-blue-900 hover:bg-blue-800 hover:bg-blue-900 hover:bg-blue-800 text-white px-6 py-3 rounded-xl shadow-lg transition-colors font-bold whitespace-nowrap"
+            className="flex items-center gap-2 bg-gray-900 hover:bg-black text-white px-6 py-3 rounded-xl shadow-lg transition-colors font-black whitespace-nowrap"
           >
             <FaPlus /> Add Document Admin
           </button>

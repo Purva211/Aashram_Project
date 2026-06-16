@@ -209,3 +209,27 @@ exports.updateProfile = async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 };
+
+
+exports.getAllAdmins = async (req, res) => { try { const admins = await require('../models/Admin').find().select('-password'); res.json({ success: true, data: admins }); } catch (err) { res.status(500).json({ success: false }); } };
+
+exports.getBranchManagers = async (req, res) => {
+  try {
+    const managers = await require('../models/BranchManager').find().select('-password');
+    res.json({ success: true, data: managers });
+  } catch (err) { res.status(500).json({ success: false }); }
+};
+
+exports.getDocumentAdmins = async (req, res) => {
+  try {
+    const admins = await require('../models/DocumentAdmin').find().select('-password');
+    res.json({ success: true, data: admins });
+  } catch (err) { res.status(500).json({ success: false }); }
+};
+
+exports.getAccountants = async (req, res) => {
+  try {
+    const accs = await require('../models/Accountant').find().select('-password');
+    res.json({ success: true, data: accs });
+  } catch (err) { res.status(500).json({ success: false }); }
+};

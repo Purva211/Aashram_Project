@@ -26,4 +26,11 @@ router.put("/documents/:id/review-deletion", checkPermission('Documents'), trust
 // Profile Route
 router.put("/profile", trusteeController.updateProfile);
 
+router.get('/admins-list', trusteeController.getAllAdmins);
+
+
+router.get('/branch-managers', trusteeController.getBranchManagers);
+router.get('/document-admin', trusteeController.getDocumentAdmins);
+router.get('/accountants', trusteeController.getAccountants);
 module.exports = router;
+

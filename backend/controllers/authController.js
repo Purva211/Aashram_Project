@@ -8,6 +8,7 @@ const generateToken = require("../utils/generateToken");
 const generateOTP = require("../utils/otpGenerator");
 const sendEmail = require("../utils/sendEmail");
 const SystemSettings = require("../models/SystemSettings");
+const DocumentAdmin = require("../models/DocumentAdmin");
 const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client("575853664482-vm3gho8gni1ifluc50pf742ulkbp4oob.apps.googleusercontent.com");
 
@@ -45,6 +46,10 @@ exports.login = async (req, res) => {
           return res.status(401).json({ success: false, message: "Account is inactive" });
         }
         break;
+      case "DocumentHandler":
+      case "document_admin":
+        user = await DocumentAdmin.findOne({ email });
+        break;
       default:
         return res.status(400).json({ success: false, message: "Invalid role specified" });
     }
@@ -77,7 +82,7 @@ exports.login = async (req, res) => {
 // Google OAuth Login
 exports.googleLogin = async (req, res) => {
   try {
-    const { credential } = req.body;
+    const { credential, selectedRole } = req.body;
     
     if (!credential) {
       return res.status(400).json({ success: false, message: "Google credential is required" });
@@ -93,43 +98,70 @@ exports.googleLogin = async (req, res) => {
     const name = payload.name;
     const picture = payload.picture;
 
-    // Check roles in order of priority: Admin, Trustee, Accountant, BranchManager, Devotee
-    // DocumentHandler uses username, so we skip it.
     let user = null;
     let role = null;
 
-    user = await Admin.findOne({ email });
-    if (user) role = "Admin";
-    
-    if (!user) {
-      user = await Trustee.findOne({ email });
-      if (user) role = "Trustee";
-    }
-    
-    if (!user) {
-      user = await Accountant.findOne({ email });
-      if (user) {
-        if (user.accountStatus !== "active") {
-          return res.status(401).json({ success: false, message: "Account is inactive" });
+    if (selectedRole) {
+      switch (selectedRole) {
+        case "Admin":
+          user = await Admin.findOne({ email });
+          if (user) role = "Admin";
+          break;
+        case "Trustee":
+          user = await Trustee.findOne({ email });
+          if (user) role = "Trustee";
+          break;
+        case "Accountant":
+          user = await Accountant.findOne({ email });
+          if (user) {
+            if (user.accountStatus !== "active") {
+              return res.status(401).json({ success: false, message: "Account is inactive" });
+            }
+            role = "Accountant";
+          }
+          break;
+        case "BranchManager":
+          user = await BranchManager.findOne({ email });
+          if (user) role = "BranchManager";
+          break;
+        case "Devotee":
+          user = await Devotee.findOne({ email });
+          if (user) role = "Devotee";
+          break;
+      }
+    } else {
+      // Fallback priority if no role is explicitly passed
+      user = await Admin.findOne({ email });
+      if (user) role = "Admin";
+      
+      if (!user) {
+        user = await Trustee.findOne({ email });
+        if (user) role = "Trustee";
+      }
+      
+      if (!user) {
+        user = await Accountant.findOne({ email });
+        if (user) {
+          if (user.accountStatus !== "active") {
+            return res.status(401).json({ success: false, message: "Account is inactive" });
+          }
+          role = "Accountant";
         }
-        role = "Accountant";
+      }
+      
+      if (!user) {
+        user = await BranchManager.findOne({ email });
+        if (user) role = "BranchManager";
+      }
+
+      if (!user) {
+        user = await Devotee.findOne({ email });
+        if (user) role = "Devotee";
       }
     }
-    
-    // We cannot easily auto-detect BranchManager solely by email since they login with managerId + branchId
-    // If they have an email registered, we can try to find them.
-    if (!user) {
-      user = await BranchManager.findOne({ email });
-      if (user) role = "BranchManager";
-    }
 
-    if (!user) {
-      user = await Devotee.findOne({ email });
-      if (user) role = "Devotee";
-    }
-
-    // If user completely doesn't exist, register them as a Devotee automatically
-    if (!user) {
+    // If user completely doesn't exist, register them as a Devotee automatically only if Devotee was selected or no role specified
+    if (!user && (!selectedRole || selectedRole === "Devotee")) {
       user = await Devotee.create({
         name: name || email.split('@')[0],
         email: email,
@@ -140,6 +172,8 @@ exports.googleLogin = async (req, res) => {
         profilePhoto: picture
       });
       role = "Devotee";
+    } else if (!user) {
+      return res.status(401).json({ success: false, message: "No account found for the selected role. Please check your role." });
     } else {
       // If Devotee exists but is unverified, verify them since Google verified the email
       if (role === "Devotee" && !user.isVerified) {

@@ -132,7 +132,7 @@ const Documents = () => {
               <a 
                 href={`http://localhost:5000${(doc.pdfUrl || '').startsWith('/') ? '' : '/'}${(doc.pdfUrl || '').replace(/\\/g, '/')}`}
                 target="_blank" rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center gap-2 py-2 bg-gray-50 border border-gray-200 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors text-sm font-bold"
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-white border border-gray-900 text-black hover:bg-gray-100 rounded-lg transition-all text-sm font-black shadow-sm"
               >
                 <FiEye /> Preview
               </a>

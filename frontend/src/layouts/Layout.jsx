@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
-import { FaHome, FaDonate, FaCalendarAlt, FaUsers, FaSignOutAlt, FaBell, FaOm, FaClipboardList, FaBullhorn, FaMapMarkerAlt, FaUserShield, FaImages, FaFileAlt, FaHistory, FaSitemap, FaCalculator, FaReceipt, FaBars, FaTimes } from 'react-icons/fa';
+import { FaHome, FaDonate, FaCalendarAlt, FaUsers, FaSignOutAlt, FaBell, FaOm, FaClipboardList, FaBullhorn, FaMapMarkerAlt, FaUserShield, FaImages, FaFileAlt, FaHistory, FaSitemap, FaCalculator, FaReceipt, FaBars, FaTimes, FaTrash } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Layout = ({ children, user }) => {
@@ -13,6 +13,13 @@ const Layout = ({ children, user }) => {
   const [pendingCounts, setPendingCounts] = useState({ annadaan: 0, documents: 0, deletions: 0, total: 0, verifyDonations: 0 });
   const [myNotifications, setMyNotifications] = useState([]);
   const { logout } = useAuth();
+  const mainRef = React.useRef(null);
+
+  React.useEffect(() => {
+    if (mainRef.current) {
+      mainRef.current.scrollTo(0, 0);
+    }
+  }, [location.pathname]);
 
   React.useEffect(() => {
     const fetchPendingCounts = async () => {
@@ -97,7 +104,7 @@ const Layout = ({ children, user }) => {
     navItems = [
       { name: 'Dashboard', path: '/trustee/dashboard', icon: <FaHome /> },
       { name: 'Profile', path: '/trustee/profile', icon: <FaUserShield /> },
-      { name: 'Announcements', path: '/trustee/announcements', icon: <FaBullhorn /> },
+      { name: 'Announcements', path: '/trustee/announcements', icon: <FaBullhorn />, showRedDot: unreadAnnouncementsCount > 0 },
       { name: 'Sansthan Updates', path: '/trustee/bulletins', icon: <FaBullhorn /> },
       { name: 'Devotees', path: '/trustee/devotees', icon: <FaUsers /> },
       { name: 'Donations', path: '/trustee/donations', icon: <FaDonate /> },
@@ -117,7 +124,7 @@ const Layout = ({ children, user }) => {
       { name: 'Events', path: '/branch/events', icon: <FaCalendarAlt /> },
       { name: 'Devotees', path: '/branch/devotees', icon: <FaUsers /> },
       { name: 'Donations', path: '/branch/donations', icon: <FaDonate /> },
-      { name: 'Announcements', path: '/branch/announcements', icon: <FaBullhorn /> },
+      { name: 'Announcements', path: '/branch/announcements', icon: <FaBullhorn />, showRedDot: unreadAnnouncementsCount > 0 },
       { name: 'Branches', path: '/branch/branches', icon: <FaMapMarkerAlt /> },
       { name: 'Documents', path: '/branch/documents', icon: <FaFileAlt /> },
     ];
@@ -129,6 +136,13 @@ const Layout = ({ children, user }) => {
       { name: 'Verify Donations', path: '/accountant/verify-donations', icon: <FaClipboardList />, badge: pendingCounts.verifyDonations ?? 0 },
       { name: 'Receipts', path: '/accountant/receipts', icon: <FaReceipt /> },
     ];
+  } else if (user?.role === 'DocumentHandler' || user?.role === 'document_admin') {
+    navItems = [
+      { name: 'Dashboard', path: '/document-handler/dashboard', icon: <FaHome /> },
+      { name: 'Profile', path: '/document-handler/profile', icon: <FaUserShield /> },
+      { name: 'Documents', path: '/document-handler/documents', icon: <FaFileAlt /> },
+      { name: 'Deletion Requests', path: '/document-handler/deletion-requests', icon: <FaTrash /> },
+    ];
   } else {
     navItems = [
       { name: 'Dashboard', path: '/admin/dashboard', icon: <FaHome /> },
@@ -137,15 +151,13 @@ const Layout = ({ children, user }) => {
       { name: 'Trustees', path: '/admin/trustees', icon: <FaUserShield /> },
       { name: 'Donations', path: '/admin/donations', icon: <FaDonate /> },
       { name: 'Events', path: '/admin/events', icon: <FaCalendarAlt /> },
-      { name: 'Announcements', path: '/admin/announcements', icon: <FaBullhorn /> },
+      { name: 'Announcements', path: '/admin/announcements', icon: <FaBullhorn />, showRedDot: unreadAnnouncementsCount > 0 },
       { name: 'Sansthan Updates', path: '/trustee/bulletins', icon: <FaBullhorn /> },
       { name: 'Annadan', path: '/admin/annadaan', icon: <FaClipboardList /> },
       { name: 'Branches', path: '/admin/branches', icon: <FaMapMarkerAlt /> },
       { name: 'Branch Managers', path: '/admin/branch-managers', icon: <FaUserShield /> },
       { name: 'Documents', path: '/admin/documents', icon: <FaFileAlt /> },
       { name: 'Doc Admins', path: '/admin/document-admins', icon: <FaUserShield /> },
-      { name: 'Monastery History', path: '/admin/math-history', icon: <FaHistory /> },
-      { name: 'Lineage', path: '/admin/lineage', icon: <FaSitemap /> },
     ];
   }
 
@@ -200,7 +212,15 @@ const Layout = ({ children, user }) => {
                }
              >
                <div className="flex items-center gap-4 z-10">
-                 <span className="text-lg">{item.icon}</span>
+                 <div className="relative">
+                   <span className="text-lg">{item.icon}</span>
+                   {item.showRedDot && (
+                     <>
+                       <span className="absolute -top-1 -right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full animate-ping opacity-75"></span>
+                       <span className="absolute -top-1 -right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border border-[#05051F]"></span>
+                     </>
+                   )}
+                 </div>
                  <span>{item.name}</span>
                </div>
                {item.badge !== undefined && (
@@ -282,7 +302,7 @@ const Layout = ({ children, user }) => {
             </div>
          </header>
 
-         <main className="flex-1 overflow-x-hidden overflow-y-auto relative">
+         <main ref={mainRef} className="flex-1 overflow-x-hidden overflow-y-auto relative">
            
            {/* Slide-out Notification Panel */}
            <AnimatePresence>

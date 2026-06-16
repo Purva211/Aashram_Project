@@ -5,7 +5,7 @@ import { FiUser, FiMail, FiPhone, FiMapPin, FiShield, FiSave, FiEdit2, FiCamera,
 import api from '../../utils/api';
 
 const AdminProfile = () => {
-  const { user } = useAuth();
+  const { user, login } = useAuth();
   const [activeTab, setActiveTab] = useState('personal');
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -14,6 +14,8 @@ const AdminProfile = () => {
 
   const [profileImage, setProfileImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   const [formData, setFormData] = useState({
     name: '',
@@ -43,6 +45,9 @@ const AdminProfile = () => {
         mobile: user.mobile || user.phone || '',
         address: user.address || ''
       });
+      if (user.profilePhoto) {
+        setImagePreview(`${API_URL}${user.profilePhoto}`);
+      }
     }
   }, [user]);
 
@@ -60,13 +65,28 @@ const AdminProfile = () => {
     setLoading(true);
     setSuccessMsg('');
     try {
-      // Simulate an API update for profile
-      await new Promise(res => setTimeout(res, 1000)); 
-      setSuccessMsg('Profile information updated successfully!');
-      setIsEditing(false);
+      const data = new FormData();
+      data.append('name', formData.name);
+      data.append('email', formData.email);
+      data.append('mobile', formData.mobile);
+      data.append('address', formData.address);
+      if (profileImage) {
+        data.append('profileImage', profileImage);
+      }
+
+      const res = await api.put('/admins/profile', data, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      if (res.data.success) {
+        login(sessionStorage.getItem('token') || localStorage.getItem('token'), res.data.data);
+        setSuccessMsg('Profile information updated successfully!');
+        setIsEditing(false);
+      } else {
+        alert(res.data.message || 'Failed to update profile.');
+      }
     } catch (err) {
       console.error(err);
-      alert('Failed to update profile.');
+      alert(err.response?.data?.message || 'Failed to update profile.');
     } finally {
       setLoading(false);
     }
@@ -80,12 +100,19 @@ const AdminProfile = () => {
     setLoading(true);
     setSuccessMsg('');
     try {
-      await new Promise(res => setTimeout(res, 1000)); 
-      setSuccessMsg('Security settings updated successfully!');
-      setSecurityData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      const res = await api.put('/admins/password', {
+        currentPassword: securityData.currentPassword,
+        newPassword: securityData.newPassword
+      });
+      if (res.data.success) {
+        setSuccessMsg('Security settings updated successfully!');
+        setSecurityData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      } else {
+        alert(res.data.message || 'Failed to update security settings.');
+      }
     } catch (err) {
       console.error(err);
-      alert('Failed to update security settings.');
+      alert(err.response?.data?.message || 'Failed to update security settings.');
     } finally {
       setLoading(false);
     }
@@ -210,7 +237,7 @@ const AdminProfile = () => {
                       <label className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2">Email Address</label>
                       <div className="relative">
                         <FiMail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                        <input type="email" disabled={!isEditing} value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3 text-gray-800 focus:outline-none focus:border-sky-500 focus:bg-white focus:ring-1 focus:ring-sky-500 transition-all disabled:opacity-70 disabled:bg-gray-100 font-medium" required />
+                        <input type="email" disabled={true} value={formData.email} className="w-full bg-gray-100 border border-gray-200 rounded-xl pl-11 pr-4 py-3 text-gray-800 opacity-70 cursor-not-allowed font-medium" title="Email address cannot be changed" />
                       </div>
                     </div>
 

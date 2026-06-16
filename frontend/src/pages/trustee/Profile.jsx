@@ -8,14 +8,16 @@ import {
 } from 'lucide-react';
 
 const Profile = () => {
-  const { user } = useAuth();
+  const { user, login } = useAuth();
   
   const [activeTab, setActiveTab] = useState('personal');
   
-  // Tab 1: Personal Info
   const [personalInfo, setPersonalInfo] = useState({
     name: '', email: '', mobile: '', trusteeId: '', joiningDate: '', aadhaar: '', profilePhoto: ''
   });
+  const [profileImageFile, setProfileImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
   
   // Tab 2: Security Settings
   const [passwords, setPasswords] = useState({ old: '', new: '', confirm: '' });
@@ -46,10 +48,22 @@ const Profile = () => {
         aadhaar: 'XXXX-XXXX-1234',
         profilePhoto: user.profilePhoto || ''
       });
+      if (user.profilePhoto) {
+        setImagePreview(`${API_URL}${user.profilePhoto}`);
+      }
     }
   }, [user]);
 
   const handlePersonalChange = (e) => setPersonalInfo({ ...personalInfo, [e.target.name]: e.target.value });
+  
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProfileImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
   const handlePasswordChange = (e) => setPasswords({ ...passwords, [e.target.name]: e.target.value });
   
   const handleToggleSecurity = (key) => setSecuritySettings(prev => ({ ...prev, [key]: !prev[key] }));
@@ -60,14 +74,20 @@ const Profile = () => {
     setLoading(true);
     setMessage({ type: '', text: '' });
     try {
-      // Mock API call or real if endpoint exists
-      const dataToUpdate = { 
-        name: personalInfo.name, 
-        email: personalInfo.email, 
-        mobile: personalInfo.mobile, 
-        profilePhoto: personalInfo.profilePhoto 
-      };
-      await api.put('/trustees/profile', dataToUpdate);
+      const dataToUpdate = new FormData();
+      dataToUpdate.append('name', personalInfo.name);
+      dataToUpdate.append('email', personalInfo.email);
+      dataToUpdate.append('mobile', personalInfo.mobile);
+      if (profileImageFile) {
+        dataToUpdate.append('profileImage', profileImageFile);
+      }
+      
+      const res = await api.put('/trustees/profile', dataToUpdate, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      if (res.data.success) {
+        login(sessionStorage.getItem('token') || localStorage.getItem('token'), res.data.data);
+      }
       setMessage({ type: 'success', text: 'Personal information updated successfully!' });
     } catch (err) {
       setMessage({ type: 'error', text: err.response?.data?.message || 'Failed to update profile.' });
@@ -77,20 +97,23 @@ const Profile = () => {
     }
   };
 
-  const handleSavePassword = (e) => {
+  const handleSavePassword = async (e) => {
     e.preventDefault();
     if(passwords.new !== passwords.confirm) {
       setMessage({ type: 'error', text: 'New passwords do not match.' });
       return;
     }
-    // Mocking password save
     setLoading(true);
-    setTimeout(() => {
+    try {
+      await api.put('/trustees/profile', { password: passwords.new });
       setMessage({ type: 'success', text: 'Password changed successfully.' });
       setPasswords({ old: '', new: '', confirm: '' });
+    } catch (err) {
+      setMessage({ type: 'error', text: err.response?.data?.message || 'Failed to update password.' });
+    } finally {
       setLoading(false);
       setTimeout(() => setMessage({ type: '', text: '' }), 5000);
-    }, 1000);
+    }
   };
 
   // Toggles component
@@ -120,16 +143,17 @@ const Profile = () => {
           <div className="bg-white rounded-[20px] shadow-sm border border-gray-100 p-8 flex flex-col items-center text-center transition-all hover:shadow-md">
             
             <div className="relative group mb-5">
-              <div className="w-32 h-32 rounded-full border-4 border-gray-50 shadow-sm overflow-hidden bg-gray-100 flex items-center justify-center">
-                {personalInfo.profilePhoto ? (
-                  <img src={personalInfo.profilePhoto} alt="Profile" className="w-full h-full object-cover" />
+              <div className="w-32 h-32 rounded-full border-4 border-gray-50 shadow-sm overflow-hidden bg-gray-100 flex items-center justify-center relative">
+                {imagePreview ? (
+                  <img src={imagePreview} alt="Profile" className="w-full h-full object-cover" />
                 ) : (
                   <span className="text-4xl font-bold text-gray-400">{personalInfo.name.charAt(0) || 'U'}</span>
                 )}
               </div>
-              <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+              <label className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                 <Camera className="text-white w-8 h-8" />
-              </div>
+                <input type="file" onChange={handleImageChange} accept="image/*" className="hidden" />
+              </label>
             </div>
 
             <h2 className="text-xl font-bold text-gray-900">{personalInfo.name || 'Trustee Name'}</h2>
@@ -207,7 +231,8 @@ const Profile = () => {
                       className="w-full px-4 py-3 bg-gray-100 border border-gray-200 text-gray-500 rounded-xl outline-none cursor-not-allowed" />
                   </div>
                   
-                  <div className="space-y-2">
+                  {/* Hidden Profile Photo URL input since we use file upload now */}
+                  <div className="space-y-2 hidden">
                     <label className="text-sm font-semibold text-gray-700 flex items-center gap-2"><User className="w-4 h-4 text-gray-400"/> Profile Photo URL</label>
                     <input type="text" name="profilePhoto" value={personalInfo.profilePhoto} onChange={handlePersonalChange} 
                       className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none transition-all" placeholder="https://..." />

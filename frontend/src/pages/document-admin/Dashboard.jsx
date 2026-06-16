@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiSearch, FiPlus, FiLogOut, FiFileText, FiEye, FiEdit2, FiTrash2, FiDownload, FiX, FiUploadCloud } from "react-icons/fi";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { FiSearch, FiPlus, FiFileText, FiEye, FiEdit2, FiTrash2, FiDownload, FiX, FiUploadCloud } from "react-icons/fi";
+import api from "../../utils/api";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 const ASSETS_URL = import.meta.env.VITE_ASSETS_URL || "http://localhost:5000";
 
 const DocumentAdminDashboard = () => {
+  const [allDocuments, setAllDocuments] = useState([]);
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -29,71 +28,62 @@ const DocumentAdminDashboard = () => {
   const [file, setFile] = useState(null);
   const [formLoading, setFormLoading] = useState(false);
 
-  const navigate = useNavigate();
-  const token = sessionStorage.getItem("documentAdminToken");
-  const adminBranchName = sessionStorage.getItem("documentAdminBranch") || "Unknown Branch";
-
   const categories = ["All", "Reports", "Policies", "Financial", "Meeting Minutes", "Other"];
 
   useEffect(() => {
-    if (!token) {
-      navigate("/login");
-      return;
-    }
     fetchBranches();
+    fetchAllDocuments();
   }, []);
 
   useEffect(() => {
-    if (token) fetchDocuments();
+    fetchDocuments();
   }, [searchTerm, selectedCategory, selectedBranch]);
 
   const fetchBranches = async () => {
     try {
-      const res = await axios.get(`${API_URL}/branches`);
+      const res = await api.get('/branches');
       if (res.data.success) setBranches(res.data.branches);
     } catch (err) {
       console.error(err);
     }
   };
 
+  const fetchAllDocuments = async () => {
+    try {
+      const res = await api.get('/documents');
+      if (res.data.success) setAllDocuments(res.data.documents);
+    } catch (err) {
+      console.error("Error fetching all documents:", err);
+    }
+  };
+
   const fetchDocuments = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${API_URL}/documents`, {
-        params: { search: searchTerm, category: selectedCategory, branchId: selectedBranch },
-        headers: { Authorization: `Bearer ${token}` }
+      const res = await api.get('/documents', {
+        params: { search: searchTerm, category: selectedCategory, branchId: selectedBranch }
       });
       setDocuments(res.data.documents);
     } catch (err) {
       console.error("Error fetching documents:", err);
-      if (err.response?.status === 401 || err.response?.status === 403) {
-        handleLogout();
-      }
     } finally {
       setLoading(false);
     }
   };
 
-  const handleLogout = () => {
-    sessionStorage.removeItem("documentAdminToken");
-    sessionStorage.removeItem("documentAdminBranch");
-    sessionStorage.clear();
-    localStorage.removeItem("documentAdminToken");
-    localStorage.removeItem("documentAdminBranch");
-    navigate("/login");
-  };
-
   const handleFileChange = (e) => {
     if (e.target.files[0]) {
-      if (e.target.files[0].type !== "application/pdf") {
-        alert("Please upload a PDF file only.");
+      const file = e.target.files[0];
+      const validTypes = ["application/pdf", "image/jpeg", "image/png", "image/webp"];
+      if (!validTypes.includes(file.type)) {
+        alert("Please upload a PDF or an Image file only.");
         return;
       }
-      if (e.target.files[0].size > 10 * 1024 * 1024) {
+      if (file.size > 10 * 1024 * 1024) {
         alert("File size must be less than 10MB.");
         return;
       }
-      setFile(e.target.files[0]);
+      setFile(file);
     }
   };
 
@@ -118,23 +108,18 @@ const DocumentAdminDashboard = () => {
     try {
       setFormLoading(true);
       if (currentDocument) {
-        await axios.put(`${API_URL}/documents/${currentDocument._id}`, data, {
-          headers: { 
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data" 
-          }
+        await api.put(`/documents/${currentDocument._id}`, data, {
+          headers: { "Content-Type": "multipart/form-data" }
         });
       } else {
-        await axios.post(`${API_URL}/documents`, data, {
-          headers: { 
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data" 
-          }
+        await api.post(`/documents`, data, {
+          headers: { "Content-Type": "multipart/form-data" }
         });
       }
       setIsUploadModalOpen(false);
       resetForm();
       fetchDocuments();
+      fetchAllDocuments();
     } catch (err) {
       alert(err.response?.data?.message || "An error occurred");
     } finally {
@@ -145,26 +130,14 @@ const DocumentAdminDashboard = () => {
   const handleDelete = async () => {
     if (!currentDocument) return;
     try {
-      await axios.delete(`${API_URL}/documents/${currentDocument._id}`, {
-        headers: { Authorization: `Bearer ${token}` },
+      await api.delete(`/documents/${currentDocument._id}`, {
         data: { reason: deletionReason }
       });
       setIsDeleteModalOpen(false);
       fetchDocuments();
+      fetchAllDocuments();
     } catch (err) {
-      alert("Error deleting document");
-    }
-  };
-
-  const handleApproveDeletion = async (doc) => {
-    try {
-      const res = await axios.put(`${API_URL}/documents/${doc._id}/approve-deletion`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      alert(res.data.message);
-      fetchDocuments();
-    } catch (err) {
-      alert(err.response?.data?.message || "Error approving deletion");
+      alert("Error requesting deletion");
     }
   };
 
@@ -206,39 +179,48 @@ const DocumentAdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans">
-      {/* Top Navbar */}
-      <nav className="bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center sticky top-0 z-20">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-200">
-            <FiFileText className="text-white text-xl" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-slate-800 leading-tight">Document Hub</h1>
-            <p className="text-xs text-indigo-200 mt-1">{adminBranchName}</p>
-          </div>
+    <div className="p-6 md:p-8 max-w-7xl mx-auto w-full">
+      <div className="mb-8 flex justify-between items-end">
+        <div>
+          <h1 className="text-3xl font-black text-slate-800 tracking-tight">Document Hub</h1>
+          <p className="text-slate-500 mt-1">Manage all institutional documents</p>
         </div>
-        <button 
-          onClick={handleLogout}
-          className="flex items-center gap-2 text-slate-500 hover:text-red-600 transition-colors bg-slate-100 hover:bg-red-50 px-4 py-2 rounded-lg text-sm font-medium"
-        >
-          <FiLogOut /> Logout
-        </button>
-      </nav>
+      </div>
 
-      <main className="w-full px-6 py-8">
+      <main className="w-full">
         {/* Stats Row */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between group hover:shadow-md transition-shadow">
             <div>
               <p className="text-sm text-slate-500 mb-1">Total Documents</p>
-              <h3 className="text-3xl font-bold text-slate-800">{documents.length}</h3>
+              <h3 className="text-3xl font-bold text-slate-800">{allDocuments.length}</h3>
             </div>
             <div className="w-12 h-12 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-600 group-hover:scale-110 transition-transform">
               <FiFileText className="text-xl" />
             </div>
           </div>
-          {/* We can add more stats cards here if needed */}
+          <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between group hover:shadow-md transition-shadow">
+            <div>
+              <p className="text-sm text-slate-500 mb-1">Approved</p>
+              <h3 className="text-3xl font-bold text-emerald-600">
+                {allDocuments.filter(d => d.status === 'Approved').length}
+              </h3>
+            </div>
+            <div className="w-12 h-12 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform">
+              <FiFileText className="text-xl" />
+            </div>
+          </div>
+          <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between group hover:shadow-md transition-shadow">
+            <div>
+              <p className="text-sm text-slate-500 mb-1">Pending Deletion</p>
+              <h3 className="text-3xl font-bold text-amber-600">
+                {allDocuments.filter(d => d.deleteStatus === 'Pending').length}
+              </h3>
+            </div>
+            <div className="w-12 h-12 bg-amber-50 rounded-full flex items-center justify-center text-amber-600 group-hover:scale-110 transition-transform">
+              <FiTrash2 className="text-xl" />
+            </div>
+          </div>
         </div>
 
         {/* Action Bar */}
@@ -378,9 +360,9 @@ const DocumentAdminDashboard = () => {
                               <FiTrash2 />
                             </button>
                           ) : (
-                            <button onClick={() => handleApproveDeletion(doc)} className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg tooltip" title="Approve Deletion Request">
-                              <span className="font-bold text-xs uppercase tracking-wider">Approve</span>
-                            </button>
+                            <span className="p-2 text-slate-400 cursor-not-allowed tooltip" title="Deletion requested">
+                              <FiTrash2 />
+                            </span>
                           )}
                         </div>
                       </td>
@@ -436,14 +418,14 @@ const DocumentAdminDashboard = () => {
                   <textarea required value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} rows="3" className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:outline-none resize-none" placeholder="Brief description..." />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">PDF File {currentDocument && "(Leave empty to keep existing)"}</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Document File {currentDocument && "(Leave empty to keep existing)"}</label>
                   <div className="relative border-2 border-dashed border-slate-300 rounded-xl p-6 text-center hover:bg-slate-50 transition-colors cursor-pointer" onClick={() => document.getElementById('file-upload').click()}>
-                    <input id="file-upload" type="file" accept=".pdf" onChange={handleFileChange} className="hidden" />
+                    <input id="file-upload" type="file" accept=".pdf,image/*" onChange={handleFileChange} className="hidden" />
                     <FiUploadCloud className="mx-auto text-3xl text-indigo-400 mb-2" />
                     <p className="text-sm text-slate-600 font-medium">
-                      {file ? file.name : "Click to select or drag and drop PDF"}
+                      {file ? file.name : "Click to select or drag and drop PDF/Image"}
                     </p>
-                    <p className="text-xs text-slate-400 mt-1">PDF up to 10MB</p>
+                    <p className="text-xs text-slate-400 mt-1">PDF or Image up to 10MB</p>
                   </div>
                 </div>
                 <div className="flex gap-3 pt-4 border-t border-slate-100">
@@ -494,11 +476,15 @@ const DocumentAdminDashboard = () => {
               </div>
             </div>
             <div className="flex-1 bg-white rounded-2xl overflow-hidden">
-              <iframe 
-                src={`${ASSETS_URL}${currentDocument.pdfUrl}`} 
-                className="w-full h-full border-0"
-                title={currentDocument.title}
-              />
+              {currentDocument.pdfUrl.match(/\.(jpeg|jpg|gif|png|webp)$/i) ? (
+                <img src={`${ASSETS_URL}${currentDocument.pdfUrl}`} alt={currentDocument.title} className="w-full h-full object-contain" />
+              ) : (
+                <iframe 
+                  src={`${ASSETS_URL}${currentDocument.pdfUrl}`} 
+                  className="w-full h-full border-0"
+                  title={currentDocument.title}
+                />
+              )}
             </div>
           </div>
         )}

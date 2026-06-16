@@ -178,10 +178,14 @@ exports.updateProfile = async (req, res) => {
     const accountant = await Accountant.findById(req.user._id);
     if (!accountant) return res.status(404).json({ success: false, message: "Accountant not found" });
 
-    accountant.fullName = fullName || accountant.fullName;
-    accountant.phone = phone || accountant.phone;
-    accountant.address = address || accountant.address;
-    accountant.profilePhoto = profilePhoto || accountant.profilePhoto;
+    if (fullName !== undefined) accountant.fullName = fullName;
+    if (phone !== undefined) accountant.phone = phone;
+    if (address !== undefined) accountant.address = address;
+    if (profilePhoto !== undefined) accountant.profilePhoto = profilePhoto;
+
+    if (req.file) {
+      accountant.profilePhoto = `/uploads/${req.file.filename}`;
+    }
 
     await accountant.save();
 

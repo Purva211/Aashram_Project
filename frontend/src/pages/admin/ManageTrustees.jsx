@@ -192,7 +192,7 @@ const ManageTrustees = () => {
           </div>
           <button 
             onClick={() => { resetForm(); setIsModalOpen(true); }}
-            className="w-full sm:w-auto bg-blue-900 hover:bg-blue-800 text-white px-6 py-2.5 rounded-xl font-black transition-colors shadow-lg flex items-center justify-center gap-2 whitespace-nowrap"
+            className="w-full sm:w-auto bg-gray-900 hover:bg-black text-white px-6 py-2.5 rounded-xl font-black transition-colors shadow-lg flex items-center justify-center gap-2 whitespace-nowrap"
           >
             <FiPlus /> Add Member
           </button>

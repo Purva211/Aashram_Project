@@ -36,6 +36,24 @@ exports.createDocument = async (req, res) => {
   }
 };
 
+exports.getPublicDocuments = async (req, res) => {
+  try {
+    const { branchId } = req.query;
+    const query = { status: "Approved" };
+    if (branchId && branchId !== 'All') {
+      query.branch = branchId;
+    }
+
+    const documents = await Document.find(query)
+      .populate("branch", "name")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({ success: true, documents });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server Error", error: error.message });
+  }
+};
+
 exports.getDocuments = async (req, res) => {
   try {
     const { search, category, branchId } = req.query;

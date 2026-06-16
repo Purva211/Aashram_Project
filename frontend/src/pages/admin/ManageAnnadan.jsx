@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiHeart, FiEdit2, FiTrash2, FiUsers, FiDollarSign, FiX, FiCheckCircle, FiClock, FiSearch, FiFilter, FiChevronUp, FiChevronDown } from 'react-icons/fi';
 import api from "../../utils/api";
@@ -13,9 +13,7 @@ const ManageAnnadan = () => {
   const [editingRecord, setEditingRecord] = useState(null);
   
   const [formData, setFormData] = useState({
-    status: 'pending',
-    beneficiaryCount: 0,
-    expenseAmount: 0
+    status: 'pending'
   });
 
   const [showFilters, setShowFilters] = useState(false);
@@ -105,30 +103,30 @@ const ManageAnnadan = () => {
       {stats && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-white border border-gray-100 shadow-sm p-6 rounded-2xl relative overflow-hidden group hover:shadow-md transition-shadow">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-rose-50 rounded-bl-full opacity-50"></div>
+            <div className="absolute top-0 right-0 w-24 h-24 bg-yellow-50 rounded-bl-full opacity-50"></div>
             <div className="flex justify-between items-center mb-2 relative z-10">
-              <p className="text-sm text-gray-500 font-bold uppercase tracking-wider">Total Requests</p>
-              <FiHeart className="text-rose-400 text-xl" />
+              <p className="text-sm text-gray-500 font-bold uppercase tracking-wider">Pending Records</p>
+              <FiClock className="text-yellow-500 text-xl" />
             </div>
-            <p className="text-3xl font-bold text-slate-900 relative z-10">{stats.totalRecords}</p>
-          </div>
-          
-          <div className="bg-white border border-gray-100 shadow-sm p-6 rounded-2xl relative overflow-hidden group hover:shadow-md transition-shadow">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full opacity-50"></div>
-            <div className="flex justify-between items-center mb-2 relative z-10">
-              <p className="text-sm text-gray-500 font-bold uppercase tracking-wider">Total Beneficiaries</p>
-              <FiUsers className="text-emerald-400 text-xl" />
-            </div>
-            <p className="text-3xl font-bold text-slate-900 relative z-10">{stats.totalBeneficiaries.toLocaleString()}</p>
+            <p className="text-3xl font-bold text-slate-900 relative z-10">{stats.totalPending}</p>
           </div>
 
           <div className="bg-white border border-gray-100 shadow-sm p-6 rounded-2xl relative overflow-hidden group hover:shadow-md transition-shadow">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-saffron-50 rounded-bl-full opacity-50"></div>
+            <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full opacity-50"></div>
             <div className="flex justify-between items-center mb-2 relative z-10">
-              <p className="text-sm text-gray-500 font-bold uppercase tracking-wider">Total Expenses</p>
-              <FiDollarSign className="text-saffron-500 text-xl" />
+              <p className="text-sm text-gray-500 font-bold uppercase tracking-wider">Total Approved</p>
+              <FiCheckCircle className="text-emerald-400 text-xl" />
             </div>
-            <p className="text-3xl font-bold text-slate-900 relative z-10">₹ {stats.totalExpenses.toLocaleString()}</p>
+            <p className="text-3xl font-bold text-slate-900 relative z-10">{stats.totalApproved}</p>
+          </div>
+
+          <div className="bg-white border border-gray-100 shadow-sm p-6 rounded-2xl relative overflow-hidden group hover:shadow-md transition-shadow">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-rose-50 rounded-bl-full opacity-50"></div>
+            <div className="flex justify-between items-center mb-2 relative z-10">
+              <p className="text-sm text-gray-500 font-bold uppercase tracking-wider">Total Rejected</p>
+              <FiX className="text-rose-400 text-xl" />
+            </div>
+            <p className="text-3xl font-bold text-slate-900 relative z-10">{stats.totalRejected}</p>
           </div>
         </div>
       )}
@@ -147,9 +145,6 @@ const ManageAnnadan = () => {
                 </th>
                 <th className="p-4 font-bold cursor-pointer hover:bg-slate-200 transition-colors bg-slate-100" onClick={() => handleSort('annadaanType')}>
                   <div className="flex items-center gap-1">Type {sortConfig.key === 'annadaanType' && (sortConfig.direction === 'asc' ? <FiChevronUp/> : <FiChevronDown/>)}</div>
-                </th>
-                <th className="p-4 font-bold cursor-pointer hover:bg-slate-200 transition-colors bg-slate-100" onClick={() => handleSort('beneficiaryCount')}>
-                  <div className="flex items-center gap-1">Metrics {sortConfig.key === 'beneficiaryCount' && (sortConfig.direction === 'asc' ? <FiChevronUp/> : <FiChevronDown/>)}</div>
                 </th>
                 <th className="p-4 font-bold cursor-pointer hover:bg-slate-200 transition-colors bg-slate-100" onClick={() => handleSort('status')}>
                   <div className="flex items-center gap-1">Status {sortConfig.key === 'status' && (sortConfig.direction === 'asc' ? <FiChevronUp/> : <FiChevronDown/>)}</div>
@@ -174,19 +169,15 @@ const ManageAnnadan = () => {
                     </span>
                   </td>
                   <td className="p-4">
-                    <div className="text-xs text-gray-600"><span className="text-emerald-600 font-bold">{r.beneficiaryCount || 0}</span> Fed</div>
-                    <div className="text-xs mt-1 text-gray-600">₹ <span className="text-saffron-600 font-bold">{r.expenseAmount || 0}</span></div>
-                  </td>
-                  <td className="p-4">
-                    {r.status === 'completed' && <span className="flex items-center gap-1 text-emerald-600 text-xs font-bold uppercase"><FiCheckCircle /> Completed</span>}
-                    {r.status === 'approved' && <span className="flex items-center gap-1 text-blue-600 text-xs font-bold uppercase">Approved</span>}
-                    {r.status === 'pending' && <span className="flex items-center gap-1 text-saffron-600 text-xs font-bold uppercase">Pending</span>}
+                    <span className={`px-2.5 py-1 text-xs font-black uppercase tracking-wide rounded-md ${r.status === 'completed' ? 'bg-green-100 text-green-700' : r.status === 'approved' ? 'bg-blue-100 text-blue-700' : r.status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                      {r.status}
+                    </span>
                   </td>
                 </tr>
               ))}
               {paginatedData.length === 0 && (
                 <tr>
-                  <td colSpan="5" className="p-8 text-center text-gray-500">No Annadan records found.</td>
+                  <td colSpan="4" className="p-8 text-center text-gray-500">No Annadan records found.</td>
                 </tr>
               )}
             </tbody>

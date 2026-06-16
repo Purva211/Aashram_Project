@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaHandHoldingHeart, FaPlus, FaSpinner, FaEdit, FaTrash, FaTimes } from 'react-icons/fa';
+import { FaHandHoldingHeart, FaPlus, FaSpinner, FaEdit, FaTrash, FaTimes, FaClock, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import api from "../../utils/api";
 import { usePermissions } from '../../hooks/usePermissions';
 
@@ -12,6 +12,7 @@ const Annadaan = () => {
   const [formData, setFormData] = useState({ name: '', phone: '', email: '', annadaanType: '', date: '', time: '', description: '', status: 'pending' });
   const [editingId, setEditingId] = useState(null);
   const [filterDate, setFilterDate] = useState("");
+  const [stats, setStats] = useState(null);
   const { hasManage } = usePermissions('Annadan');
 
   useEffect(() => {
@@ -21,8 +22,12 @@ const Annadaan = () => {
   const fetchRecords = async () => {
     try {
       setLoading(true);
-      const res = await api.get('/annadaan');
+      const [res, statsRes] = await Promise.all([
+        api.get('/annadaan'),
+        api.get('/annadaan/stats')
+      ]);
       setRecords(res.data.data);
+      setStats(statsRes.data.data);
       setError("");
     } catch (err) {
       setError("Failed to fetch annadaan records.");
@@ -107,6 +112,38 @@ const Annadaan = () => {
       </div>
 
       {error && <div className="text-red-500 bg-red-50 p-4 rounded-xl font-bold">{error}</div>}
+
+      {/* Stats Cards */}
+      {stats && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white border border-gray-100 shadow-sm p-6 rounded-2xl relative overflow-hidden group hover:shadow-md transition-shadow">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-yellow-50 rounded-bl-full opacity-50"></div>
+            <div className="flex justify-between items-center mb-2 relative z-10">
+              <p className="text-sm text-gray-500 font-bold uppercase tracking-wider">Pending Records</p>
+              <FaClock className="text-yellow-500 text-xl" />
+            </div>
+            <p className="text-3xl font-bold text-slate-900 relative z-10">{stats.totalPending}</p>
+          </div>
+
+          <div className="bg-white border border-gray-100 shadow-sm p-6 rounded-2xl relative overflow-hidden group hover:shadow-md transition-shadow">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full opacity-50"></div>
+            <div className="flex justify-between items-center mb-2 relative z-10">
+              <p className="text-sm text-gray-500 font-bold uppercase tracking-wider">Total Approved</p>
+              <FaCheckCircle className="text-emerald-400 text-xl" />
+            </div>
+            <p className="text-3xl font-bold text-slate-900 relative z-10">{stats.totalApproved}</p>
+          </div>
+
+          <div className="bg-white border border-gray-100 shadow-sm p-6 rounded-2xl relative overflow-hidden group hover:shadow-md transition-shadow">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-rose-50 rounded-bl-full opacity-50"></div>
+            <div className="flex justify-between items-center mb-2 relative z-10">
+              <p className="text-sm text-gray-500 font-bold uppercase tracking-wider">Total Rejected</p>
+              <FaTimesCircle className="text-rose-400 text-xl" />
+            </div>
+            <p className="text-3xl font-bold text-slate-900 relative z-10">{stats.totalRejected}</p>
+          </div>
+        </div>
+      )}
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative min-h-[400px]">
         {loading ? (

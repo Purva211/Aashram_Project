@@ -9,7 +9,8 @@ const branchManagerSchema = new mongoose.Schema({
   address: { type: String },
   branch: { type: mongoose.Schema.Types.ObjectId, ref: "Branch", required: true },
   password: { type: String, required: true },
-  role: { type: String, default: "BranchManager" }
+  role: { type: String, default: "BranchManager" },
+  profilePhoto: { type: String, default: "" }
 }, { timestamps: true });
 
 branchManagerSchema.pre("save", async function() {

@@ -6,6 +6,7 @@ import api from "../../utils/api";
 import { useTableFeatures } from '../../hooks/useTableFeatures';
 import TablePagination from '../../components/TablePagination';
 import { useAuth } from '../../context/AuthContext';
+import { usePermissions } from '../../hooks/usePermissions';
 
 const Announcements = () => {
   const [activeTab, setActiveTab] = useState('list'); // 'list', 'analytics'
@@ -118,7 +119,7 @@ const Announcements = () => {
       }
       
     } catch (err) {
-      alert("Failed to save announcement.");
+      alert(`Failed to save announcement. Server said: ${err.response?.data?.message || err.message}`);
     } finally {
       setSubmitting(false);
     }

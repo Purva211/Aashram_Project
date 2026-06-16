@@ -669,7 +669,7 @@ const UserEvents = () => {
 
                   <div className="p-8 flex flex-col flex-1 relative">
                     <span className="inline-block px-3 py-1 bg-stone-100 rounded-md text-stone-500 text-[10px] font-black uppercase tracking-widest mb-4 w-fit">
-                      {event.category}
+                      {event.branch?.name || "Global"}
                     </span>
                     
                     <h3 className="text-xl font-serif font-bold text-stone-900 line-clamp-2 leading-tight mb-4 group-hover:text-amber-700 transition-colors">

@@ -5,7 +5,7 @@ import { FiUser, FiMail, FiPhone, FiMapPin, FiShield, FiSave, FiEdit2, FiCamera,
 import api from '../../utils/api';
 
 const Profile = () => {
-  const { user } = useAuth();
+  const { user, login } = useAuth();
   const [activeTab, setActiveTab] = useState('personal');
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -14,6 +14,7 @@ const Profile = () => {
 
   const [profileImage, setProfileImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   const [formData, setFormData] = useState({
     name: '',
@@ -43,6 +44,9 @@ const Profile = () => {
         mobile: user.mobile || user.phone || '',
         address: user.address || ''
       });
+      if (user.profilePhoto) {
+        setImagePreview(`${API_URL}${user.profilePhoto}`);
+      }
     }
   }, [user]);
 
@@ -60,13 +64,26 @@ const Profile = () => {
     setLoading(true);
     setSuccessMsg('');
     try {
-      // Simulate an API update for profile
-      await new Promise(res => setTimeout(res, 1000)); 
-      setSuccessMsg('Profile information updated successfully!');
-      setIsEditing(false);
+      const dataToUpdate = new FormData();
+      dataToUpdate.append('name', formData.name);
+      dataToUpdate.append('email', formData.email);
+      dataToUpdate.append('mobile', formData.mobile);
+      dataToUpdate.append('address', formData.address);
+      if (profileImage) {
+        dataToUpdate.append('profileImage', profileImage);
+      }
+
+      const res = await api.put('/branch-managers/profile', dataToUpdate, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      if (res.data.success) {
+        login(sessionStorage.getItem('token') || localStorage.getItem('token'), res.data.user);
+        setSuccessMsg('Profile information updated successfully!');
+        setIsEditing(false);
+      }
     } catch (err) {
       console.error(err);
-      alert('Failed to update profile.');
+      alert(err.response?.data?.message || 'Failed to update profile.');
     } finally {
       setLoading(false);
     }
@@ -80,12 +97,14 @@ const Profile = () => {
     setLoading(true);
     setSuccessMsg('');
     try {
-      await new Promise(res => setTimeout(res, 1000)); 
-      setSuccessMsg('Security settings updated successfully!');
-      setSecurityData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      const res = await api.put('/branch-managers/profile', { password: securityData.newPassword });
+      if (res.data.success) {
+        setSuccessMsg('Security settings updated successfully!');
+        setSecurityData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      }
     } catch (err) {
       console.error(err);
-      alert('Failed to update security settings.');
+      alert(err.response?.data?.message || 'Failed to update security settings.');
     } finally {
       setLoading(false);
     }

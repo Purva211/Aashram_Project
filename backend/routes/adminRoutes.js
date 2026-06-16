@@ -28,4 +28,6 @@ router.delete("/branch-managers/:id", adminController.deleteBranchManager);
 // Documents (Read-only for Admin)
 router.get("/documents", adminController.getAllDocuments);
 
+router.get('/admins-list', adminController.getAllAdmins);
+
 module.exports = router;

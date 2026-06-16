@@ -22,7 +22,7 @@ const trusteeSchema = new mongoose.Schema({
       { module: 'Devotees', level: 'View' },
       { module: 'Donations', level: 'View' },
       { module: 'Events', level: 'View' },
-      { module: 'Announcements', level: 'View' },
+      { module: 'Announcements', level: 'Manage' },
       { module: 'Branches', level: 'View' },
       { module: 'Documents', level: 'View' },
       { module: 'Annadan', level: 'View' },

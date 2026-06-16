@@ -23,6 +23,10 @@ const documentAdminSchema = new mongoose.Schema({
     type: String,
     enum: ["Active", "Inactive"],
     default: "Active"
+  },
+  profilePhoto: {
+    type: String,
+    default: ""
   }
 }, { timestamps: true });
 

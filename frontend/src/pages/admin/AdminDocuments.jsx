@@ -134,7 +134,7 @@ const AdminDocuments = () => {
               <a 
                 href={`http://localhost:5000${(doc.pdfUrl || '').replace(/\\/g, '/')}`}
                 target="_blank" rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-slate-900 border border-slate-900 text-white hover:bg-slate-800 rounded-xl transition-all text-sm font-black shadow-md hover:shadow-lg"
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-white border border-gray-900 text-black hover:bg-gray-100 rounded-xl transition-all text-sm font-black shadow-md hover:shadow-lg"
               >
                 <FiEye /> Preview
               </a>

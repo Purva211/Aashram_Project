@@ -170,7 +170,7 @@ const Home = () => {
     return {
       pages: PAGES.filter(p => p.title.toLowerCase().includes(query)),
       branches: branches.filter(b => b.name.toLowerCase().includes(query) || (b.address && b.address.toLowerCase().includes(query))),
-      events: allEvents.filter(e => e.title.toLowerCase().includes(query) || (e.category && e.category.toLowerCase().includes(query)))
+      events: allEvents.filter(e => e.title.toLowerCase().includes(query) || (e.branch?.name && e.branch.name.toLowerCase().includes(query)))
     };
   }, [searchQuery, branches, allEvents, PAGES]);
 

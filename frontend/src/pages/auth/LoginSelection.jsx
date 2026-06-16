@@ -90,19 +90,7 @@ const LoginSelection = () => {
     setSuccessMsg('');
 
     try {
-      if (selectedRole === 'DocumentHandler') {
-        const res = await api.post('/document-admin/login', {
-          email: formData.email,
-          password: formData.password
-        });
-        if (res.data.success) {
-          sessionStorage.setItem("documentAdminToken", res.data.token);
-          if (res.data.branch) sessionStorage.setItem("documentAdminBranch", res.data.branch.name);
-          navigate("/document-handler/dashboard");
-        }
-        setLoading(false);
-        return;
-      }
+      // Proceed with standard auth for all roles
 
       const payload = { role: selectedRole, password: formData.password };
       
@@ -139,7 +127,8 @@ const LoginSelection = () => {
     setError('');
     try {
       const res = await api.post('/auth/google-login', {
-        credential: credentialResponse.credential
+        credential: credentialResponse.credential,
+        selectedRole: selectedRole
       });
       if (res.data.success) {
         login(res.data.token, res.data.user);

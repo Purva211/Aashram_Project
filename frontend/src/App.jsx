@@ -73,6 +73,8 @@ import AdminDocuments from "./pages/admin/AdminDocuments";
 
 // Document Handler Pages
 import DocumentAdminDashboard from "./pages/document-admin/Dashboard";
+import DocumentAdminProfile from "./pages/document-admin/Profile";
+import DocumentAdminDeletionRequests from "./pages/document-admin/DeletionRequests";
 
 // Accountant Pages
 import TrusteeAccountants from "./pages/trustee/Accountants";
@@ -152,7 +154,7 @@ function AppRoutes() {
   
   return (
     <div className="h-full w-full">
-      <Routes location={location} key={location.pathname}>
+      <Routes location={location}>
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
@@ -237,7 +239,10 @@ function AppRoutes() {
           <Route path="/accountant/receipts" element={<RoleProtectedRoute allowedRoles={['Accountant']}><AccountantReceipts /></RoleProtectedRoute>} />
 
           {/* Document Handler Routes */}
-          <Route path="/document-handler/dashboard" element={<DocumentAdminDashboard />} />
+          <Route path="/document-handler/dashboard" element={<RoleProtectedRoute allowedRoles={['DocumentHandler', 'document_admin']}><DocumentAdminDashboard /></RoleProtectedRoute>} />
+          <Route path="/document-handler/profile" element={<RoleProtectedRoute allowedRoles={['DocumentHandler', 'document_admin']}><DocumentAdminProfile /></RoleProtectedRoute>} />
+          <Route path="/document-handler/deletion-requests" element={<RoleProtectedRoute allowedRoles={['DocumentHandler', 'document_admin']}><DocumentAdminDeletionRequests /></RoleProtectedRoute>} />
+          <Route path="/document-handler/documents" element={<RoleProtectedRoute allowedRoles={['DocumentHandler', 'document_admin']}><DocumentAdminDashboard /></RoleProtectedRoute>} />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" />} />

@@ -18,6 +18,18 @@ const adminSchema = new mongoose.Schema({
   role: {
     type: String,
     default: "Admin" // Admin is Super User
+  },
+  mobile: {
+    type: String,
+    default: ""
+  },
+  address: {
+    type: String,
+    default: ""
+  },
+  profilePhoto: {
+    type: String,
+    default: ""
   }
 }, { timestamps: true });
 

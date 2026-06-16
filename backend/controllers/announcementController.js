@@ -4,6 +4,7 @@ const Admin = require('../models/Admin');
 const Trustee = require('../models/Trustee');
 const BranchManager = require('../models/BranchManager');
 const Accountant = require('../models/Accountant');
+const DocumentAdmin = require('../models/DocumentAdmin');
 const { sendAnnouncementEmail } = require('../services/mailService');
 
 
@@ -97,6 +98,7 @@ exports.createAnnouncement = async (req, res) => {
             addEmails(await Trustee.find({ email: { $exists: true, $ne: '' } }));
             addEmails(await BranchManager.find({ email: { $exists: true, $ne: '' } }));
             addEmails(await Accountant.find({ email: { $exists: true, $ne: '' } }));
+            addEmails(await DocumentAdmin.find({ email: { $exists: true, $ne: '' } }));
             addEmails(await Admin.find({ email: { $exists: true, $ne: '' } }));
           } else {
             if (audienceType.includes('All Devotees')) addEmails(await User.find({ email: { $exists: true, $ne: '' } }));
@@ -106,14 +108,16 @@ exports.createAnnouncement = async (req, res) => {
             if (targetRoles && targetRoles.length > 0) {
               addEmails(await Trustee.find({ systemRole: { $in: targetRoles }, email: { $exists: true, $ne: '' } }));
               if (targetRoles.includes('Admin')) addEmails(await Admin.find({ email: { $exists: true, $ne: '' } }));
-              if (targetRoles.includes('Branch Manager')) addEmails(await BranchManager.find({ email: { $exists: true, $ne: '' } }));
+              if (targetRoles.includes('BranchManager')) addEmails(await BranchManager.find({ email: { $exists: true, $ne: '' } }));
               if (targetRoles.includes('Accountant')) addEmails(await Accountant.find({ email: { $exists: true, $ne: '' } }));
+              if (targetRoles.includes('DocumentAdmin')) addEmails(await DocumentAdmin.find({ email: { $exists: true, $ne: '' } }));
             }
             if (targetUsers && targetUsers.length > 0) {
               addEmails(await Trustee.find({ _id: { $in: targetUsers }, email: { $exists: true, $ne: '' } }));
               addEmails(await Admin.find({ _id: { $in: targetUsers }, email: { $exists: true, $ne: '' } }));
               addEmails(await BranchManager.find({ _id: { $in: targetUsers }, email: { $exists: true, $ne: '' } }));
               addEmails(await Accountant.find({ _id: { $in: targetUsers }, email: { $exists: true, $ne: '' } }));
+              addEmails(await DocumentAdmin.find({ _id: { $in: targetUsers }, email: { $exists: true, $ne: '' } }));
               addEmails(await User.find({ _id: { $in: targetUsers }, email: { $exists: true, $ne: '' } }));
             }
           }
@@ -199,6 +203,10 @@ exports.getMyNotifications = async (req, res) => {
       if (user.branchId) {
         conditions.push({ targetBranches: user.branchId });
       }
+    } else if (user.role === 'Accountant') {
+      conditions.push({ targetRoles: 'Accountant' });
+    } else if (user.role === 'DocumentAdmin') {
+      conditions.push({ targetRoles: 'DocumentAdmin' });
     }
     
     // Specific user targeting applies to anyone
@@ -246,7 +254,7 @@ exports.markAsRead = async (req, res) => {
     const receipt = await AnnouncementRecipient.findOneAndUpdate(
       { announcementId: id, userId: user._id },
       { readStatus: true, readTime: new Date(), deliveryStatus: 'Delivered' },
-      { upsert: true, new: true, setDefaultsOnInsert: true }
+      { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true }
     );
 
     res.status(200).json({ success: true, data: receipt });
@@ -263,7 +271,7 @@ exports.dismissNotification = async (req, res) => {
     const receipt = await AnnouncementRecipient.findOneAndUpdate(
       { announcementId: id, userId: user._id },
       { isDismissed: true },
-      { upsert: true, new: true, setDefaultsOnInsert: true }
+      { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true }
     );
 
     res.status(200).json({ success: true, data: receipt });

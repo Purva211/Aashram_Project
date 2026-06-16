@@ -1,6 +1,7 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { FiUsers, FiDollarSign, FiCalendar, FiBell, FiMapPin, FiFileText, FiShield, FiHeart, FiClock } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
+import { FiUsers, FiDollarSign, FiCalendar, FiBell, FiMapPin, FiFileText, FiShield, FiHeart, FiClock, FiPlus } from 'react-icons/fi';
 import api from "../../utils/api";
 import { useAuth } from "../../context/AuthContext";
 
@@ -23,6 +24,7 @@ const AdminDashboard = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     api.get('/admins/stats').then(res => {
@@ -67,6 +69,8 @@ const AdminDashboard = () => {
             </span>
           </div>
         </div>
+
+
       </div>
 
       {/* Stats Grid */}
