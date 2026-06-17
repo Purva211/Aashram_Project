@@ -4,9 +4,16 @@ const trusteeController = require("../controllers/trusteeController");
 const authMiddleware = require("../middleware/authMiddleware");
 const checkRole = require("../middleware/roleMiddleware");
 const checkPermission = require("../middleware/permissionMiddleware");
+const upload = require("../middleware/uploadMiddleware");
 
 // Public route to fetch trustees
 router.get("/public", trusteeController.getPublicTrustees);
+
+// Fetch roles for announcement targeting (open to all authenticated users)
+router.get('/admins-list', authMiddleware, trusteeController.getAllAdmins);
+router.get('/branch-managers', authMiddleware, trusteeController.getBranchManagers);
+router.get('/document-admin', authMiddleware, trusteeController.getDocumentAdmins);
+router.get('/accountants', authMiddleware, trusteeController.getAccountants);
 
 // All routes require 'Trustee' role
 router.use(authMiddleware, checkRole("Trustee"));
@@ -24,13 +31,6 @@ router.get("/documents/deletion-requests", checkPermission('Documents'), trustee
 router.put("/documents/:id/review-deletion", checkPermission('Documents'), trusteeController.reviewDeletionRequest);
 
 // Profile Route
-router.put("/profile", trusteeController.updateProfile);
+router.put("/profile", upload.single('profileImage'), trusteeController.updateProfile);
 
-router.get('/admins-list', trusteeController.getAllAdmins);
-
-
-router.get('/branch-managers', trusteeController.getBranchManagers);
-router.get('/document-admin', trusteeController.getDocumentAdmins);
-router.get('/accountants', trusteeController.getAccountants);
 module.exports = router;
-

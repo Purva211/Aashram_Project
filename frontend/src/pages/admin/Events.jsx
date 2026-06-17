@@ -41,7 +41,7 @@ const AdminEvents = () => {
     fetchBranches();
     fetchEvents();
 
-    const socket = io("http://localhost:5000");
+    const socket = io(import.meta.env.VITE_ASSETS_URL || "http://localhost:5000");
 
     socket.on("event_created", (newEvent) => setEvents((prev) => [newEvent, ...prev]));
     socket.on("event_updated", (updatedEvent) => setEvents((prev) => prev.map((e) => (e._id === updatedEvent._id ? updatedEvent : e))));

@@ -7,6 +7,7 @@ const trusteeSchema = new mongoose.Schema({
   mobile: { type: String, required: true },
   designation: { type: String, required: true },
   address: { type: String, required: true },
+  aadhaar: { type: String },
   profilePhoto: { type: String },
   password: { type: String, required: true },
   role: { type: String, default: "Trustee" },

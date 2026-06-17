@@ -24,6 +24,14 @@ const Announcements = () => {
   const [newlyAddedId, setNewAddedId] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [ownershipFilter, setOwnershipFilter] = useState('all'); // 'all', 'mine', 'others'
+  const [expandedIds, setExpandedIds] = useState(new Set());
+
+  const toggleExpand = (id) => {
+    const next = new Set(expandedIds);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    setExpandedIds(next);
+  };
 
   const { user } = useAuth();
 
@@ -53,7 +61,7 @@ const Announcements = () => {
     subject: '',
     message: '',
     priority: 'Normal',
-    audienceType: ['All Users'],
+    audienceType: [],
     targetBranches: [],
     targetRoles: [],
     targetUsers: [],
@@ -195,8 +203,10 @@ const Announcements = () => {
         setTimeout(() => setNewAddedId(null), 5000); 
       }
       
+      alert('Announcement dispatched successfully!');
+      
     } catch (err) {
-      alert(`Failed to save announcement. Server said: ${err.response?.data?.message || err.message}`);
+      alert(`Failed to broadcast announcement.\n\nServer said: ${err.response?.data?.message || err.message}`);
     } finally {
       setSubmitting(false);
     }
@@ -340,7 +350,7 @@ const Announcements = () => {
               className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 w-64 shadow-sm transition-all"
             />
           </div>
-          <button onClick={handleOpenNew} className="flex items-center gap-2 px-6 py-3 bg-gray-900 hover:bg-black text-white font-black rounded-xl shadow-lg transition-all whitespace-nowrap">
+          <button onClick={handleOpenNew} className="flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl shadow-lg transition-all whitespace-nowrap">
             <FiPlus /> New Announcement
           </button>
         </div>
@@ -349,7 +359,7 @@ const Announcements = () => {
       {/* Tabs */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="flex bg-white rounded-xl shadow-sm border border-slate-100 p-1 gap-1 w-full md:w-auto">
-          <button onClick={() => setActiveTab('list')} className={`flex-1 md:flex-none md:px-8 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'list' ? 'bg-slate-900 text-white shadow' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'}`}>
+          <button onClick={() => setActiveTab('list')} className={`flex-1 md:flex-none md:px-8 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'list' ? 'bg-indigo-600 text-white shadow' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'}`}>
             <FiFileText className="inline mr-2" /> All Broadcasts
           </button>
           <button onClick={() => setActiveTab('analytics')} className={`flex-1 md:flex-none md:px-8 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'analytics' ? 'bg-indigo-500 text-white shadow' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'}`}>
@@ -639,7 +649,7 @@ const Announcements = () => {
                             </div>
                           </div>
                           <div className="max-h-40 overflow-y-auto custom-scrollbar p-2 grid grid-cols-1 md:grid-cols-2 gap-1 bg-white">
-                            {admins.filter(a => (a.name || a.email || '').toLowerCase().includes(searchAdmins.toLowerCase())).map(a => (
+                            {admins.filter(a => a._id !== user?._id && (a.name || a.email || '').toLowerCase().includes(searchAdmins.toLowerCase())).map(a => (
                               <label key={a._id} className={`flex items-center gap-2 cursor-pointer text-xs hover:bg-slate-50 p-1.5 rounded ${audienceSettings.specificAdmins.includes(a._id) ? 'bg-indigo-50/50' : ''}`}>
                                 <input type="checkbox" checked={audienceSettings.specificAdmins.includes(a._id)} onChange={() => handleAudienceToggle('specificAdmins', true, a._id)} className="rounded text-indigo-600 focus:ring-indigo-500 w-3.5 h-3.5" />
                                 <span className="text-slate-700 truncate">{a.name || a.email} <span className="text-slate-400">({a.role || 'Admin'})</span></span>
@@ -685,7 +695,7 @@ const Announcements = () => {
                             </div>
                           </div>
                           <div className="max-h-40 overflow-y-auto custom-scrollbar p-2 grid grid-cols-1 md:grid-cols-2 gap-1 bg-white">
-                            {branchManagers.filter(b => (b.name || b.email || '').toLowerCase().includes(searchBm.toLowerCase())).map(b => (
+                            {branchManagers.filter(b => b._id !== user?._id && (b.name || b.email || '').toLowerCase().includes(searchBm.toLowerCase())).map(b => (
                               <label key={b._id} className={`flex items-center gap-2 cursor-pointer text-xs hover:bg-slate-50 p-1.5 rounded ${audienceSettings.specificBranchManagers.includes(b._id) ? 'bg-indigo-50/50' : ''}`}>
                                 <input type="checkbox" checked={audienceSettings.specificBranchManagers.includes(b._id)} onChange={() => handleAudienceToggle('specificBranchManagers', true, b._id)} className="rounded text-indigo-600 focus:ring-indigo-500 w-3.5 h-3.5" />
                                 <span className="text-slate-700 truncate">{b.name || b.email}</span>
@@ -708,7 +718,7 @@ const Announcements = () => {
                             </div>
                           </div>
                           <div className="max-h-40 overflow-y-auto custom-scrollbar p-2 grid grid-cols-1 md:grid-cols-2 gap-1 bg-white">
-                            {accountants.filter(a => (a.fullName || a.name || a.email || '').toLowerCase().includes(searchAcc.toLowerCase())).map(a => (
+                            {accountants.filter(a => a._id !== user?._id && (a.fullName || a.name || a.email || '').toLowerCase().includes(searchAcc.toLowerCase())).map(a => (
                               <label key={a._id} className={`flex items-center gap-2 cursor-pointer text-xs hover:bg-slate-50 p-1.5 rounded ${audienceSettings.specificAccountants.includes(a._id) ? 'bg-indigo-50/50' : ''}`}>
                                 <input type="checkbox" checked={audienceSettings.specificAccountants.includes(a._id)} onChange={() => handleAudienceToggle('specificAccountants', true, a._id)} className="rounded text-indigo-600 focus:ring-indigo-500 w-3.5 h-3.5" />
                                 <span className="text-slate-700 truncate">{a.fullName || a.name || a.email} <span className="text-slate-400">({a.role || 'Accountant'})</span></span>
@@ -731,7 +741,7 @@ const Announcements = () => {
                             </div>
                           </div>
                           <div className="max-h-40 overflow-y-auto custom-scrollbar p-2 grid grid-cols-1 md:grid-cols-2 gap-1 bg-white">
-                            {documentHandlers.filter(d => (d.email || '').toLowerCase().includes(searchDh.toLowerCase())).map(d => (
+                            {documentHandlers.filter(d => d._id !== user?._id && (d.email || '').toLowerCase().includes(searchDh.toLowerCase())).map(d => (
                               <label key={d._id} className={`flex items-center gap-2 cursor-pointer text-xs hover:bg-slate-50 p-1.5 rounded ${audienceSettings.specificDocHandlers.includes(d._id) ? 'bg-indigo-50/50' : ''}`}>
                                 <input type="checkbox" checked={audienceSettings.specificDocHandlers.includes(d._id)} onChange={() => handleAudienceToggle('specificDocHandlers', true, d._id)} className="rounded text-indigo-600 focus:ring-indigo-500 w-3.5 h-3.5" />
                                 <span className="text-slate-700 truncate">{d.email} <span className="text-slate-400">({d.role === 'document_admin' ? 'Document Handler' : (d.role || 'Document Handler')})</span></span>

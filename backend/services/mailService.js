@@ -31,6 +31,9 @@ const getTransporter = () => {
   if (_transporter) return _transporter;
 
   _transporter = nodemailer.createTransport({
+    pool:   true,
+    maxConnections: 5,
+    maxMessages: 100,
     host:   process.env.EMAIL_HOST || "smtp.gmail.com",
     port:   parseInt(process.env.EMAIL_PORT, 10) || 587,
     secure: process.env.EMAIL_SECURE === "true", // true → port 465, false → STARTTLS
@@ -94,9 +97,10 @@ verifyTransporter();
  * @param {string}          [opts.text]      - Plain-text body
  * @param {string}          [opts.html]      - HTML body
  * @param {Object[]}        [opts.attachments] - Nodemailer attachment objects
+ * @param {string}          [opts.replyTo]   - Email address for replies
  * @returns {Promise<Object>}  Nodemailer send-result info object
  */
-const _send = async ({ to, subject, text, html, attachments = [] }) => {
+const _send = async ({ to, subject, text, html, attachments = [], senderName, replyTo }) => {
   if (!emailUser || !emailPass) {
     const msg =
       "[mailService][ERROR] Cannot send email — SMTP credentials not configured. " +
@@ -105,16 +109,19 @@ const _send = async ({ to, subject, text, html, attachments = [] }) => {
     throw new Error(msg);
   }
 
+  const isBulk = Array.isArray(to) && to.length > 1;
   const mailOptions = {
-    from:    `"Ashram Notifications" <${emailUser}>`,
-    to:      Array.isArray(to) ? to.join(", ") : to,
+    from:    `"${senderName || 'Ashram Notifications'}" <${emailUser}>`,
+    replyTo: replyTo || emailUser,
+    to:      isBulk ? emailUser : (Array.isArray(to) ? to[0] : to),
+    bcc:     isBulk ? to.join(", ") : undefined,
     subject,
     text:    text || "",
     html:    html || (text ? text.replace(/\n/g, "<br>") : ""),
     attachments,
   };
 
-  console.log(`[mailService][INFO] Sending email → Subject: "${subject}" | To: ${mailOptions.to}`);
+  console.log(`[mailService][INFO] Sending email → Subject: "${subject}" | To: ${mailOptions.to} | BCC Count: ${isBulk ? to.length : 0}`);
 
   try {
     const info = await getTransporter().sendMail(mailOptions);
@@ -303,11 +310,15 @@ const sendEventReminderEmail = (to, name, eventTitle, eventDate, location) =>
  * @param {string} name    - User's name
  * @param {string} title   - Announcement title
  * @param {string} content - Announcement body text
+ * @param {string} senderName
+ * @param {string} senderEmail
  */
-const sendAnnouncementEmail = (to, name, title, content) =>
+const sendAnnouncementEmail = (to, name, title, content, senderName, senderEmail) =>
   _send({
     to,
     subject: "New Announcement — Ashram",
+    senderName,
+    replyTo: senderEmail,
     text: [
       `Hello ${name},`,
       "",

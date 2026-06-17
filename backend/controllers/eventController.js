@@ -54,19 +54,19 @@ exports.createEvent = async (req, res) => {
     // Process files if available
     if (req.files) {
       if (req.files['featuredImage']) {
-        eventData.featuredImage = `http://localhost:5000/uploads/${req.files['featuredImage'][0].filename}`;
+        eventData.featuredImage = `${process.env.BACKEND_URL || 'http://localhost:5000'}/uploads/${req.files['featuredImage'][0].filename}`;
       }
       
       if (req.files['galleryImages']) {
         const galleryUrls = [];
         for (const file of req.files['galleryImages']) {
-          galleryUrls.push(`http://localhost:5000/uploads/${file.filename}`);
+          galleryUrls.push(`${process.env.BACKEND_URL || 'http://localhost:5000'}/uploads/${file.filename}`);
         }
         eventData.galleryImages = galleryUrls;
       }
 
       if (req.files['videoFile']) {
-        eventData.videoFile = `http://localhost:5000/uploads/${req.files['videoFile'][0].filename}`;
+        eventData.videoFile = `${process.env.BACKEND_URL || 'http://localhost:5000'}/uploads/${req.files['videoFile'][0].filename}`;
       }
     }
     
@@ -95,19 +95,19 @@ exports.updateEvent = async (req, res) => {
     // Process files if available
     if (req.files) {
       if (req.files['featuredImage']) {
-        eventData.featuredImage = `http://localhost:5000/uploads/${req.files['featuredImage'][0].filename}`;
+        eventData.featuredImage = `${process.env.BACKEND_URL || 'http://localhost:5000'}/uploads/${req.files['featuredImage'][0].filename}`;
       }
       
       if (req.files['galleryImages']) {
         const galleryUrls = [];
         for (const file of req.files['galleryImages']) {
-          galleryUrls.push(`http://localhost:5000/uploads/${file.filename}`);
+          galleryUrls.push(`${process.env.BACKEND_URL || 'http://localhost:5000'}/uploads/${file.filename}`);
         }
         eventData.galleryImages = galleryUrls;
       }
 
       if (req.files['videoFile']) {
-        eventData.videoFile = `http://localhost:5000/uploads/${req.files['videoFile'][0].filename}`;
+        eventData.videoFile = `${process.env.BACKEND_URL || 'http://localhost:5000'}/uploads/${req.files['videoFile'][0].filename}`;
       }
     }
     

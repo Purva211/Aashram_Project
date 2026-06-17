@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../utils/api";
 import { FaUser, FaEnvelope, FaLock, FaPhone, FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-import OtpInput from "../../components/OtpInput";
+import OtpInput from "../../components/OTPInput";
 
 const Register = () => {
   const navigate = useNavigate();

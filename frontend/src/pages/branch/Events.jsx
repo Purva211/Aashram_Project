@@ -21,13 +21,30 @@ const AdminEvents = () => {
   const [search, setSearch] = useState("");
   const [branches, setBranches] = useState([]);
   const [filterDate, setFilterDate] = useState("");
+  const [filterBranch, setFilterBranch] = useState("");
+  const [filterYear, setFilterYear] = useState("");
+  const [filterMonth, setFilterMonth] = useState("");
   const [showFilters, setShowFilters] = useState(false);
 
   const filteredByCustom = events.filter((e) => {
     let match = true;
-    if (filterDate && e.eventDate && new Date(e.eventDate).toISOString().split('T')[0] !== filterDate) match = false;
+    const eventDateObj = e.eventDate ? new Date(e.eventDate) : null;
+    
+    if (filterDate && eventDateObj && eventDateObj.toISOString().split('T')[0] !== filterDate) match = false;
+    if (filterBranch && e.branch?._id !== filterBranch && e.branch?.name !== filterBranch && e.branch !== filterBranch) match = false;
+    if (filterYear && eventDateObj && eventDateObj.getFullYear().toString() !== filterYear) match = false;
+    if (filterMonth && eventDateObj && (eventDateObj.getMonth() + 1).toString() !== filterMonth) match = false;
+
     return match;
   });
+
+  const uniqueYears = [...new Set(events.filter(e => e.eventDate).map(e => new Date(e.eventDate).getFullYear().toString()))].sort((a,b) => b - a);
+  const monthsList = [
+    { value: "1", label: "January" }, { value: "2", label: "February" }, { value: "3", label: "March" },
+    { value: "4", label: "April" }, { value: "5", label: "May" }, { value: "6", label: "June" },
+    { value: "7", label: "July" }, { value: "8", label: "August" }, { value: "9", label: "September" },
+    { value: "10", label: "October" }, { value: "11", label: "November" }, { value: "12", label: "December" }
+  ];
 
   const {
     searchTerm, setSearchTerm, sortConfig, handleSort,
@@ -39,7 +56,7 @@ const AdminEvents = () => {
     fetchBranches();
     fetchEvents();
 
-    const socket = io("http://localhost:5000");
+    const socket = io(import.meta.env.VITE_ASSETS_URL || "http://localhost:5000");
 
     socket.on("event_created", (newEvent) => setEvents((prev) => [newEvent, ...prev]));
     socket.on("event_updated", (updatedEvent) => setEvents((prev) => prev.map((e) => (e._id === updatedEvent._id ? updatedEvent : e))));
@@ -109,14 +126,41 @@ const AdminEvents = () => {
 
       {showFilters && (
         <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Date</label>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Exact Date</label>
               <input type="date" value={filterDate} onChange={(e) => setFilterDate(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-saffron-500" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Branch</label>
+              <select value={filterBranch} onChange={(e) => setFilterBranch(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-saffron-500">
+                <option value="">All Branches</option>
+                {branches.map(b => (
+                  <option key={b._id} value={b._id}>{b.name}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Year</label>
+              <select value={filterYear} onChange={(e) => setFilterYear(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-saffron-500">
+                <option value="">All Years</option>
+                {uniqueYears.map(y => (
+                  <option key={y} value={y}>{y}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Month</label>
+              <select value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-saffron-500">
+                <option value="">All Months</option>
+                {monthsList.map(m => (
+                  <option key={m.value} value={m.value}>{m.label}</option>
+                ))}
+              </select>
             </div>
           </div>
           <div className="flex justify-end mt-4">
-            <button onClick={() => { setFilterDate(''); }} className="text-sm font-bold text-gray-500 hover:text-gray-700">Clear Filters</button>
+            <button onClick={() => { setFilterDate(''); setFilterBranch(''); setFilterYear(''); setFilterMonth(''); }} className="text-sm font-bold text-gray-500 hover:text-gray-700">Clear Filters</button>
           </div>
         </div>
       )}

@@ -104,60 +104,62 @@ const Layout = ({ children, user }) => {
     navItems = [
       { name: 'Dashboard', path: '/trustee/dashboard', icon: <FaHome /> },
       { name: 'Profile', path: '/trustee/profile', icon: <FaUserShield /> },
+      { name: 'Accountants', path: '/trustee/accountants', icon: <FaCalculator /> },
+      { name: 'Annadan', path: '/trustee/annadaan', icon: <FaClipboardList />, badge: pendingCounts.annadaan ?? 0 },
       { name: 'Announcements', path: '/trustee/announcements', icon: <FaBullhorn />, showRedDot: unreadAnnouncementsCount > 0 },
-      { name: 'Sansthan Updates', path: '/trustee/bulletins', icon: <FaBullhorn /> },
+      { name: 'Branches', path: '/trustee/branches', icon: <FaMapMarkerAlt /> },
       { name: 'Devotees', path: '/trustee/devotees', icon: <FaUsers /> },
+      { name: 'Documents', path: '/trustee/documents', icon: <FaFileAlt />, badge: pendingCounts.deletions ?? 0 },
       { name: 'Donations', path: '/trustee/donations', icon: <FaDonate /> },
       { name: 'Events', path: '/trustee/events', icon: <FaCalendarAlt /> },
-      { name: 'Branches', path: '/trustee/branches', icon: <FaMapMarkerAlt /> },
-      { name: 'Annadan', path: '/trustee/annadaan', icon: <FaClipboardList />, badge: pendingCounts.annadaan ?? 0 },
       { name: 'Gallery', path: '/trustee/gallery', icon: <FaImages /> },
-      { name: 'Documents', path: '/trustee/documents', icon: <FaFileAlt />, badge: pendingCounts.deletions ?? 0 },
-      { name: 'Monastery History', path: '/trustee/math-history', icon: <FaHistory /> },
       { name: 'Lineage', path: '/trustee/lineage', icon: <FaSitemap /> },
-      { name: 'Accountants', path: '/trustee/accountants', icon: <FaCalculator /> },
+      { name: 'Monastery History', path: '/trustee/math-history', icon: <FaHistory /> },
+      { name: 'Sansthan Updates', path: '/trustee/bulletins', icon: <FaBullhorn /> },
     ];
   } else if (user?.role === 'BranchManager') {
     navItems = [
       { name: 'Dashboard', path: '/branch/dashboard', icon: <FaHome /> },
       { name: 'Profile', path: '/branch/profile', icon: <FaUserShield /> },
-      { name: 'Events', path: '/branch/events', icon: <FaCalendarAlt /> },
-      { name: 'Devotees', path: '/branch/devotees', icon: <FaUsers /> },
-      { name: 'Donations', path: '/branch/donations', icon: <FaDonate /> },
       { name: 'Announcements', path: '/branch/announcements', icon: <FaBullhorn />, showRedDot: unreadAnnouncementsCount > 0 },
       { name: 'Branches', path: '/branch/branches', icon: <FaMapMarkerAlt /> },
+      { name: 'Devotees', path: '/branch/devotees', icon: <FaUsers /> },
       { name: 'Documents', path: '/branch/documents', icon: <FaFileAlt /> },
+      { name: 'Donations', path: '/branch/donations', icon: <FaDonate /> },
+      { name: 'Events', path: '/branch/events', icon: <FaCalendarAlt /> },
     ];
   } else if (user?.role === 'Accountant') {
     navItems = [
       { name: 'Dashboard', path: '/accountant/dashboard', icon: <FaHome /> },
       { name: 'Profile', path: '/accountant/profile', icon: <FaUserShield /> },
+      { name: 'Announcements', path: '/accountant/announcements', icon: <FaBullhorn />, showRedDot: unreadAnnouncementsCount > 0 },
       { name: 'Donations', path: '/accountant/donations', icon: <FaDonate /> },
-      { name: 'Verify Donations', path: '/accountant/verify-donations', icon: <FaClipboardList />, badge: pendingCounts.verifyDonations ?? 0 },
       { name: 'Receipts', path: '/accountant/receipts', icon: <FaReceipt /> },
+      { name: 'Verify Donations', path: '/accountant/verify-donations', icon: <FaClipboardList />, badge: pendingCounts.verifyDonations ?? 0 },
     ];
   } else if (user?.role === 'DocumentHandler' || user?.role === 'document_admin') {
     navItems = [
       { name: 'Dashboard', path: '/document-handler/dashboard', icon: <FaHome /> },
       { name: 'Profile', path: '/document-handler/profile', icon: <FaUserShield /> },
-      { name: 'Documents', path: '/document-handler/documents', icon: <FaFileAlt /> },
+      { name: 'Announcements', path: '/document-handler/announcements', icon: <FaBullhorn />, showRedDot: unreadAnnouncementsCount > 0 },
       { name: 'Deletion Requests', path: '/document-handler/deletion-requests', icon: <FaTrash /> },
+      { name: 'Documents', path: '/document-handler/documents', icon: <FaFileAlt /> },
     ];
   } else {
     navItems = [
       { name: 'Dashboard', path: '/admin/dashboard', icon: <FaHome /> },
       { name: 'Profile', path: '/admin/profile', icon: <FaUserShield /> },
+      { name: 'Annadan', path: '/admin/annadaan', icon: <FaClipboardList /> },
+      { name: 'Announcements', path: '/admin/announcements', icon: <FaBullhorn />, showRedDot: unreadAnnouncementsCount > 0 },
+      { name: 'Branch Managers', path: '/admin/branch-managers', icon: <FaUserShield /> },
+      { name: 'Branches', path: '/admin/branches', icon: <FaMapMarkerAlt /> },
       { name: 'Devotees', path: '/admin/devotees', icon: <FaUsers /> },
-      { name: 'Trustees', path: '/admin/trustees', icon: <FaUserShield /> },
+      { name: 'Doc Admins', path: '/admin/document-admins', icon: <FaUserShield /> },
+      { name: 'Documents', path: '/admin/documents', icon: <FaFileAlt /> },
       { name: 'Donations', path: '/admin/donations', icon: <FaDonate /> },
       { name: 'Events', path: '/admin/events', icon: <FaCalendarAlt /> },
-      { name: 'Announcements', path: '/admin/announcements', icon: <FaBullhorn />, showRedDot: unreadAnnouncementsCount > 0 },
       { name: 'Sansthan Updates', path: '/trustee/bulletins', icon: <FaBullhorn /> },
-      { name: 'Annadan', path: '/admin/annadaan', icon: <FaClipboardList /> },
-      { name: 'Branches', path: '/admin/branches', icon: <FaMapMarkerAlt /> },
-      { name: 'Branch Managers', path: '/admin/branch-managers', icon: <FaUserShield /> },
-      { name: 'Documents', path: '/admin/documents', icon: <FaFileAlt /> },
-      { name: 'Doc Admins', path: '/admin/document-admins', icon: <FaUserShield /> },
+      { name: 'Trustees', path: '/admin/trustees', icon: <FaUserShield /> },
     ];
   }
 
@@ -351,8 +353,12 @@ const Layout = ({ children, user }) => {
                            </button>
 
                            <div className="cursor-pointer pr-6" onClick={() => {
-                             if(!ann.isRead) handleMarkAsRead(ann._id);
-                             navigate(`/${user.role.toLowerCase()}/announcements`);
+                             handleDismiss(ann._id);
+                             setShowNotifications(false);
+                             let basePath = user.role.toLowerCase();
+                             if (user.role === 'BranchManager') basePath = 'branch';
+                             else if (user.role === 'DocumentHandler' || user.role === 'document_admin') basePath = 'document-handler';
+                             navigate(`/${basePath}/announcements`);
                            }}>
                              <div className="flex items-center gap-3 mb-2">
                                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${ann.priority === 'Urgent' ? 'bg-red-100 text-red-500' : ann.priority === 'Important' ? 'bg-yellow-100 text-yellow-500' : 'bg-blue-100 text-blue-500'}`}>

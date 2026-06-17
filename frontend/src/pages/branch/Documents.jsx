@@ -123,14 +123,14 @@ const Documents = () => {
 
             <div className="flex gap-2 relative z-10 pt-4 border-t border-gray-100">
               <a 
-                href={`http://localhost:5000/api/documents/download/${doc._id}`}
+                href={`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/documents/download/${doc._id}`}
                 target="_blank" rel="noopener noreferrer"
                 className="flex-1 flex items-center justify-center gap-2 py-2 bg-saffron-50 border border-saffron-100 text-saffron-700 hover:bg-saffron-500 hover:text-white rounded-lg transition-colors text-sm font-bold"
               >
                 <FiDownload /> Download
               </a>
               <a 
-                href={`http://localhost:5000${(doc.pdfUrl || '').startsWith('/') ? '' : '/'}${(doc.pdfUrl || '').replace(/\\/g, '/')}`}
+                href={`${import.meta.env.VITE_ASSETS_URL || 'http://localhost:5000'}${(doc.pdfUrl || '').startsWith('/') ? '' : '/'}${(doc.pdfUrl || '').replace(/\\/g, '/')}`}
                 target="_blank" rel="noopener noreferrer"
                 className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-white border border-gray-900 text-black hover:bg-gray-100 rounded-lg transition-all text-sm font-black shadow-sm"
               >

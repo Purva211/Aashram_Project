@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEnvelope, FaLock, FaArrowRight, FaCheckCircle } from "react-icons/fa";
-import OtpInput from "../../components/OtpInput";
+import OtpInput from "../../components/OTPInput";
 import { toast, Toaster } from "react-hot-toast";
 import api from "../../utils/api";
 

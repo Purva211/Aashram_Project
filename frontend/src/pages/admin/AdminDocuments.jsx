@@ -124,7 +124,7 @@ const AdminDocuments = () => {
 
             <div className="flex gap-2 relative z-10 pt-4 border-t border-gray-100">
               <a 
-                href={`http://localhost:5000${(doc.pdfUrl || '').replace(/\\/g, '/')}`}
+                href={`${import.meta.env.VITE_ASSETS_URL || 'http://localhost:5000'}${(doc.pdfUrl || '').replace(/\\/g, '/')}`}
                 target="_blank" rel="noopener noreferrer"
                 download
                 className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-saffron-600 border border-saffron-600 text-white hover:bg-saffron-700 hover:border-saffron-700 rounded-xl transition-all text-sm font-black shadow-md hover:shadow-lg"
@@ -132,7 +132,7 @@ const AdminDocuments = () => {
                 <FiDownload /> Download
               </a>
               <a 
-                href={`http://localhost:5000${(doc.pdfUrl || '').replace(/\\/g, '/')}`}
+                href={`${import.meta.env.VITE_ASSETS_URL || 'http://localhost:5000'}${(doc.pdfUrl || '').replace(/\\/g, '/')}`}
                 target="_blank" rel="noopener noreferrer"
                 className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-white border border-gray-900 text-black hover:bg-gray-100 rounded-xl transition-all text-sm font-black shadow-md hover:shadow-lg"
               >

@@ -93,8 +93,31 @@ const Devotees = () => {
     return defaultGradients[sum % defaultGradients.length];
   };
 
+  const calculateStats = () => {
+    const now = new Date();
+    const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+
+    const newThisWeek = devotees.filter(d => new Date(d.registrationDate || d.createdAt) >= oneWeekAgo).length;
+    const newLastWeek = devotees.filter(d => {
+      const date = new Date(d.registrationDate || d.createdAt);
+      return date >= twoWeeksAgo && date < oneWeekAgo;
+    }).length;
+
+    let percentageChange = 0;
+    if (newLastWeek === 0) {
+      percentageChange = newThisWeek > 0 ? 100 : 0;
+    } else {
+      percentageChange = Math.round(((newThisWeek - newLastWeek) / newLastWeek) * 100);
+    }
+
+    return { newThisWeek, percentageChange };
+  };
+
+  const { newThisWeek, percentageChange } = calculateStats();
+
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)] gap-6">
+    <div className="w-full space-y-6 pb-10">
 
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -113,17 +136,20 @@ const Devotees = () => {
         
         <motion.div 
           initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
-          className="bg-gradient-to-br from-deepblue-900 to-deepblue-800 p-6 rounded-3xl shadow-lg border border-gray-800 flex items-center justify-between relative overflow-hidden"
+          className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex items-center justify-between group hover:shadow-xl transition-all duration-300 relative overflow-hidden"
         >
-          <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/5 rounded-full blur-2xl"></div>
+          <div className="absolute -right-6 -top-6 w-32 h-32 bg-saffron-50 rounded-full blur-2xl"></div>
           <div className="relative z-10">
-            <p className="text-blue-300 text-sm font-semibold uppercase tracking-wider mb-2">New This Week</p>
+            <p className="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-2">New This Week</p>
             <div className="flex items-center gap-3">
-              <h3 className="text-4xl font-bold text-white">42</h3>
-              <span className="flex items-center gap-1 text-xs font-bold text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-full">
-                <FaArrowUp /> 12%
+              <h3 className="text-4xl font-bold text-deepblue-900">{newThisWeek}</h3>
+              <span className={`flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full ${percentageChange >= 0 ? 'text-emerald-500 bg-emerald-50' : 'text-rose-500 bg-rose-50'}`}>
+                {percentageChange >= 0 ? <FaArrowUp /> : null} {Math.abs(percentageChange)}%
               </span>
             </div>
+          </div>
+          <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-500 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300 relative z-10">
+            <FaArrowUp className="text-3xl" />
           </div>
         </motion.div>
       </div>
@@ -131,66 +157,73 @@ const Devotees = () => {
       {/* Main Table Container */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
-        className="bg-white rounded-3xl shadow-sm border border-gray-100 flex flex-col flex-1 overflow-hidden relative"
+        className="bg-white rounded-3xl shadow-sm border border-gray-100 flex flex-col relative"
       >
         <div className="absolute top-0 right-0 w-96 h-96 bg-saffron-50 rounded-full blur-[100px] pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
 
-        <div className="p-8 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 relative z-10">
-          <div>
-            <h2 className="text-2xl font-bold text-deepblue-900">Devotee Directory
-              {!hasManage && <span className="bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full shadow-sm ml-4 font-sans inline-block align-middle">View Only Access</span>}
-            </h2>
-            <p className="text-sm text-gray-500 mt-1">Manage, search, and update records securely.</p>
+        <div className="p-8 pb-6 border-b border-gray-100 flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 relative z-10">
+          <div className="flex-1">
+            <div className="flex items-center gap-3 mb-2">
+              <FaUsers className="text-saffron-500 text-3xl" />
+              <h2 className="text-3xl font-black text-deepblue-900 tracking-tight">Devotee Directory
+                {!hasManage && <span className="bg-yellow-100 text-yellow-800 text-[10px] font-black px-3 py-1 rounded-full shadow-sm ml-4 uppercase tracking-wider align-middle border border-yellow-200">View Only</span>}
+              </h2>
+            </div>
+            <p className="text-sm text-gray-500 font-medium ml-1">Manage, search, and update devotee records securely.</p>
           </div>
           
-          <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
-            <div className="relative w-full sm:w-72">
-              <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          <div className="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto">
+            <div className="relative w-full sm:w-64 group">
+              <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-saffron-500 transition-colors" />
               <input 
                 type="text" 
-                placeholder="Search by name or mobile..." 
+                placeholder="Search name or mobile..." 
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-saffron-500 outline-none transition-all shadow-sm text-gray-700"
+                className="w-full pl-11 pr-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-saffron-500/20 focus:border-saffron-500 outline-none transition-all shadow-sm text-gray-700 font-medium placeholder-gray-400"
               />
             </div>
             
-            <div className="relative w-full sm:w-48">
+            <div className="relative w-full sm:w-48 group">
+              <FaMapMarkerAlt className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-saffron-500 transition-colors pointer-events-none" />
               <select 
                 value={filterLocation}
                 onChange={(e) => setFilterLocation(e.target.value)}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-saffron-500 outline-none transition-all shadow-sm text-gray-700 cursor-pointer"
+                className="w-full pl-10 pr-8 py-2.5 bg-gray-50/50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-saffron-500/20 focus:border-saffron-500 outline-none transition-all shadow-sm text-gray-700 font-medium cursor-pointer appearance-none"
               >
                 <option value="">All Locations</option>
                 {uniqueLocations.map(loc => <option key={loc} value={loc}>{loc}</option>)}
               </select>
+              <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+              </div>
             </div>
             
             {hasManage && (
               <button 
                 onClick={() => handleOpenModal()} 
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-gray-900 hover:bg-black text-white rounded-xl text-sm font-black shadow-lg shadow-gray-900/30 transition-all hover:-translate-y-0.5 active:scale-95 whitespace-nowrap"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 bg-black hover:bg-gray-900 text-white rounded-xl text-sm font-black shadow-lg shadow-black/20 transition-all hover:-translate-y-0.5 active:scale-95 whitespace-nowrap"
               >
-                <FaPlus /> Add Devotee
+                <FaPlus size={12} /> Add Devotee
               </button>
             )}
           </div>
         </div>
 
-        {error && <div className="bg-red-50 text-red-600 font-medium p-4 mx-8 mt-4 rounded-xl text-sm border border-red-100 flex items-center justify-between"><span>{error}</span><FaTimes className="cursor-pointer" onClick={() => setError('')} /></div>}
+        {error && <div className="bg-red-50 text-red-600 font-medium p-4 mx-8 mt-4 rounded-xl text-sm border border-red-100 flex items-center justify-between shadow-sm"><span>{error}</span><FaTimes className="cursor-pointer hover:bg-red-100 p-1 rounded-full transition-colors" onClick={() => setError('')} /></div>}
 
-        <div className="flex-1 overflow-auto relative z-10 p-4">
+        <div className="w-full overflow-x-auto relative z-10 p-2">
           {loading ? (
-            <div className="h-full flex flex-col items-center justify-center text-gray-400 gap-4">
-              <div className="w-16 h-16 border-4 border-gray-100 border-t-saffron-500 rounded-full animate-spin"></div>
-              <p className="font-medium animate-pulse">Loading devotees...</p>
+            <div className="h-full flex flex-col items-center justify-center text-gray-400 gap-4 min-h-[300px]">
+              <div className="w-12 h-12 border-4 border-gray-100 border-t-saffron-500 rounded-full animate-spin shadow-sm"></div>
+              <p className="font-medium animate-pulse text-sm">Loading directory...</p>
             </div>
           ) : (
-            <div className="w-full bg-transparent min-w-[800px]">
-              <div className="grid grid-cols-12 text-xs font-bold text-gray-400 uppercase tracking-widest px-8 py-4 sticky top-0 bg-white/90 backdrop-blur-md z-20 border-b border-gray-100">
-                <div className="col-span-4">Devotee Profile</div>
-                <div className="col-span-3">Contact Info</div>
-                <div className="col-span-3">Location</div>
+            <div className="w-full bg-transparent min-w-[800px] pb-4">
+              <div className="grid grid-cols-12 text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] px-8 py-5 sticky top-0 bg-white/95 backdrop-blur-xl z-20 border-b border-gray-100/50 shadow-sm rounded-t-2xl mx-2 mt-2">
+                <div className="col-span-4 flex items-center gap-2"><FaUsers className="text-gray-300" /> Devotee Profile</div>
+                <div className="col-span-3 flex items-center gap-2"><FaPhoneAlt className="text-gray-300" /> Contact Info</div>
+                <div className="col-span-3 flex items-center gap-2"><FaMapMarkerAlt className="text-gray-300" /> Location</div>
                 <div className="col-span-2 text-right">Actions</div>
               </div>
               
@@ -322,7 +355,7 @@ const Devotees = () => {
                   <button 
                     disabled={submitting} 
                     type="submit" 
-                    className="w-2/3 flex justify-center items-center gap-2 py-3.5 bg-blue-900 hover:bg-blue-800 text-white font-black rounded-xl hover:bg-blue-900 hover:bg-blue-800 transition-all shadow-lg shadow-gray-900/30 hover:-translate-y-0.5 disabled:opacity-50"
+                    className="w-2/3 flex justify-center items-center gap-2 py-3.5 bg-black hover:bg-gray-900 text-white font-black rounded-xl hover:bg-gray-900 transition-all shadow-lg shadow-black/30 hover:-translate-y-0.5 disabled:opacity-50"
                   >
                     {submitting ? <FaSpinner className="animate-spin text-xl" /> : (editingId ? 'Save Changes' : 'Complete Registration')}
                   </button>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaHandHoldingHeart, FaPlus, FaSpinner, FaEdit, FaTrash, FaTimes, FaClock, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+import { FaHandHoldingHeart, FaPlus, FaSpinner, FaEdit, FaTrash, FaTimes, FaClock, FaCheckCircle, FaTimesCircle, FaSearch } from 'react-icons/fa';
 import api from "../../utils/api";
 import { usePermissions } from '../../hooks/usePermissions';
 
@@ -12,6 +12,7 @@ const Annadaan = () => {
   const [formData, setFormData] = useState({ name: '', phone: '', email: '', annadaanType: '', date: '', time: '', description: '', status: 'pending' });
   const [editingId, setEditingId] = useState(null);
   const [filterDate, setFilterDate] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [stats, setStats] = useState(null);
   const { hasManage } = usePermissions('Annadan');
 
@@ -94,7 +95,11 @@ const Annadaan = () => {
           </h1>
           <p className="text-gray-500 mt-1">Manage and track temple food donations.</p>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-center gap-4">
+          <div className="relative">
+             <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+             <input type="text" placeholder="Search by name..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-saffron-500 shadow-sm w-full sm:w-64" />
+          </div>
           <div className="flex items-center gap-3 bg-gray-50 px-4 py-2.5 rounded-xl border border-gray-200">
             <span className="text-sm font-bold text-gray-600">Date:</span>
             <input type="date" value={filterDate} onChange={(e) => setFilterDate(e.target.value)} className="text-sm outline-none bg-transparent text-gray-800 font-semibold cursor-pointer" />
@@ -166,8 +171,9 @@ const Annadaan = () => {
               <tbody className="divide-y divide-gray-100">
                 {records
                   .filter(record => filterDate ? new Date(record.date).toLocaleDateString() === new Date(filterDate).toLocaleDateString() : true)
+                  .filter(record => searchTerm ? record.name.toLowerCase().includes(searchTerm.toLowerCase()) : true)
                   .map((record, idx) => (
-                  <motion.tr initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: idx * 0.05 }} className="hover:bg-gray-50" key={record._id}>
+                  <motion.tr initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: idx * 0.05 }} className={`transition-colors border-l-4 ${record.status === 'pending' ? 'bg-yellow-50 hover:bg-yellow-100 border-yellow-500' : record.status === 'approved' ? 'bg-blue-50 hover:bg-blue-100 border-blue-500' : record.status === 'completed' ? 'bg-green-50 hover:bg-green-100 border-green-500' : record.status === 'rejected' ? 'bg-red-50 hover:bg-red-100 border-red-500' : 'hover:bg-gray-50 border-transparent'}`} key={record._id}>
                     <td className="px-6 py-4 font-bold text-gray-800">{record.name}</td>
                     <td className="px-6 py-4">{record.phone}<br/><span className="text-xs text-gray-400">{record.email}</span></td>
                     <td className="px-6 py-4"><span className="px-2 py-1 bg-blue-50 text-blue-600 rounded-md font-semibold text-xs">{record.annadaanType}</span></td>

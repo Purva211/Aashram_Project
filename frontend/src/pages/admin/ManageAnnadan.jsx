@@ -153,7 +153,7 @@ const ManageAnnadan = () => {
             </thead>
             <tbody className="divide-y divide-gray-100 text-sm">
               {paginatedData.map(r => (
-                <tr key={r._id} className="hover:bg-gray-50 transition-colors">
+                <tr key={r._id} className={`transition-colors border-l-4 ${r.status === 'pending' ? 'bg-yellow-50 hover:bg-yellow-100 border-yellow-500' : r.status === 'approved' ? 'bg-blue-50 hover:bg-blue-100 border-blue-500' : r.status === 'completed' ? 'bg-green-50 hover:bg-green-100 border-green-500' : r.status === 'rejected' ? 'bg-red-50 hover:bg-red-100 border-red-500' : 'hover:bg-gray-50 border-transparent'}`}>
                   <td className="p-4">
                     <div className="font-bold text-slate-900">{r.name}</div>
                     <div className="text-xs text-gray-500 mt-0.5">{r.phone}</div>

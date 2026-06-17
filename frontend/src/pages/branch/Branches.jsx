@@ -204,9 +204,12 @@ const ManageBranches = () => {
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl relative z-10 overflow-hidden flex flex-col max-h-full"
             >
-              <div className="bg-gradient-to-r from-saffron-600 to-saffron-500 p-6 text-white flex justify-between items-center shrink-0">
-                <h3 className="text-xl font-bold font-serif">Edit Your Branch</h3>
-                <button type="button" onClick={handleCloseModal} className="text-white/80 hover:text-white transition-colors">
+              <div className="bg-white px-8 py-6 border-b border-gray-100 flex justify-between items-center shrink-0 sticky top-0 z-50">
+                <div>
+                  <h3 className="text-2xl font-black text-deepblue-900 tracking-tight">Edit Your Branch</h3>
+                  <p className="text-sm text-gray-500 font-medium mt-1">Update branch details and contact information.</p>
+                </div>
+                <button type="button" onClick={handleCloseModal} className="text-gray-400 hover:text-red-500 p-2 rounded-full hover:bg-red-50 transition-colors flex items-center justify-center cursor-pointer z-50">
                   <FaTimes className="text-xl" />
                 </button>
               </div>
@@ -216,23 +219,21 @@ const ManageBranches = () => {
                   {/* Branch Details */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div className="sm:col-span-2">
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">Branch Name</label>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Branch Name <span className="text-gray-400 text-xs font-normal ml-2">(Contact Trustee to change)</span></label>
                       <input
                         type="text"
                         value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-saffron-500 focus:ring-2 focus:ring-saffron-200 outline-none transition-all"
-                        required
+                        disabled
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed outline-none font-medium"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">Location</label>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Location <span className="text-gray-400 text-xs font-normal ml-2">(Contact Trustee to change)</span></label>
                       <input
                         type="text"
                         value={formData.location}
-                        onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-saffron-500 focus:ring-2 focus:ring-saffron-200 outline-none transition-all"
-                        required
+                        disabled
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed outline-none font-medium"
                       />
                     </div>
                     <div>
@@ -333,22 +334,24 @@ const ManageBranches = () => {
                 </form>
               </div>
 
-              <div className="p-6 bg-gray-50 border-t border-gray-100 shrink-0 flex justify-end gap-3 rounded-b-2xl">
-                <button
-                  type="button"
-                  onClick={handleCloseModal}
-                  className="px-6 py-2.5 rounded-xl font-semibold text-gray-600 hover:bg-gray-200 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  form="branch-form"
-                  disabled={submitting}
-                  className="px-6 py-2.5 rounded-xl bg-blue-900 hover:bg-blue-800 text-white font-black hover:bg-blue-900 hover:bg-blue-800 transition-all shadow-lg shadow-gray-900/30 hover:-translate-y-0.5 disabled:opacity-50 flex items-center gap-2"
-                >
-                  <FaSave /> {submitting ? 'Saving...' : 'Save Changes'}
-                </button>
+              <div className="p-6 bg-white border-t border-gray-100 shrink-0 flex justify-end gap-3 rounded-b-2xl sticky bottom-0 z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+                <div className="flex justify-end gap-3 w-full">
+                  <button 
+                    type="button" 
+                    onClick={handleCloseModal}
+                    className="w-1/3 py-3.5 bg-gray-100 text-gray-600 font-bold rounded-xl hover:bg-gray-200 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    disabled={submitting} 
+                    type="submit" 
+                    form="branch-form"
+                    className="w-2/3 flex justify-center items-center gap-2 py-3.5 bg-black hover:bg-gray-900 text-white font-black rounded-xl hover:bg-gray-900 transition-all shadow-lg shadow-black/30 hover:-translate-y-0.5 disabled:opacity-50"
+                  >
+                    {submitting ? 'Saving...' : 'Save Branch Details'}
+                  </button>
+                </div>
               </div>
 
             </motion.div>

@@ -73,7 +73,7 @@ const UserEvents = () => {
     setSelectedMonth("all");
     setSearchQuery("");
 
-    const socket = io("http://localhost:5000");
+    const socket = io(import.meta.env.VITE_ASSETS_URL || "http://localhost:5000");
 
     socket.on("event_created", (newEvent) => {
       if (newEvent.isPublished) {

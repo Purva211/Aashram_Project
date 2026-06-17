@@ -75,6 +75,7 @@ import AdminDocuments from "./pages/admin/AdminDocuments";
 import DocumentAdminDashboard from "./pages/document-admin/Dashboard";
 import DocumentAdminProfile from "./pages/document-admin/Profile";
 import DocumentAdminDeletionRequests from "./pages/document-admin/DeletionRequests";
+import DocumentAdminAnnouncements from "./pages/document-admin/Announcements";
 
 // Accountant Pages
 import TrusteeAccountants from "./pages/trustee/Accountants";
@@ -82,6 +83,7 @@ import AccountantDashboard from "./pages/accountant/Dashboard";
 import AccountantProfile from "./pages/accountant/Profile";
 import AccountantDonations from "./pages/accountant/Donations";
 import AccountantReceipts from "./pages/accountant/Receipts";
+import AccountantAnnouncements from "./pages/accountant/Announcements";
 
 // CMS Pages for Monastery History and Lineage
 import ManageMathHistory from "./pages/admin/ManageMathHistory";
@@ -237,12 +239,14 @@ function AppRoutes() {
           <Route path="/accountant/donations" element={<RoleProtectedRoute allowedRoles={['Accountant']}><AccountantDonations /></RoleProtectedRoute>} />
           <Route path="/accountant/verify-donations" element={<RoleProtectedRoute allowedRoles={['Accountant']}><AccountantDonationVerification /></RoleProtectedRoute>} />
           <Route path="/accountant/receipts" element={<RoleProtectedRoute allowedRoles={['Accountant']}><AccountantReceipts /></RoleProtectedRoute>} />
+          <Route path="/accountant/announcements" element={<RoleProtectedRoute allowedRoles={['Accountant']}><AccountantAnnouncements /></RoleProtectedRoute>} />
 
           {/* Document Handler Routes */}
           <Route path="/document-handler/dashboard" element={<RoleProtectedRoute allowedRoles={['DocumentHandler', 'document_admin']}><DocumentAdminDashboard /></RoleProtectedRoute>} />
           <Route path="/document-handler/profile" element={<RoleProtectedRoute allowedRoles={['DocumentHandler', 'document_admin']}><DocumentAdminProfile /></RoleProtectedRoute>} />
           <Route path="/document-handler/deletion-requests" element={<RoleProtectedRoute allowedRoles={['DocumentHandler', 'document_admin']}><DocumentAdminDeletionRequests /></RoleProtectedRoute>} />
           <Route path="/document-handler/documents" element={<RoleProtectedRoute allowedRoles={['DocumentHandler', 'document_admin']}><DocumentAdminDashboard /></RoleProtectedRoute>} />
+          <Route path="/document-handler/announcements" element={<RoleProtectedRoute allowedRoles={['DocumentHandler', 'document_admin']}><DocumentAdminAnnouncements /></RoleProtectedRoute>} />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" />} />

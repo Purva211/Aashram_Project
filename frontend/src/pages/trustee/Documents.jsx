@@ -109,8 +109,8 @@ const Documents = () => {
                       <div className="flex justify-between items-center mt-auto pt-4 border-t border-gray-100">
                         <span className="text-xs text-gray-400 font-bold px-2 py-1 bg-gray-50 rounded-md">{(doc.fileSize / 1024 / 1024).toFixed(2)} MB</span>
                         <div className="flex gap-2">
-                          <a href={`http://localhost:5000${doc.pdfUrl}`} target="_blank" rel="noopener noreferrer" className="px-3 py-2 bg-indigo-50 text-indigo-600 font-bold hover:bg-indigo-600 hover:text-white rounded-xl transition-all text-sm flex items-center gap-1.5 shadow-sm" title="Read Online"><FaEye /> View</a>
-                          <a href={`http://localhost:5000${doc.pdfUrl}`} download className="px-3 py-2 bg-saffron-50 text-saffron-600 font-bold hover:bg-saffron-500 hover:text-white rounded-xl transition-all text-sm flex items-center gap-1.5 shadow-sm" title="Download File"><FaDownload /> Save</a>
+                          <a href={`${import.meta.env.VITE_ASSETS_URL || 'http://localhost:5000'}${doc.pdfUrl}`} target="_blank" rel="noopener noreferrer" className="px-3 py-2 bg-indigo-50 text-indigo-600 font-bold hover:bg-indigo-600 hover:text-white rounded-xl transition-all text-sm flex items-center gap-1.5 shadow-sm" title="Read Online"><FaEye /> View</a>
+                          <a href={`${import.meta.env.VITE_ASSETS_URL || 'http://localhost:5000'}${doc.pdfUrl}`} download className="px-3 py-2 bg-saffron-50 text-saffron-600 font-bold hover:bg-saffron-500 hover:text-white rounded-xl transition-all text-sm flex items-center gap-1.5 shadow-sm" title="Download File"><FaDownload /> Save</a>
                         </div>
                       </div>
                     </motion.div>
@@ -149,7 +149,7 @@ const Documents = () => {
                         </td>
                         <td className="px-6 py-4 text-right">
                           <div className="flex justify-end gap-2">
-                            <a href={`http://localhost:5000${req.pdfUrl}`} target="_blank" rel="noopener noreferrer" className="p-2 text-gray-500 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors" title="View Document"><FaEye /></a>
+                            <a href={`${import.meta.env.VITE_ASSETS_URL || 'http://localhost:5000'}${req.pdfUrl}`} target="_blank" rel="noopener noreferrer" className="p-2 text-gray-500 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors" title="View Document"><FaEye /></a>
                             {hasManage && (
                               <>
                                 <button onClick={() => handleReviewDeletion(req._id, 'Approved')} className="px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors flex items-center gap-1 font-bold text-xs"><FaCheck /> Approve</button>

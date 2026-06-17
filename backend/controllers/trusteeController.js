@@ -189,7 +189,7 @@ exports.reviewDeletionRequest = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
   try {
-    const { name, email, mobile, password, profilePhoto } = req.body;
+    const { name, mobile, password } = req.body;
     const trustee = await Trustee.findById(req.user._id);
 
     if (!trustee) {
@@ -197,14 +197,16 @@ exports.updateProfile = async (req, res) => {
     }
 
     if (name) trustee.name = name;
-    if (email) trustee.email = email;
     if (mobile) trustee.mobile = mobile;
-    if (profilePhoto) trustee.profilePhoto = profilePhoto;
+    if (req.file) trustee.profilePhoto = '/uploads/' + req.file.filename;
     if (password) trustee.password = password;
 
     await trustee.save();
 
-    res.status(200).json({ success: true, message: "Profile updated successfully" });
+    const userResponse = trustee.toObject();
+    delete userResponse.password;
+
+    res.status(200).json({ success: true, message: "Profile updated successfully", data: userResponse });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

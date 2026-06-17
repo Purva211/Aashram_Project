@@ -182,7 +182,7 @@ const EventDetails = () => {
                 </div>
                 <div className="rounded-2xl overflow-hidden shadow-lg bg-stone-900 aspect-video">
                   <video 
-                    src={event.videoFile.startsWith('http') ? event.videoFile : `http://localhost:5000${event.videoFile}`} 
+                    src={event.videoFile.startsWith('http') ? event.videoFile : `${import.meta.env.VITE_ASSETS_URL || 'http://localhost:5000'}${event.videoFile}`} 
                     controls 
                     className="w-full h-full object-contain"
                   >

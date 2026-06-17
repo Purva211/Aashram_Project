@@ -212,16 +212,16 @@ const ManageBranches = () => {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-lg relative z-10 overflow-hidden"
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-lg relative z-10 flex flex-col max-h-[90vh] overflow-hidden"
             >
-              <div className="bg-gradient-to-r from-saffron-600 to-saffron-500 p-6 text-white flex justify-between items-center">
-                <h3 className="text-xl font-bold font-serif">{currentBranch ? 'Edit Branch' : 'Add New Branch'}</h3>
-                <button onClick={handleCloseModal} className="text-white/80 hover:text-white transition-colors">
+              <div className="bg-white p-6 pb-2 flex justify-between items-center shrink-0 border-b border-gray-100">
+                <h3 className="text-2xl font-black font-serif text-mahakal-burgundy">{currentBranch ? 'Edit Branch' : 'Add New Branch'}</h3>
+                <button type="button" onClick={handleCloseModal} className="text-gray-400 hover:text-red-500 p-2 rounded-full hover:bg-red-50 transition-colors flex items-center justify-center cursor-pointer z-50">
                   <FaTimes className="text-xl" />
                 </button>
               </div>
               
-              <form onSubmit={handleSubmit} className="p-6">
+              <form onSubmit={handleSubmit} className="p-6 overflow-y-auto custom-scrollbar">
                 <div className="space-y-5">
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Branch Name</label>
@@ -291,7 +291,7 @@ const ManageBranches = () => {
                   )}
                 </div>
                 
-                <div className="mt-8 flex justify-end gap-3">
+                <div className="mt-6 pt-4 flex justify-end gap-3 sticky bottom-[-24px] bg-white border-t border-gray-100 z-10 pb-6 -mx-6 px-6">
                   <button
                     type="button"
                     onClick={handleCloseModal}

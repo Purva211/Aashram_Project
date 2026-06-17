@@ -81,8 +81,9 @@ const TrusteeBoard = () => {
         ) : trustees.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 md:gap-8">
             {trustees.map((trustee, idx) => {
+              const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
               const imageUrl = trustee.profilePhoto 
-                ? (trustee.profilePhoto.startsWith('http') ? trustee.profilePhoto : `${ASSETS_URL}/${trustee.profilePhoto}`)
+                ? (trustee.profilePhoto.startsWith('http') ? trustee.profilePhoto : `${API_URL}${trustee.profilePhoto.startsWith('/') ? '' : '/'}${trustee.profilePhoto}`)
                 : `https://ui-avatars.com/api/?name=${encodeURIComponent(trustee.name)}&background=8D5B2F&color=fff&size=200`;
                 
               return (

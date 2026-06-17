@@ -16,6 +16,7 @@
 
 const cron  = require("node-cron");
 const Event = require("../models/Event");
+const Devotee = require("../models/Devotee");
 const { sendEventReminderEmail } = require("../services/mailService");
 
 /**
@@ -58,7 +59,7 @@ const runEventReminderJob = async () => {
     );
 
     // ── Fetch all registered devotees ──
-    const users = await User.find({}, "name email").lean();
+    const users = await Devotee.find({}, "name email").lean();
     if (!users.length) {
       console.log("[eventReminderCron][INFO] No registered users — skipping reminder emails.");
       return;

@@ -173,7 +173,7 @@ const ManageLineage = () => {
               {paginatedData.map(member => (
                 <tr key={member._id} className="hover:bg-gray-50 transition-colors">
                   <td className="p-4 font-bold text-slate-900 flex items-center gap-3">
-                     {member.profileImage && <img src={member.profileImage} alt={member.name} className="w-10 h-10 rounded-full object-cover border" />}
+                     {member.profileImage && <img src={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${member.profileImage.startsWith('/') ? '' : '/'}${member.profileImage}`} alt={member.name} className="w-10 h-10 rounded-full object-cover border" />}
                      {member.name}
                   </td>
                   <td className="p-4 text-gray-600">{member.era}</td>

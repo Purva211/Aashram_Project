@@ -43,9 +43,9 @@ const Profile = () => {
         name: user.displayName || user.name || '',
         email: user.email || '',
         mobile: user.mobile || '',
-        trusteeId: user.trusteeId || 'TRST-2023-001', // Mock ID if not present
-        joiningDate: user.createdAt ? new Date(user.createdAt).toISOString().split('T')[0] : '2023-01-15',
-        aadhaar: 'XXXX-XXXX-1234',
+        trusteeId: user.trusteeId || user._id?.substring(0, 10).toUpperCase() || 'TRST-2023-001',
+        joiningDate: user.createdAt ? new Date(user.createdAt).toISOString().split('T')[0] : 'Not Available',
+        aadhaar: user.aadhaar || 'Not Provided',
         profilePhoto: user.profilePhoto || ''
       });
       if (user.profilePhoto) {
@@ -209,8 +209,8 @@ const Profile = () => {
 
                   <div className="space-y-2">
                     <label className="text-sm font-semibold text-gray-700 flex items-center gap-2"><Mail className="w-4 h-4 text-gray-400"/> Email Address</label>
-                    <input type="email" name="email" value={personalInfo.email} onChange={handlePersonalChange} required 
-                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:bg-white outline-none transition-all" />
+                    <input type="email" name="email" value={personalInfo.email} disabled 
+                      className="w-full px-4 py-3 bg-gray-100 border border-gray-200 text-gray-500 rounded-xl outline-none cursor-not-allowed" />
                   </div>
 
                   <div className="space-y-2">

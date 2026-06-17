@@ -21,7 +21,7 @@ const LineageCard = ({ node, isRoot }) => (
         <div className="absolute inset-0 border-[2px] border-mahakal-saffron/20 rounded-full scale-[1.15] animate-[spin_10s_linear_infinite_reverse]"></div>
         <div className="w-full h-full rounded-full flex items-center justify-center border-[4px] border-white shadow-[0_5px_15px_rgba(0,0,0,0.1)] overflow-hidden relative z-10 bg-stone-50">
             {node.profileImage ? (
-               <img src={node.profileImage} alt={node.name} className="w-full h-full object-cover object-[50%_15%] group-hover:scale-110 transition-transform duration-700 ease-out" />
+               <img src={node.profileImage.startsWith('http') ? node.profileImage : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${node.profileImage.startsWith('/') ? '' : '/'}${node.profileImage}`} alt={node.name} className="w-full h-full object-cover object-[50%_15%] group-hover:scale-110 transition-transform duration-700 ease-out" />
             ) : (
                <Crown className="w-10 h-10 text-mahakal-saffron/40" />
             )}
@@ -64,7 +64,7 @@ const ExtendedLineageCard = ({ node, index }) => {
        <div className="relative w-full lg:w-[400px] h-[300px] lg:h-[450px] shrink-0">
           <div className="w-full h-full rounded-[2.5rem] flex items-center justify-center shadow-lg overflow-hidden relative z-10 bg-stone-50 border-8 border-white group-hover:shadow-2xl transition-all duration-700">
               {node.profileImage ? (
-                 <img src={node.profileImage} alt={node.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.5s] ease-out" />
+                 <img src={node.profileImage.startsWith('http') ? node.profileImage : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${node.profileImage.startsWith('/') ? '' : '/'}${node.profileImage}`} alt={node.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.5s] ease-out" />
               ) : (
                  <Crown className="w-20 h-20 text-mahakal-saffron/30" />
               )}
@@ -97,7 +97,7 @@ const ExtendedLineageCard = ({ node, index }) => {
                 <h5 className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-4 text-left">Sacred Gallery</h5>
                 <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar">
                   {node.galleryImages.map((img, idx) => (
-                     <img key={idx} src={img} alt={`Gallery ${idx}`} className="h-28 w-40 lg:h-32 lg:w-48 object-cover rounded-2xl shadow-sm border border-stone-200 shrink-0 hover:shadow-md transition-shadow cursor-pointer hover:scale-105 duration-300" />
+                     <img key={idx} src={img.startsWith('http') ? img : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${img.startsWith('/') ? '' : '/'}${img}`} alt={`Gallery ${idx}`} className="h-28 w-40 lg:h-32 lg:w-48 object-cover rounded-2xl shadow-sm border border-stone-200 shrink-0 hover:shadow-md transition-shadow cursor-pointer hover:scale-105 duration-300" />
                   ))}
                 </div>
              </div>

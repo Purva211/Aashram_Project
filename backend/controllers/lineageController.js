@@ -34,17 +34,15 @@ exports.createMember = async (req, res) => {
       parentId: parentId || null
     };
 
-    const baseUrl = process.env.BACKEND_URL || 'http://localhost:5000';
-
     if (req.files) {
       if (req.files.profileImage) {
-        newMemberData.profileImage = `${baseUrl}/uploads/${req.files.profileImage[0].filename}`;
+        newMemberData.profileImage = `/uploads/${req.files.profileImage[0].filename}`;
       }
       if (req.files.galleryImages) {
-        newMemberData.galleryImages = req.files.galleryImages.map(f => `${baseUrl}/uploads/${f.filename}`);
+        newMemberData.galleryImages = req.files.galleryImages.map(f => `/uploads/${f.filename}`);
       }
       if (req.files.documents) {
-        newMemberData.documents = req.files.documents.map(f => `${baseUrl}/uploads/${f.filename}`);
+        newMemberData.documents = req.files.documents.map(f => `/uploads/${f.filename}`);
       }
     }
 
@@ -64,17 +62,15 @@ exports.updateMember = async (req, res) => {
     const { name, era, shortDescription, biography, status, parentId } = req.body;
 
     const updateData = { name, era, shortDescription, biography, status, parentId: parentId || null };
-    const baseUrl = process.env.BACKEND_URL || 'http://localhost:5000';
-
     if (req.files) {
       if (req.files.profileImage) {
-        updateData.profileImage = `${baseUrl}/uploads/${req.files.profileImage[0].filename}`;
+        updateData.profileImage = `/uploads/${req.files.profileImage[0].filename}`;
       }
       if (req.files.galleryImages) {
-        updateData.galleryImages = req.files.galleryImages.map(f => `${baseUrl}/uploads/${f.filename}`);
+        updateData.galleryImages = req.files.galleryImages.map(f => `/uploads/${f.filename}`);
       }
       if (req.files.documents) {
-        updateData.documents = req.files.documents.map(f => `${baseUrl}/uploads/${f.filename}`);
+        updateData.documents = req.files.documents.map(f => `/uploads/${f.filename}`);
       }
     }
 
