@@ -7,6 +7,7 @@ const branchSchema = new mongoose.Schema({
   description: { type: String },
   image: { type: String },
   cctvUrl: { type: String },
+  manager: { type: mongoose.Schema.Types.ObjectId, ref: "BranchManager" },
   members: [{
     name: { type: String, required: true },
     contact: { type: String },
