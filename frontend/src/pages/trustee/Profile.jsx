@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from "../../context/AuthContext";
+import { useTranslation } from 'react-i18next';
 import api from "../../utils/api";
 import { 
   User, Shield, Settings, Camera, Mail, Phone, Calendar, CreditCard,
@@ -9,6 +10,7 @@ import {
 
 const Profile = () => {
   const { user, login } = useAuth();
+  const { i18n } = useTranslation();
   
   const [activeTab, setActiveTab] = useState('personal');
   
@@ -17,6 +19,7 @@ const Profile = () => {
   });
   const [profileImageFile, setProfileImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [recentLogins, setRecentLogins] = useState([]);
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
   
   // Tab 2: Security Settings
@@ -51,6 +54,18 @@ const Profile = () => {
       if (user.profilePhoto) {
         setImagePreview(`${API_URL}${user.profilePhoto}`);
       }
+      
+      const fetchLogins = async () => {
+        try {
+          const res = await api.get('/trustees/profile/logins');
+          if (res.data.success) {
+            setRecentLogins(res.data.logins);
+          }
+        } catch (error) {
+          console.error("Failed to fetch recent logins", error);
+        }
+      };
+      fetchLogins();
     }
   }, [user]);
 
@@ -333,18 +348,18 @@ const Profile = () => {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
-                      <tr className="hover:bg-gray-50">
-                        <td className="px-6 py-4">Today, 10:23 AM</td>
-                        <td className="px-6 py-4">Windows â€¢ Chrome</td>
-                        <td className="px-6 py-4">192.168.1.1</td>
-                        <td className="px-6 py-4"><span className="px-2.5 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">Active</span></td>
-                      </tr>
-                      <tr className="hover:bg-gray-50">
-                        <td className="px-6 py-4">Yesterday, 04:15 PM</td>
-                        <td className="px-6 py-4">MacBook â€¢ Safari</td>
-                        <td className="px-6 py-4">10.0.0.45</td>
-                        <td className="px-6 py-4"><span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">Logged out</span></td>
-                      </tr>
+                      {recentLogins.length > 0 ? recentLogins.map((login, idx) => (
+                        <tr key={idx} className="hover:bg-gray-50">
+                          <td className="px-6 py-4">{new Date(login.timestamp).toLocaleString()}</td>
+                          <td className="px-6 py-4">{login.details?.method || 'N/A'}</td>
+                          <td className="px-6 py-4">{login.ipAddress || 'Unknown'}</td>
+                          <td className="px-6 py-4"><span className="px-2.5 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">Success</span></td>
+                        </tr>
+                      )) : (
+                        <tr>
+                          <td colSpan="4" className="px-6 py-4 text-center text-gray-500">No recent logins found</td>
+                        </tr>
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -363,8 +378,19 @@ const Profile = () => {
                 </div>
                 <button 
                   onClick={() => {
+                    let lngCode = 'en';
+                    if (preferences.language === 'Hindi') lngCode = 'hi';
+                    if (preferences.language === 'Marathi') lngCode = 'mr';
+                    
+                    i18n.changeLanguage(lngCode);
+                    document.cookie = `googtrans=/en/${lngCode}; path=/;`;
+                    document.cookie = `googtrans=/en/${lngCode}; path=/; domain=${window.location.hostname};`;
+                    
                     setMessage({ type: 'success', text: 'Preferences saved successfully.' });
-                    setTimeout(() => setMessage({ type: '', text: '' }), 3000);
+                    setTimeout(() => {
+                      setMessage({ type: '', text: '' });
+                      window.location.reload();
+                    }, 1000);
                   }}
                   className="bg-white border border-sky-500 text-sky-600 hover:bg-sky-50 px-6 py-2.5 rounded-xl font-medium shadow-sm transition-colors flex items-center gap-2">
                   <Save className="w-4 h-4"/> Save Preferences

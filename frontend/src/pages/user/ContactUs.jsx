@@ -86,7 +86,7 @@ const ContactUs = () => {
                   </div>
                   <div>
                     <h4 className="font-bold text-caramel-deep text-sm tracking-wider uppercase">Phone</h4>
-                    <p className="text-caramel-dark text-sm">+91 98765 43210</p>
+                    <p className="text-caramel-dark text-sm">+91 8830760116</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -95,7 +95,7 @@ const ContactUs = () => {
                   </div>
                   <div>
                     <h4 className="font-bold text-caramel-deep text-sm tracking-wider uppercase">Email</h4>
-                    <p className="text-caramel-dark text-sm">info@kolekarmath.org</p>
+                    <p className="text-caramel-dark text-sm">gurumurtikolekarmaharaj44@gmail.com</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">

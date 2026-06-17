@@ -55,5 +55,9 @@ export const getProfile = async () => {
 };
 
 export const downloadDonationReceipt = async (id) => {
-  return await api.get(`/user/my-donations/${id}/receipt`, { responseType: 'blob' });
+  return await api.get(`/user/my-donations/${id}/receipt?t=${Date.now()}`, { responseType: 'blob' });
+};
+
+export const downloadAnnadaanReceipt = async (id) => {
+  return await api.get(`/user/my-annadaan/${id}/receipt?t=${Date.now()}`, { responseType: 'blob' });
 };

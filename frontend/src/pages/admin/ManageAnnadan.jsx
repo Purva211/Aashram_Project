@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiHeart, FiEdit2, FiTrash2, FiUsers, FiDollarSign, FiX, FiCheckCircle, FiClock, FiSearch, FiFilter, FiChevronUp, FiChevronDown } from 'react-icons/fi';
+import { FiHeart, FiEdit2, FiTrash2, FiUsers, FiDollarSign, FiX, FiCheckCircle, FiClock, FiSearch, FiFilter, FiChevronUp, FiChevronDown, FiPrinter } from 'react-icons/fi';
 import api from "../../utils/api";
 import { useTableFeatures } from '../../hooks/useTableFeatures';
 import TablePagination from '../../components/TablePagination';
+import Receipt from '../../components/Receipt';
 
 const ManageAnnadan = () => {
   const [records, setRecords] = useState([]);
@@ -11,6 +12,7 @@ const ManageAnnadan = () => {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState(null);
+  const [selectedRecord, setSelectedRecord] = useState(null);
   
   const [formData, setFormData] = useState({
     status: 'pending'
@@ -149,6 +151,9 @@ const ManageAnnadan = () => {
                 <th className="p-4 font-bold cursor-pointer hover:bg-slate-200 transition-colors bg-slate-100" onClick={() => handleSort('status')}>
                   <div className="flex items-center gap-1">Status {sortConfig.key === 'status' && (sortConfig.direction === 'asc' ? <FiChevronUp/> : <FiChevronDown/>)}</div>
                 </th>
+                <th className="p-4 font-bold text-center bg-slate-100">
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 text-sm">
@@ -173,6 +178,15 @@ const ManageAnnadan = () => {
                       {r.status}
                     </span>
                   </td>
+                  <td className="p-4 text-center">
+                    <button 
+                      onClick={() => setSelectedRecord(r)}
+                      className="p-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 hover:text-gray-900 rounded-lg shadow-sm transition-colors"
+                      title="View Receipt"
+                    >
+                      <FiPrinter size={16} />
+                    </button>
+                  </td>
                 </tr>
               ))}
               {paginatedData.length === 0 && (
@@ -189,7 +203,47 @@ const ManageAnnadan = () => {
         />
       </div>
 
-
+      {/* Receipt Modal */}
+      <AnimatePresence>
+        {selectedRecord && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm overflow-y-auto"
+          >
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-gray-100 w-full max-w-5xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+            >
+              <div className="p-4 bg-white border-b flex justify-between items-center sticky top-0 z-20">
+                <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                  <FiPrinter className="text-rose-500" /> Annadan Receipt
+                </h2>
+                <div className="flex gap-2">
+                  <button 
+                    onClick={() => window.print()}
+                    className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-bold transition-colors flex items-center gap-2"
+                  >
+                    <FiPrinter /> Print Receipt
+                  </button>
+                  <button 
+                    onClick={() => setSelectedRecord(null)}
+                    className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-500"
+                  >
+                    <FiX size={24} />
+                  </button>
+                </div>
+              </div>
+              <div className="p-8 overflow-y-auto bg-gray-200 flex-1 flex justify-center custom-scrollbar">
+                <Receipt donation={selectedRecord} />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

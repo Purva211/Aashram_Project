@@ -127,7 +127,7 @@ const AdminDocuments = () => {
                 href={`${import.meta.env.VITE_ASSETS_URL || 'http://localhost:5000'}${(doc.pdfUrl || '').replace(/\\/g, '/')}`}
                 target="_blank" rel="noopener noreferrer"
                 download
-                className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-saffron-600 border border-saffron-600 text-white hover:bg-saffron-700 hover:border-saffron-700 rounded-xl transition-all text-sm font-black shadow-md hover:shadow-lg"
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-black border border-black text-white hover:bg-gray-900 hover:border-gray-900 rounded-xl transition-all text-sm font-black shadow-md hover:shadow-lg"
               >
                 <FiDownload /> Download
               </a>

@@ -306,7 +306,7 @@ exports.approveDonation = async (req, res) => {
 
     try {
       if (donation.email) {
-        const pdfBuffer = await generateReceiptPdf(donation);
+        const pdfBuffer = await generateReceiptPdf(donation.toObject());
         await sendEmail({
           email: donation.email,
           subject: "Your Donation Receipt - Kolekar Maha Swamiji Monastery",

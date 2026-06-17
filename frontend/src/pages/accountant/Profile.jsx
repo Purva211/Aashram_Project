@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../utils/api';
-import { User, Phone, MapPin, Mail, Shield, Lock, Save, Camera } from 'lucide-react';
+import { User, Phone, MapPin, Mail, Shield, Lock, Save, Camera, Globe, Moon, Sun, Bell } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 const Profile = () => {
   const { user, login } = useAuth();
+  const { i18n } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: '',
@@ -14,6 +16,14 @@ const Profile = () => {
   });
   const [profileImageFile, setProfileImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  
+  const [preferences, setPreferences] = useState({
+    notifyEmail: true, notifySms: false, notifyDonation: true, notifyEvent: true, notifyAnnadan: false,
+    language: 'English', theme: 'Light',
+    showActivities: true, showBranches: true, showDonations: true, showEvents: true,
+    dateFormat: 'DD/MM/YYYY', timezone: 'Asia/Kolkata'
+  });
+  
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   useEffect(() => {
@@ -71,26 +81,25 @@ const Profile = () => {
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="bg-indigo-50/50 p-6 border-b border-indigo-100 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="relative w-20 h-20 bg-white rounded-full border-4 border-indigo-100 shadow-sm flex items-center justify-center overflow-hidden">
+        <div className="bg-indigo-50/50 p-6 border-b border-indigo-100 flex flex-col items-center justify-center text-center">
+            <div className="relative w-28 h-28 bg-white rounded-full border-4 border-indigo-100 shadow-sm flex items-center justify-center overflow-hidden mb-4 group cursor-pointer">
+              <label className="absolute inset-0 z-10 cursor-pointer w-full h-full flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 bg-black/40 transition-opacity">
+                 <Camera size={24} className="text-white mb-1" />
+                 <span className="text-white text-xs font-bold">Change</span>
+                 <input type="file" onChange={handleImageChange} className="hidden" accept="image/*" />
+              </label>
               {(imagePreview || user?.profilePhoto) ? (
                 <img src={imagePreview || `${API_URL}${user.profilePhoto}`} alt="Profile" className="w-full h-full object-cover" />
               ) : (
-                <span className="text-3xl font-bold text-indigo-300">{formData.fullName.charAt(0) || 'A'}</span>
+                <span className="text-4xl font-bold text-indigo-300">{formData.fullName.charAt(0) || 'A'}</span>
               )}
-              <label className="absolute bottom-0 right-0 bg-indigo-600 text-white p-1.5 rounded-full cursor-pointer hover:bg-indigo-700 transition">
-                 <Camera size={12} />
-                 <input type="file" onChange={handleImageChange} className="hidden" accept="image/*" />
-              </label>
             </div>
             <div>
               <h2 className="text-xl font-bold text-gray-900">{formData.fullName || 'Accountant'}</h2>
-              <p className="text-sm font-medium text-indigo-600 flex items-center gap-1 mt-1">
+              <p className="text-sm font-medium text-indigo-600 flex items-center justify-center gap-1 mt-1">
                 <Shield size={14} /> Managed by Trustee
               </p>
             </div>
-          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="p-8 space-y-6">
@@ -182,6 +191,66 @@ const Profile = () => {
           </div>
         </form>
       </div>
+
+      {/* Preferences Section */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mt-6">
+        <div className="bg-indigo-50/50 p-6 border-b border-indigo-100 flex items-center justify-between">
+          <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+            <Bell size={20} className="text-indigo-600" /> Preferences
+          </h2>
+          <button 
+            onClick={() => {
+              let lngCode = 'en';
+              if (preferences.language === 'Hindi') lngCode = 'hi';
+              if (preferences.language === 'Marathi') lngCode = 'mr';
+              
+              i18n.changeLanguage(lngCode);
+              document.cookie = `googtrans=/en/${lngCode}; path=/;`;
+              document.cookie = `googtrans=/en/${lngCode}; path=/; domain=${window.location.hostname};`;
+              
+              toast.success('Preferences saved successfully.');
+              setTimeout(() => {
+                window.location.reload();
+              }, 1000);
+            }}
+            className="bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-4 py-2 rounded-xl font-medium transition"
+          >
+            Save Preferences
+          </button>
+        </div>
+        <div className="p-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                <Globe size={16} className="text-gray-400" /> Display Language
+              </label>
+              <select 
+                value={preferences.language}
+                onChange={e => setPreferences({...preferences, language: e.target.value})}
+                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 outline-none transition"
+              >
+                <option value="English">English</option>
+                <option value="Hindi">Hindi (हिंदी)</option>
+                <option value="Marathi">Marathi (मराठी)</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                <Sun size={16} className="text-gray-400" /> Theme
+              </label>
+              <select 
+                value={preferences.theme}
+                onChange={e => setPreferences({...preferences, theme: e.target.value})}
+                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 outline-none transition"
+              >
+                <option value="Light">Light</option>
+                <option value="Dark">Dark</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 };

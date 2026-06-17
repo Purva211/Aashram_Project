@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiPlus, FiEdit2, FiTrash2, FiShield, FiX, FiCheck, FiSearch, FiChevronUp, FiChevronDown } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2, FiShield, FiX, FiCheck, FiSearch, FiChevronUp, FiChevronDown, FiEye, FiEyeOff } from 'react-icons/fi';
 import api from "../../utils/api";
 import { useTableFeatures } from '../../hooks/useTableFeatures';
 import TablePagination from '../../components/TablePagination';
@@ -372,13 +372,23 @@ const ManageTrustees = () => {
                     <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">
                       {editingId ? 'New Password (Optional)' : 'Password'}
                     </label>
-                    <input required={!editingId} type={showPassword ? "text" : "password"} value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-gray-800 focus:outline-none focus:border-saffron-500 focus:bg-white focus:ring-1 focus:ring-saffron-500 transition-all" />
+                    <div className="relative">
+                      <input required={!editingId} type={showPassword ? "text" : "password"} value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-4 pr-10 py-2.5 text-gray-800 focus:outline-none focus:border-saffron-500 focus:bg-white focus:ring-1 focus:ring-saffron-500 transition-all" />
+                      <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                        {showPassword ? <FiEyeOff /> : <FiEye />}
+                      </button>
+                    </div>
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">
                       {editingId ? 'Confirm New Password' : 'Confirm Password'}
                     </label>
-                    <input required={!editingId || (editingId && formData.password.length > 0)} type={showConfirmPassword ? "text" : "password"} value={formData.confirmPassword} onChange={e => setFormData({...formData, confirmPassword: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-gray-800 focus:outline-none focus:border-saffron-500 focus:bg-white focus:ring-1 focus:ring-saffron-500 transition-all" />
+                    <div className="relative">
+                      <input required={!editingId || (editingId && formData.password.length > 0)} type={showConfirmPassword ? "text" : "password"} value={formData.confirmPassword} onChange={e => setFormData({...formData, confirmPassword: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-4 pr-10 py-2.5 text-gray-800 focus:outline-none focus:border-saffron-500 focus:bg-white focus:ring-1 focus:ring-saffron-500 transition-all" />
+                      <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                        {showConfirmPassword ? <FiEyeOff /> : <FiEye />}
+                      </button>
+                    </div>
                   </div>
                 </div>
 

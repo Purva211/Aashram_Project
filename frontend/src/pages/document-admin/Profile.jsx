@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { motion } from 'framer-motion';
-import { FiUser, FiMail, FiPhone, FiLock, FiShield, FiSave } from 'react-icons/fi';
+import { FiUser, FiMail, FiPhone, FiLock, FiShield, FiSave, FiBell, FiGlobe, FiClock } from 'react-icons/fi';
+import { useTranslation } from 'react-i18next';
 import api from '../../utils/api';
 
 const DocumentAdminProfile = () => {
   const { user, login } = useAuth();
+  const { i18n } = useTranslation();
   
   const [formData, setFormData] = useState({
     contactNo: user?.contactNo || '',
@@ -13,6 +15,25 @@ const DocumentAdminProfile = () => {
     newPassword: '',
     confirmPassword: ''
   });
+  
+  const [preferences, setPreferences] = useState({
+    notifyEmail: true, notifySms: false, notifyDonation: true, notifyEvent: true, notifyAnnadan: false,
+    language: 'English', theme: 'Light',
+    showActivities: true, showBranches: true, showDonations: true, showEvents: true,
+    dateFormat: 'DD/MM/YYYY', timezone: 'Asia/Kolkata'
+  });
+  
+  const handleTogglePref = (key) => setPreferences(prev => ({ ...prev, [key]: !prev[key] }));
+  
+  const Toggle = ({ enabled, onChange }) => (
+    <div 
+      onClick={onChange}
+      className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-300 ${enabled ? 'bg-indigo-500' : 'bg-slate-300'}`}
+    >
+      <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${enabled ? 'translate-x-6' : ''}`} />
+    </div>
+  );
+
   const [profileImageFile, setProfileImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -258,6 +279,70 @@ const DocumentAdminProfile = () => {
                 </button>
               </div>
             </form>
+          </motion.div>
+          {/* Preferences Section */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 mt-6"
+          >
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                <FiBell className="text-indigo-500" /> Preferences
+              </h3>
+              <button 
+                onClick={() => {
+                  let lngCode = 'en';
+                  if (preferences.language === 'Hindi') lngCode = 'hi';
+                  if (preferences.language === 'Marathi') lngCode = 'mr';
+                  
+                  i18n.changeLanguage(lngCode);
+                  document.cookie = `googtrans=/en/${lngCode}; path=/;`;
+                  document.cookie = `googtrans=/en/${lngCode}; path=/; domain=${window.location.hostname};`;
+                  
+                  setMessage({ type: 'success', text: 'Preferences saved successfully.' });
+                  setTimeout(() => {
+                    setMessage({ type: '', text: '' });
+                    window.location.reload();
+                  }, 1000);
+                }}
+                className="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-4 py-2 rounded-xl font-medium flex items-center gap-2 transition-colors"
+              >
+                <FiSave /> Save Prefs
+              </button>
+            </div>
+            
+            <div className="space-y-6">
+              <div>
+                <h4 className="font-semibold text-slate-800 mb-3">Language & Theme</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Display Language</label>
+                    <select 
+                      value={preferences.language} 
+                      onChange={(e) => setPreferences({...preferences, language: e.target.value})}
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/50 outline-none"
+                    >
+                      <option value="English">English</option>
+                      <option value="Hindi">Hindi (हिंदी)</option>
+                      <option value="Marathi">Marathi (मराठी)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Theme</label>
+                    <select 
+                      value={preferences.theme} 
+                      onChange={(e) => setPreferences({...preferences, theme: e.target.value})}
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/50 outline-none"
+                    >
+                      <option value="Light">Light</option>
+                      <option value="Dark">Dark</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
           </motion.div>
         </div>
       </div>

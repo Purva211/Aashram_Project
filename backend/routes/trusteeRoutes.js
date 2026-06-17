@@ -31,6 +31,7 @@ router.get("/documents/deletion-requests", checkPermission('Documents'), trustee
 router.put("/documents/:id/review-deletion", checkPermission('Documents'), trusteeController.reviewDeletionRequest);
 
 // Profile Route
+router.get("/profile/logins", trusteeController.getRecentLogins);
 router.put("/profile", upload.single('profileImage'), trusteeController.updateProfile);
 
 module.exports = router;

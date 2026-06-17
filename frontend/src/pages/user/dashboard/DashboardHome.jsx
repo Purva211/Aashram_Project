@@ -5,6 +5,7 @@ import { getDashboardStats, getMyDonations, getMyAnnadaan } from '../../../servi
 import { CardSkeleton, RowSkeleton } from '../../../components/dashboard/LoadingSkeleton';
 import { FaClipboardList, FaDonate, FaUtensils, FaUserCheck, FaCalendarAlt, FaHistory } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
+import AnimatedCounter from '../../../components/dashboard/AnimatedCounter';
 
 export const DashboardHome = () => {
   const { user } = useAuth();
@@ -120,7 +121,7 @@ export const DashboardHome = () => {
   const statCards = [
     {
       title: "Donations Made",
-      value: stats.totalDonations,
+      value: <AnimatedCounter value={stats.totalDonations} />,
       icon: <FaDonate className="text-2xl text-amber-500" />,
       bg: "bg-amber-50",
       border: "border-amber-100",
@@ -128,7 +129,7 @@ export const DashboardHome = () => {
     },
     {
       title: "Annadaan Participation",
-      value: stats.totalAnnadaan,
+      value: <AnimatedCounter value={stats.totalAnnadaan} />,
       icon: <FaUtensils className="text-2xl text-red-500" />,
       bg: "bg-red-50",
       border: "border-red-100",

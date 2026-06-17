@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import api from '../../utils/api';
 import { DollarSign, Clock, CheckCircle, XCircle, TrendingUp, Activity } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import AnimatedCounter from '../../components/dashboard/AnimatedCounter';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -59,11 +60,11 @@ const Dashboard = () => {
   }, []);
 
   const statCards = [
-    { title: 'Total Donations', value: stats.total, icon: <Activity className="text-blue-500" />, bg: 'bg-blue-50' },
-    { title: 'Unique Donors', value: stats.uniqueDonors, icon: <Activity className="text-purple-500" />, bg: 'bg-purple-50' },
-    { title: 'Pending Verifications', value: stats.pending, icon: <Clock className="text-orange-500" />, bg: 'bg-orange-50' },
-    { title: 'Approved Donations', value: stats.approved, icon: <CheckCircle className="text-green-500" />, bg: 'bg-green-50' },
-    { title: 'Total Amount', value: `₹${stats.amount.toLocaleString()}`, icon: <TrendingUp className="text-indigo-500" />, bg: 'bg-indigo-50' },
+    { title: 'Total Donations', value: <AnimatedCounter value={stats.total} />, icon: <Activity className="text-blue-500" />, bg: 'bg-blue-50' },
+    { title: 'Unique Donors', value: <AnimatedCounter value={stats.uniqueDonors} />, icon: <Activity className="text-purple-500" />, bg: 'bg-purple-50' },
+    { title: 'Pending Verifications', value: <AnimatedCounter value={stats.pending} />, icon: <Clock className="text-orange-500" />, bg: 'bg-orange-50' },
+    { title: 'Approved Donations', value: <AnimatedCounter value={stats.approved} />, icon: <CheckCircle className="text-green-500" />, bg: 'bg-green-50' },
+    { title: 'Total Amount', value: <AnimatedCounter value={stats.amount} prefix="₹" />, icon: <TrendingUp className="text-indigo-500" />, bg: 'bg-indigo-50' },
   ];
 
   if (loading) {

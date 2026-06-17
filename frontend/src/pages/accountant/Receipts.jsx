@@ -1,8 +1,9 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import api from '../../utils/api';
-import { Search, Printer, Download, Eye } from 'lucide-react';
+import { Search, Printer, Download, Eye, X } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import Receipt from '../../components/Receipt'; // Assuming this component exists to render receipt HTML
+import Receipt from '../../components/Receipt';
+import { generateDonationReceipt } from '../../utils/pdfGenerator';
 
 const Receipts = () => {
   const [approvedDonations, setApprovedDonations] = useState([]);
@@ -104,7 +105,8 @@ const Receipts = () => {
                     <td className="p-4 text-sm text-gray-600">{don.approvalDate ? new Date(don.approvalDate).toLocaleDateString() : 'N/A'}</td>
                     <td className="p-4 text-right">
                       <div className="flex justify-end gap-2">
-                        <button onClick={() => { setSelectedDonation(don); setShowReceiptModal(true); }} className="p-2 text-blue-600 bg-blue-50 rounded hover:bg-blue-100"><Eye size={18} /></button>
+                        <button onClick={() => { setSelectedDonation(don); setShowReceiptModal(true); }} className="p-2 text-blue-600 bg-blue-50 rounded hover:bg-blue-100 transition" title="View"><Eye size={18} /></button>
+                        <button onClick={() => generateDonationReceipt(don)} className="p-2 text-indigo-600 bg-indigo-50 rounded hover:bg-indigo-100 transition" title="Download PDF"><Download size={18} /></button>
                       </div>
                     </td>
                   </tr>
@@ -125,7 +127,12 @@ const Receipts = () => {
                 <button onClick={handlePrint} className="flex items-center gap-2 bg-blue-900 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-800 transition">
                   <Printer size={16} /> Print
                 </button>
-                <button onClick={() => setShowReceiptModal(false)} className="text-gray-400 hover:text-gray-800 p-2">âœ•</button>
+                <button onClick={() => generateDonationReceipt(selectedDonation)} className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition">
+                  <Download size={16} /> Download
+                </button>
+                <button onClick={() => setShowReceiptModal(false)} className="text-gray-400 hover:text-gray-800 p-2 ml-2 transition">
+                  <X size={20} />
+                </button>
               </div>
             </div>
             

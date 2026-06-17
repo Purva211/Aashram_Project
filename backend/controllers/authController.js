@@ -9,6 +9,7 @@ const generateOTP = require("../utils/otpGenerator");
 const sendEmail = require("../utils/sendEmail");
 const SystemSettings = require("../models/SystemSettings");
 const DocumentAdmin = require("../models/DocumentAdmin");
+const AuditLog = require("../models/AuditLog");
 const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client("575853664482-vm3gho8gni1ifluc50pf742ulkbp4oob.apps.googleusercontent.com");
 
@@ -68,6 +69,18 @@ exports.login = async (req, res) => {
     // Remove password from response
     const userResponse = user.toObject();
     delete userResponse.password;
+
+    try {
+      await AuditLog.create({
+        userId: user._id,
+        role: role,
+        action: 'Login',
+        details: { method: 'Email/Password' },
+        ipAddress: req.ip || req.connection?.remoteAddress || 'Unknown'
+      });
+    } catch (err) {
+      console.error("Audit log error:", err);
+    }
 
     res.status(200).json({
       success: true,
@@ -192,6 +205,18 @@ exports.googleLogin = async (req, res) => {
 
     const userResponse = user.toObject();
     delete userResponse.password;
+
+    try {
+      await AuditLog.create({
+        userId: user._id,
+        role: role,
+        action: 'Login',
+        details: { method: 'Google OAuth' },
+        ipAddress: req.ip || req.connection?.remoteAddress || 'Unknown'
+      });
+    } catch (err) {
+      console.error("Audit log error:", err);
+    }
 
     res.status(200).json({
       success: true,

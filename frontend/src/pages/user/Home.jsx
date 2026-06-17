@@ -255,7 +255,7 @@ const Home = () => {
                       <div className="p-4 border-b border-stone-50">
                         <h4 className="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-2">Branches</h4>
                         {searchResults.branches.map(branch => (
-                          <Link key={branch._id} to="/branches" className="flex items-center gap-4 p-3 hover:bg-stone-50 rounded-xl transition-colors group">
+                          <Link key={branch._id} to={`/branches/${branch._id}`} className="flex items-center gap-4 p-3 hover:bg-stone-50 rounded-xl transition-colors group">
                              <div className="w-10 h-10 rounded-lg bg-stone-100 text-stone-500 flex items-center justify-center shrink-0">
                                <FaMapMarkerAlt />
                             </div>
@@ -748,7 +748,7 @@ const Home = () => {
                      </div>
                      <h4 className="text-xl font-serif font-bold text-caramel-deep mb-3">{branch.name}</h4>
                      <p className="text-sm font-light text-caramel-dark mb-6 line-clamp-3">{branch.address}</p>
-                     <Link to={`/branches`} className="mt-auto inline-flex items-center gap-2 text-gold font-bold text-xs uppercase tracking-widest hover:text-primary transition-colors">
+                     <Link to={`/branches/${branch._id}`} className="mt-auto inline-flex items-center gap-2 text-gold font-bold text-xs uppercase tracking-widest hover:text-primary transition-colors">
                        View Details <FaChevronRight size={10} />
                      </Link>
                   </motion.div>

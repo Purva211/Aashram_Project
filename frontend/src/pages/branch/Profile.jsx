@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from "../../context/AuthContext";
+import { useTranslation } from 'react-i18next';
 import api from "../../utils/api";
 import { 
   User, Shield, Settings, Camera, Mail, Phone, Calendar, CreditCard,
@@ -9,6 +10,7 @@ import {
 
 const Profile = () => {
   const { user, login } = useAuth();
+  const { i18n } = useTranslation();
   
   const [activeTab, setActiveTab] = useState('personal');
   
@@ -363,8 +365,19 @@ const Profile = () => {
                 </div>
                 <button 
                   onClick={() => {
+                    let lngCode = 'en';
+                    if (preferences.language === 'Hindi') lngCode = 'hi';
+                    if (preferences.language === 'Marathi') lngCode = 'mr';
+                    
+                    i18n.changeLanguage(lngCode);
+                    document.cookie = `googtrans=/en/${lngCode}; path=/;`;
+                    document.cookie = `googtrans=/en/${lngCode}; path=/; domain=${window.location.hostname};`;
+                    
                     setMessage({ type: 'success', text: 'Preferences saved successfully.' });
-                    setTimeout(() => setMessage({ type: '', text: '' }), 3000);
+                    setTimeout(() => {
+                      setMessage({ type: '', text: '' });
+                      window.location.reload();
+                    }, 1000);
                   }}
                   className="bg-white border border-sky-500 text-sky-600 hover:bg-sky-50 px-6 py-2.5 rounded-xl font-medium shadow-sm transition-colors flex items-center gap-2">
                   <Save className="w-4 h-4"/> Save Preferences

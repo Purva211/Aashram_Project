@@ -41,7 +41,8 @@ const buildUserQuery = (user) => {
 
 exports.getProfile = async (req, res) => {
   try {
-    const Model = req.user.role === 'Devotee' ? require("../models/Devotee") : User;
+    const Model = req.user.role === 'Devotee' ? require("../models/Devotee") : null;
+    if (!Model) return res.status(403).json({ success: false, message: "Forbidden" });
     const user = await Model.findById(req.user._id).select("-password");
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found." });
@@ -57,7 +58,8 @@ exports.getProfile = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
   try {
-    const Model = req.user.role === 'Devotee' ? require("../models/Devotee") : User;
+    const Model = req.user.role === 'Devotee' ? require("../models/Devotee") : null;
+    if (!Model) return res.status(403).json({ success: false, message: "Forbidden" });
     const { name, email, mobile } = req.body;
     const updateData = {};
 
@@ -89,7 +91,7 @@ exports.updateProfile = async (req, res) => {
     const updatedUser = await Model.findByIdAndUpdate(
       req.user._id,
       { $set: updateData },
-      { returnDocument: 'after', runValidators: true }
+      { new: true, runValidators: true }
     ).select("-password");
 
     if (!updatedUser) {
@@ -228,14 +230,7 @@ exports.downloadReceipt = async (req, res) => {
       return res.status(403).json({ success: false, message: "Unauthorized to access this receipt." });
     }
 
-    const pdfBuffer = await generateReceiptPdf({
-      donorName: donation.donorName,
-      amount: donation.amount,
-      purpose: donation.purpose,
-      transactionId: donation.transactionId,
-      paymentMethod: donation.paymentMethod,
-      date: donation.date,
-    });
+    const pdfBuffer = await generateReceiptPdf(donation.toObject());
 
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", `attachment; filename=receipt_${id}.pdf`);
@@ -261,8 +256,9 @@ exports.downloadAnnadaanReceipt = async (req, res) => {
       return res.status(400).json({ success: false, message: "Receipt is only available after approval." });
     }
 
-    // Verify ownership: must be the user's annadaan (by email, or name)
+    // Verify ownership: must be the user's annadaan (by userId, email, or name)
     const isOwner = 
+      (annadaan.userId && annadaan.userId.toString() === req.user._id.toString()) ||
       (annadaan.email && req.user.email && annadaan.email.toLowerCase() === req.user.email.toLowerCase()) ||
       (annadaan.name && req.user.name && annadaan.name.toLowerCase() === req.user.name.toLowerCase());
 
@@ -271,12 +267,13 @@ exports.downloadAnnadaanReceipt = async (req, res) => {
     }
 
     const pdfBuffer = await generateReceiptPdf({
+      ...annadaan.toObject(),
       donorName: annadaan.name,
-      amount: "Annadaan Seva", // Or cost if you have it
-      purpose: `Annadaan - ${annadaan.annadaanType}`,
-      transactionId: `ANN-${id.substring(0, 8).toUpperCase()}`,
-      paymentMethod: "N/A",
-      date: annadaan.date,
+      amount: "Annadaan Seva",
+      message: `Annadaan - ${annadaan.annadaanType}`,
+      utrNumber: "",
+      paymentApp: "N/A",
+      receiptNumber: `ANN-${id.substring(0, 8).toUpperCase()}`,
     });
 
     res.setHeader("Content-Type", "application/pdf");

@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
+import { useLocation, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiSearch, FiPlus, FiFileText, FiEye, FiEdit2, FiTrash2, FiDownload, FiX, FiUploadCloud } from "react-icons/fi";
+import { FiSearch, FiPlus, FiFileText, FiEye, FiEdit2, FiTrash2, FiDownload, FiX, FiUploadCloud, FiClock } from "react-icons/fi";
 import api from "../../utils/api";
+import AnimatedCounter from '../../components/dashboard/AnimatedCounter';
 
 const ASSETS_URL = import.meta.env.VITE_ASSETS_URL || "http://localhost:5000";
 
@@ -27,6 +29,9 @@ const DocumentAdminDashboard = () => {
   const [formData, setFormData] = useState({ title: "", description: "", category: "Reports", branchId: "" });
   const [file, setFile] = useState(null);
   const [formLoading, setFormLoading] = useState(false);
+
+  const location = useLocation();
+  const isDashboard = location.pathname.includes('/dashboard');
 
   const categories = ["All", "Reports", "Policies", "Financial", "Meeting Minutes", "Other"];
 
@@ -189,11 +194,11 @@ const DocumentAdminDashboard = () => {
 
       <main className="w-full">
         {/* Stats Row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between group hover:shadow-md transition-shadow">
             <div>
               <p className="text-sm text-slate-500 mb-1">Total Documents</p>
-              <h3 className="text-3xl font-bold text-slate-800">{allDocuments.length}</h3>
+              <h3 className="text-3xl font-bold text-slate-800"><AnimatedCounter value={allDocuments.length} /></h3>
             </div>
             <div className="w-12 h-12 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-600 group-hover:scale-110 transition-transform">
               <FiFileText className="text-xl" />
@@ -201,20 +206,9 @@ const DocumentAdminDashboard = () => {
           </div>
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between group hover:shadow-md transition-shadow">
             <div>
-              <p className="text-sm text-slate-500 mb-1">Approved</p>
-              <h3 className="text-3xl font-bold text-emerald-600">
-                {allDocuments.filter(d => d.status === 'Approved').length}
-              </h3>
-            </div>
-            <div className="w-12 h-12 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform">
-              <FiFileText className="text-xl" />
-            </div>
-          </div>
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between group hover:shadow-md transition-shadow">
-            <div>
               <p className="text-sm text-slate-500 mb-1">Pending Deletion</p>
               <h3 className="text-3xl font-bold text-amber-600">
-                {allDocuments.filter(d => d.deleteStatus === 'Pending').length}
+                <AnimatedCounter value={allDocuments.filter(d => d.deleteStatus === 'Pending').length} />
               </h3>
             </div>
             <div className="w-12 h-12 bg-amber-50 rounded-full flex items-center justify-center text-amber-600 group-hover:scale-110 transition-transform">
@@ -223,7 +217,50 @@ const DocumentAdminDashboard = () => {
           </div>
         </div>
 
-        {/* Action Bar */}
+        {isDashboard ? (
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                <FiClock className="text-indigo-500" /> Recent Activity Feed
+              </h3>
+              <Link to="/document-handler/documents" className="text-sm font-semibold text-indigo-600 hover:text-indigo-700">View All Documents &rarr;</Link>
+            </div>
+            
+            <div className="space-y-4">
+              {allDocuments
+                .filter(doc => new Date(doc.createdAt) >= new Date(Date.now() - 36 * 60 * 60 * 1000))
+                .slice(0, 10)
+                .map(doc => (
+                <div key={doc._id} className="flex items-start gap-4 p-4 rounded-xl border border-slate-50 bg-slate-50/50 hover:bg-slate-50 transition-colors">
+                  <div className="w-10 h-10 rounded-full bg-white border border-indigo-100 text-indigo-600 flex items-center justify-center shrink-0 shadow-sm">
+                    <FiFileText />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-bold text-slate-800">
+                      New document <span className="text-indigo-600">"{doc.title}"</span> was uploaded.
+                    </p>
+                    <p className="text-xs text-slate-500 mt-1 font-medium">
+                      Category: {doc.category} • {new Date(doc.createdAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}
+                    </p>
+                  </div>
+                  {doc.deleteStatus === 'Pending' && (
+                    <span className="px-2.5 py-1 bg-amber-100 text-amber-700 text-[10px] font-bold rounded-md uppercase shrink-0">Deletion Pending</span>
+                  )}
+                </div>
+              ))}
+              {allDocuments.filter(doc => new Date(doc.createdAt) >= new Date(Date.now() - 36 * 60 * 60 * 1000)).length === 0 && (
+                <div className="text-center py-10">
+                  <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400 text-2xl">
+                    <FiClock />
+                  </div>
+                  <p className="text-slate-500 text-sm font-medium">No recent activity found.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* Action Bar */}
         <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-6 flex flex-col md:flex-row gap-4 justify-between items-center">
           <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
             <div className="relative">
@@ -373,6 +410,8 @@ const DocumentAdminDashboard = () => {
             </table>
           </div>
         </div>
+        </>
+        )}
       </main>
 
       {/* Modals */}

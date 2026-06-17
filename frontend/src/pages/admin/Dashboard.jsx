@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { FiUsers, FiDollarSign, FiCalendar, FiBell, FiMapPin, FiFileText, FiShield, FiHeart, FiClock, FiPlus } from 'react-icons/fi';
 import api from "../../utils/api";
 import { useAuth } from "../../context/AuthContext";
+import AnimatedCounter from '../../components/dashboard/AnimatedCounter';
 
 const StatCard = ({ title, value, icon, gradient, delay }) => (
   <div 
@@ -81,70 +82,70 @@ const AdminDashboard = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <StatCard 
             title="Total Devotees" 
-            value={stats?.totalDevotees?.toLocaleString() || '0'} 
+            value={<AnimatedCounter value={stats?.totalDevotees || 0} />} 
             icon={<FiUsers />} 
             gradient="from-blue-400 to-indigo-600"
             delay={0.1} 
           />
           <StatCard 
             title="Total Donations" 
-            value={`₹ ${stats?.totalDonations?.toLocaleString() || '0'}`} 
+            value={<AnimatedCounter value={stats?.totalDonations || 0} prefix="₹ " />} 
             icon={<FiDollarSign />} 
             gradient="from-emerald-400 to-teal-600"
             delay={0.2} 
           />
           <StatCard 
             title="Total Donors" 
-            value={stats?.totalDonors?.toLocaleString() || '0'} 
+            value={<AnimatedCounter value={stats?.totalDonors || 0} />} 
             icon={<FiUsers />} 
             gradient="from-cyan-400 to-blue-500"
             delay={0.25} 
           />
           <StatCard 
             title="Unique Donors" 
-            value={stats?.totalUniqueDonors?.toLocaleString() || '0'} 
+            value={<AnimatedCounter value={stats?.totalUniqueDonors || 0} />} 
             icon={<FiHeart />} 
             gradient="from-fuchsia-400 to-purple-600"
             delay={0.28} 
           />
           <StatCard 
             title="Total Events" 
-            value={stats?.totalEvents?.toLocaleString() || '0'} 
+            value={<AnimatedCounter value={stats?.totalEvents || 0} />} 
             icon={<FiCalendar />} 
             gradient="from-orange-400 to-red-500"
             delay={0.3} 
           />
           <StatCard 
             title="Announcements" 
-            value={stats?.totalAnnouncements?.toLocaleString() || '0'} 
+            value={<AnimatedCounter value={stats?.totalAnnouncements || 0} />} 
             icon={<FiBell />} 
             gradient="from-purple-400 to-pink-600"
             delay={0.4} 
           />
           <StatCard 
             title="Total Branches" 
-            value={stats?.totalBranches?.toLocaleString() || '0'} 
+            value={<AnimatedCounter value={stats?.totalBranches || 0} />} 
             icon={<FiMapPin />} 
             gradient="from-rose-400 to-red-600"
             delay={0.5} 
           />
           <StatCard 
             title="Total Documents" 
-            value={stats?.totalDocuments?.toLocaleString() || '0'} 
+            value={<AnimatedCounter value={stats?.totalDocuments || 0} />} 
             icon={<FiFileText />} 
             gradient="from-slate-500 to-gray-700"
             delay={0.6} 
           />
           <StatCard 
             title="Trust Members" 
-            value={stats?.totalTrustees?.toLocaleString() || '0'} 
+            value={<AnimatedCounter value={stats?.totalTrustees || 0} />} 
             icon={<FiShield />} 
             gradient="from-indigo-400 to-blue-600"
             delay={0.7} 
           />
           <StatCard 
             title="Annadan Records" 
-            value={stats?.totalAnnadan?.toLocaleString() || '0'} 
+            value={<AnimatedCounter value={stats?.totalAnnadan || 0} />} 
             icon={<FiHeart />} 
             gradient="from-pink-400 to-rose-500"
             delay={0.8} 

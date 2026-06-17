@@ -100,7 +100,7 @@ const Footer = () => {
               </li>
               <li className="flex items-center gap-3 group">
                 <span className="text-mahakal-saffron font-bold text-base group-hover:scale-110 transition-transform">📞</span>
-                <span className="group-hover:text-white transition-colors">+91 98765 43210</span>
+                <span className="group-hover:text-white transition-colors">+91 8830760116</span>
               </li>
               <li className="flex items-center gap-3 group">
                 <span className="text-mahakal-saffron font-bold text-base group-hover:scale-110 transition-transform">✉️</span>
@@ -117,8 +117,6 @@ const Footer = () => {
             {t('footer.rights', { year: new Date().getFullYear() }) || `© ${new Date().getFullYear()} Kolekar Maharaj Trust. All rights reserved.`}
           </p>
           <div className="flex flex-wrap justify-center gap-4 text-[10px] text-mahakal-cream/60 font-medium tracking-wider uppercase">
-            <Link to="/login" className="hover:text-white transition-colors">Portal Login</Link>
-            <span className="text-white/20">|</span>
             <Link to="#" className="hover:text-white transition-colors">{t('footer.privacy') || 'Privacy Policy'}</Link>
             <Link to="#" className="hover:text-white transition-colors">{t('footer.terms') || 'Terms of Service'}</Link>
           </div>

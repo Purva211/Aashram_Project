@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getMyAnnadaan } from '../../../services/userDashboardService';
+import { getMyAnnadaan, downloadAnnadaanReceipt } from '../../../services/userDashboardService';
 import { RowSkeleton } from '../../../components/dashboard/LoadingSkeleton';
 import EmptyState from '../../../components/dashboard/EmptyState';
 import StatusBadge from '../../../components/dashboard/StatusBadge';
@@ -29,33 +29,26 @@ export const MyAnnadaan = () => {
     fetchAnnadaan();
   }, []);
 
-  const handleDownloadReceipt = async (id, action) => {
+  const handleDownloadReceipt = async (id) => {
     try {
       toast.loading('Generating receipt...', { id: 'receipt' });
-      // Fetch the PDF as a blob from the new route
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/user/my-annadaan/${id}/receipt`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
+      const response = await downloadAnnadaanReceipt(id);
       
-      if (!response.ok) {
+      if (!response.data) {
         throw new Error('Failed to download receipt');
       }
       
-      const blob = await response.blob();
+      const blob = new Blob([response.data], { type: 'application/pdf' });
       const url = window.URL.createObjectURL(blob);
       
-      if (action === 'preview') {
-        window.open(url, '_blank');
-      } else {
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', `Annadaan_Receipt_${id}.pdf`);
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-      }
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Annadaan_Receipt_${id}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
       toast.success('Receipt generated!', { id: 'receipt' });
     } catch (error) {
       console.error('Error handling receipt:', error);
@@ -105,19 +98,12 @@ export const MyAnnadaan = () => {
         {d.status === 'approved' || d.status === 'completed' ? (
           <div className="flex gap-2 justify-center">
               <button 
-                onClick={() => handleDownloadReceipt(d._id, 'preview')}
-                title="Preview"
-                className="p-2 rounded-lg bg-slate-800 text-white hover:bg-slate-700 transition-colors font-black shadow-md"
+                onClick={() => handleDownloadReceipt(d._id)}
+                title="Download Receipt"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-xs font-bold text-white bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5"
               >
-                <FaEye size={12} />
+                <FaFileDownload size={14} /> Download Receipt
               </button>
-              <button 
-                onClick={() => handleDownloadReceipt(d._id, 'download')}
-                title="Download"
-                className="p-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors font-black shadow-md"
-              >
-              <FaFileDownload size={12} />
-            </button>
           </div>
         ) : (
           <span className="text-xs font-black text-stone-400">N/A</span>

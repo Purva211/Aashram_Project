@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { FiUser, FiMail, FiPhone, FiMapPin, FiShield, FiSave, FiEdit2, FiCamera, FiLock, FiBell, FiEye, FiEyeOff } from 'react-icons/fi';
+import { Globe, Sun, Moon, Clock, Activity, ChevronDown } from 'lucide-react';
 import api from '../../utils/api';
 
 const AdminProfile = () => {
   const { user, login } = useAuth();
+  const { i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState('personal');
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -32,10 +35,22 @@ const AdminProfile = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const [preferences, setPreferences] = useState({
-    emailAlerts: true,
-    smsAlerts: false,
-    twoFactorAuth: false
+    notifyEmail: true, notifySms: false, notifyDonation: true, notifyEvent: true, notifyAnnadan: false,
+    language: 'English', theme: 'Light',
+    showActivities: true, showBranches: true, showDonations: true, showEvents: true,
+    dateFormat: 'DD/MM/YYYY', timezone: 'Asia/Kolkata'
   });
+  
+  const handleTogglePref = (key) => setPreferences(prev => ({ ...prev, [key]: !prev[key] }));
+  
+  const Toggle = ({ enabled, onChange }) => (
+    <div 
+      onClick={onChange}
+      className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-300 ${enabled ? 'bg-sky-500' : 'bg-gray-300'}`}
+    >
+      <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${enabled ? 'translate-x-6' : ''}`} />
+    </div>
+  );
 
   useEffect(() => {
     if (user) {
@@ -308,49 +323,154 @@ const AdminProfile = () => {
 
             {/* Preferences Tab */}
             {activeTab === 'preferences' && (
-              <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3 }}>
-                <h2 className="text-xl font-bold text-slate-900 mb-6 border-b border-gray-100 pb-4">System Preferences</h2>
-                <form onSubmit={handleUpdatePreferences} className="max-w-2xl space-y-6">
-                  
-                  <div className="flex items-center justify-between p-4 border border-gray-100 rounded-xl bg-gray-50/50">
-                    <div>
-                      <h4 className="font-bold text-slate-800">Email Notifications</h4>
-                      <p className="text-xs text-gray-500 mt-0.5">Receive daily summaries and critical alerts via email.</p>
-                    </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input type="checkbox" checked={preferences.emailAlerts} onChange={e => setPreferences({...preferences, emailAlerts: e.target.checked})} className="sr-only peer" />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-500"></div>
-                    </label>
+              <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3 }} className="space-y-10">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-900">System Preferences</h2>
+                    <p className="text-gray-500 mt-1">Customize your admin dashboard experience.</p>
                   </div>
+                  <button 
+                    onClick={() => {
+                      let lngCode = 'en';
+                      if (preferences.language === 'Hindi') lngCode = 'hi';
+                      if (preferences.language === 'Marathi') lngCode = 'mr';
+                      
+                      i18n.changeLanguage(lngCode);
+                      document.cookie = `googtrans=/en/${lngCode}; path=/;`;
+                      document.cookie = `googtrans=/en/${lngCode}; path=/; domain=${window.location.hostname};`;
+                      
+                      setSuccessMsg('Preferences saved successfully!');
+                      setTimeout(() => {
+                        setSuccessMsg('');
+                        window.location.reload();
+                      }, 1000);
+                    }}
+                    className="bg-white border border-sky-500 text-sky-600 hover:bg-sky-50 px-6 py-2.5 rounded-xl font-medium shadow-sm transition-colors flex items-center gap-2">
+                    <FiSave className="w-4 h-4"/> Save Preferences
+                  </button>
+                </div>
 
-                  <div className="flex items-center justify-between p-4 border border-gray-100 rounded-xl bg-gray-50/50">
-                    <div>
-                      <h4 className="font-bold text-slate-800">SMS Alerts</h4>
-                      <p className="text-xs text-gray-500 mt-0.5">Get text messages for immediate high-priority system events.</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* Section 1: Notifications */}
+                  <section className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100 space-y-6">
+                    <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2"><FiBell className="w-5 h-5 text-sky-500"/> Notifications</h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-700">Email Notifications</span>
+                        <Toggle enabled={preferences.notifyEmail} onChange={() => handleTogglePref('notifyEmail')} />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-700">SMS Notifications</span>
+                        <Toggle enabled={preferences.notifySms} onChange={() => handleTogglePref('notifySms')} />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-700">Donation Alerts</span>
+                        <Toggle enabled={preferences.notifyDonation} onChange={() => handleTogglePref('notifyDonation')} />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-700">Event Reminders</span>
+                        <Toggle enabled={preferences.notifyEvent} onChange={() => handleTogglePref('notifyEvent')} />
+                      </div>
                     </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input type="checkbox" checked={preferences.smsAlerts} onChange={e => setPreferences({...preferences, smsAlerts: e.target.checked})} className="sr-only peer" />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-500"></div>
-                    </label>
-                  </div>
+                  </section>
 
-                  <div className="flex items-center justify-between p-4 border border-gray-100 rounded-xl bg-gray-50/50">
-                    <div>
-                      <h4 className="font-bold text-slate-800">Two-Factor Authentication (2FA)</h4>
-                      <p className="text-xs text-gray-500 mt-0.5">Require an additional OTP step during admin login.</p>
+                  {/* Section 2: Dashboard Items */}
+                  <section className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100 space-y-6">
+                    <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2"><Activity className="w-5 h-5 text-sky-500"/> Dashboard Items</h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-700">Show Recent Activities</span>
+                        <Toggle enabled={preferences.showActivities} onChange={() => handleTogglePref('showActivities')} />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-700">Show Branch Statistics</span>
+                        <Toggle enabled={preferences.showBranches} onChange={() => handleTogglePref('showBranches')} />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-700">Show Donation Analytics</span>
+                        <Toggle enabled={preferences.showDonations} onChange={() => handleTogglePref('showDonations')} />
+                      </div>
                     </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input type="checkbox" checked={preferences.twoFactorAuth} onChange={e => setPreferences({...preferences, twoFactorAuth: e.target.checked})} className="sr-only peer" />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
-                    </label>
-                  </div>
+                  </section>
 
-                  <div className="pt-4 border-t border-gray-100">
-                    <button type="submit" disabled={loading} className="px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold shadow-md transition-colors flex items-center gap-2 disabled:opacity-50">
-                      {loading ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <><FiSave /> Save Preferences</>}
-                    </button>
-                  </div>
-                </form>
+                  {/* Section 3: Localization */}
+                  <section className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100 space-y-6">
+                    <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2"><Globe className="w-5 h-5 text-sky-500"/> Localization</h3>
+                    <div className="space-y-5">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700">Display Language</label>
+                        <div className="relative">
+                          <select 
+                            value={preferences.language} 
+                            onChange={(e) => setPreferences({...preferences, language: e.target.value})}
+                            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none appearance-none transition-all"
+                          >
+                            <option value="English">English</option>
+                            <option value="Hindi">Hindi (हिंदी)</option>
+                            <option value="Marathi">Marathi (मराठी)</option>
+                          </select>
+                          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700">Interface Theme</label>
+                        <div className="flex gap-3">
+                          <button 
+                            onClick={() => setPreferences({...preferences, theme: 'Light'})}
+                            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg border font-medium transition-all ${preferences.theme === 'Light' ? 'bg-sky-50 border-sky-500 text-sky-700' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+                          >
+                            <Sun className="w-4 h-4" /> Light
+                          </button>
+                          <button 
+                            onClick={() => setPreferences({...preferences, theme: 'Dark'})}
+                            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg border font-medium transition-all ${preferences.theme === 'Dark' ? 'bg-sky-50 border-sky-500 text-sky-700' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+                          >
+                            <Moon className="w-4 h-4" /> Dark
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+
+                  {/* Section 4: Date & Time Settings */}
+                  <section className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100 space-y-6">
+                    <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2"><Clock className="w-5 h-5 text-sky-500"/> Date & Time</h3>
+                    <div className="space-y-5">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700">Date Format</label>
+                        <div className="relative">
+                          <select 
+                            value={preferences.dateFormat} 
+                            onChange={(e) => setPreferences({...preferences, dateFormat: e.target.value})}
+                            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none appearance-none transition-all"
+                          >
+                            <option value="DD/MM/YYYY">DD/MM/YYYY (31/12/2023)</option>
+                            <option value="MM/DD/YYYY">MM/DD/YYYY (12/31/2023)</option>
+                            <option value="DD-MMM-YYYY">DD-MMM-YYYY (31-Dec-2023)</option>
+                          </select>
+                          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700">Timezone</label>
+                        <div className="relative">
+                          <select 
+                            value={preferences.timezone} 
+                            onChange={(e) => setPreferences({...preferences, timezone: e.target.value})}
+                            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none appearance-none transition-all"
+                          >
+                            <option value="Asia/Kolkata">Asia/Kolkata (IST)</option>
+                            <option value="UTC">UTC (Universal Coordinated Time)</option>
+                            <option value="America/New_York">America/New_York (EST)</option>
+                          </select>
+                          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                </div>
               </motion.div>
             )}
 

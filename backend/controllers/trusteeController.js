@@ -6,6 +6,7 @@ const Event = require("../models/Event");
 const Announcement = require("../models/Announcement");
 const Trustee = require("../models/Trustee");
 const Annadaan = require("../models/Annadaan");
+const AuditLog = require("../models/AuditLog");
  // Need User model for trustees
 
 exports.getPublicTrustees = async (req, res) => {
@@ -234,4 +235,15 @@ exports.getAccountants = async (req, res) => {
     const accs = await require('../models/Accountant').find().select('-password');
     res.json({ success: true, data: accs });
   } catch (err) { res.status(500).json({ success: false }); }
+};
+
+exports.getRecentLogins = async (req, res) => {
+  try {
+    const logins = await AuditLog.find({ userId: req.user._id, action: 'Login' })
+      .sort({ timestamp: -1 })
+      .limit(10);
+    res.status(200).json({ success: true, logins });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 };
