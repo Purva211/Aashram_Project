@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { NavLink, useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
-import { FaHome, FaDonate, FaCalendarAlt, FaUsers, FaSignOutAlt, FaBell, FaOm, FaClipboardList, FaBullhorn, FaMapMarkerAlt, FaUserShield, FaImages, FaFileAlt, FaHistory, FaSitemap, FaCalculator, FaReceipt, FaBars, FaTimes, FaTrash } from 'react-icons/fa';
+import { FaHome, FaDonate, FaCalendarAlt, FaUsers, FaSignOutAlt, FaBell, FaOm, FaClipboardList, FaBullhorn, FaMapMarkerAlt, FaUserShield, FaImages, FaFileAlt, FaHistory, FaSitemap, FaCalculator, FaReceipt, FaBars, FaTimes, FaTrash, FaMusic } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Layout = ({ children, user }) => {
@@ -117,6 +117,7 @@ const Layout = ({ children, user }) => {
       { name: 'Lineage', path: '/trustee/lineage', icon: <FaSitemap /> },
       { name: 'Monastery History', path: '/trustee/math-history', icon: <FaHistory /> },
       { name: 'Sansthan Updates', path: '/trustee/bulletins', icon: <FaBullhorn /> },
+      { name: 'Audio Tracks', path: '/trustee/audio', icon: <FaMusic /> },
     ];
   } else if (user?.role === 'BranchManager') {
     navItems = [

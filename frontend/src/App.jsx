@@ -19,6 +19,7 @@ import TrusteeBoard from "./pages/user/TrusteeBoard";
 
 import MathHistory from "./pages/user/MathHistory";
 import Lineage from "./pages/user/Lineage";
+import TrusteeAudioTracks from './pages/trustee/AudioTracks';
 import ContactUs from "./pages/user/ContactUs";
 import VerifyReceipt from "./pages/public/VerifyReceipt";
 
@@ -214,6 +215,7 @@ function AppRoutes() {
           <Route path="/trustee/math-history" element={<RoleProtectedRoute allowedRoles={['Trustee']}><ManageMathHistory /></RoleProtectedRoute>} />
           <Route path="/trustee/lineage" element={<RoleProtectedRoute allowedRoles={['Trustee']}><ManageLineage /></RoleProtectedRoute>} />
           <Route path="/trustee/accountants" element={<RoleProtectedRoute allowedRoles={['Trustee']}><TrusteeAccountants /></RoleProtectedRoute>} />
+          <Route path="/trustee/audio" element={<RoleProtectedRoute allowedRoles={['Trustee']}><TrusteeAudioTracks /></RoleProtectedRoute>} />
 
           {/* Branch Manager Protected Routes */}
           <Route path="/branch/dashboard" element={<RoleProtectedRoute allowedRoles={['BranchManager']}><BranchDashboard /></RoleProtectedRoute>} />
