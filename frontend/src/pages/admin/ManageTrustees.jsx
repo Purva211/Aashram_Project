@@ -25,6 +25,7 @@ const ManageTrustees = () => {
     name: '', email: '', mobile: '', designation: '', address: '', password: '', confirmPassword: '',
     systemRole: 'Trust Member', permissions: defaultPermissions, status: 'Active'
   });
+  const [audioFile, setAudioFile] = useState(null);
 
   const [otpSent, setOtpSent] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
@@ -93,12 +94,26 @@ const ManageTrustees = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const dataToSubmit = new FormData();
+      Object.keys(formData).forEach(key => {
+        if (key === 'permissions') {
+          dataToSubmit.append(key, JSON.stringify(formData[key]));
+        } else {
+          dataToSubmit.append(key, formData[key]);
+        }
+      });
+      if (audioFile) {
+        dataToSubmit.append('audioTrack', audioFile);
+      }
+
       if (editingId) {
         if (formData.password && formData.password !== formData.confirmPassword) {
            alert("Passwords do not match");
            return;
         }
-        await api.put(`/admins/trustees/${editingId}`, formData);
+        await api.put(`/admins/trustees/${editingId}`, dataToSubmit, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
       } else {
         if (!otpVerified) {
           alert("Please verify email first");
@@ -108,7 +123,10 @@ const ManageTrustees = () => {
           alert("Passwords do not match");
           return;
         }
-        await api.post('/admins/trustees', { ...formData, verifiedToken });
+        dataToSubmit.append('verifiedToken', verifiedToken);
+        await api.post('/admins/trustees', dataToSubmit, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
       }
       setIsModalOpen(false);
       setEditingId(null);
@@ -136,6 +154,7 @@ const ManageTrustees = () => {
     setVerifiedToken('');
     setShowPassword(false);
     setShowConfirmPassword(false);
+    setAudioFile(null);
     setFormData({
       name: trustee.name,
       email: trustee.email,
@@ -161,6 +180,7 @@ const ManageTrustees = () => {
     setVerifiedToken('');
     setShowPassword(false);
     setShowConfirmPassword(false);
+    setAudioFile(null);
     setFormData({
       name: '', email: '', mobile: '', designation: '', address: '', password: '', confirmPassword: '',
       systemRole: 'Trust Member', permissions: defaultPermissions, status: 'Active'
@@ -261,9 +281,14 @@ const ManageTrustees = () => {
                     <div className="text-xs text-gray-400 mt-0.5">{t.mobile}</div>
                   </td>
                   <td className="p-4">
-                    <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${t.status === 'Active' ? 'bg-green-50 text-green-600 border-green-200' : 'bg-red-50 text-red-600 border-red-200'}`}>
+                    <span className={`px-2.5 py-1 rounded-full text-xs font-bold border mb-2 inline-block ${t.status === 'Active' ? 'bg-green-50 text-green-600 border-green-200' : 'bg-red-50 text-red-600 border-red-200'}`}>
                       {t.status || 'Active'}
                     </span>
+                    {t.audioTrack && (
+                      <div className="mt-2">
+                        <audio controls src={`${import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/api$/, '') : 'http://localhost:5000'}${t.audioTrack}`} className="h-8 w-32" />
+                      </div>
+                    )}
                   </td>
                   <td className="p-4 text-right">
                     <div className="flex justify-end gap-2">
@@ -365,6 +390,11 @@ const ManageTrustees = () => {
                 <div>
                   <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Address</label>
                   <input required type="text" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-gray-800 focus:outline-none focus:border-saffron-500 focus:bg-white focus:ring-1 focus:ring-saffron-500 transition-all" />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Audio Track (Optional)</label>
+                  <input type="file" accept="audio/*" onChange={e => setAudioFile(e.target.files[0])} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-gray-800 focus:outline-none focus:border-saffron-500 focus:bg-white focus:ring-1 focus:ring-saffron-500 transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-saffron-50 file:text-saffron-700 hover:file:bg-saffron-100" />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -56,6 +56,9 @@ const Profile = () => {
       dataToUpdate.append('fullName', formData.fullName);
       dataToUpdate.append('phone', formData.phone);
       dataToUpdate.append('address', formData.address);
+      if (formData.password && formData.password.trim() !== '') {
+        dataToUpdate.append('password', formData.password);
+      }
       if (profileImageFile) {
         dataToUpdate.append('profileImage', profileImageFile);
       }
@@ -167,15 +170,16 @@ const Profile = () => {
             </div>
             <div className="col-span-1 md:col-span-2">
               <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                <Lock size={16} className="text-gray-400" /> Password (Read Only)
+                <Lock size={16} className="text-gray-400" /> Password (Leave blank to keep current)
               </label>
               <div className="relative">
                 <input 
-                  type="password" disabled
-                  value="****************"
-                  className="w-full border border-gray-200 bg-gray-50 text-gray-500 rounded-lg p-3 outline-none cursor-not-allowed"
+                  type="password"
+                  placeholder="Enter new password to change"
+                  value={formData.password || ''}
+                  onChange={e => setFormData({...formData, password: e.target.value})}
+                  className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 outline-none transition"
                 />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-400 bg-gray-200 px-2 py-1 rounded">Managed by Trustee</span>
               </div>
             </div>
 

@@ -72,40 +72,40 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="p-6 w-full">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Welcome, {user?.fullName || user?.name || 'Accountant'}!</h1>
-        <p className="text-gray-500 mt-2">Here is the overview of the temple's donation finances.</p>
+    <div className="p-4 md:p-6 w-full">
+      <div className="mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Welcome, {user?.fullName || user?.name || 'Accountant'}!</h1>
+        <p className="text-sm md:text-base text-gray-500 mt-2">Here is the overview of the temple's donation finances.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-6 mb-8">
         {statCards.map((card, idx) => (
-          <div key={idx} className="bg-white rounded-2xl p-6 shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 flex items-center gap-4">
-            <div className={`w-14 h-14 rounded-full flex items-center justify-center ${card.bg}`}>
+          <div key={idx} className="bg-white rounded-2xl p-5 md:p-6 shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 flex items-center gap-4">
+            <div className={`w-12 h-12 md:w-14 md:h-14 shrink-0 rounded-full flex items-center justify-center ${card.bg}`}>
               {card.icon}
             </div>
-            <div>
-              <p className="text-sm font-semibold text-gray-500 mb-1">{card.title}</p>
-              <h3 className="text-2xl font-bold text-gray-900">{card.value}</h3>
+            <div className="min-w-0">
+              <p className="text-xs md:text-sm font-semibold text-gray-500 mb-1 truncate">{card.title}</p>
+              <h3 className="text-xl md:text-2xl font-bold text-gray-900 truncate">{card.value}</h3>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6">
+      <div className="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-4 md:p-6">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold text-gray-900">Recent Donation Updates</h2>
+          <h2 className="text-lg md:text-xl font-bold text-gray-900">Recent Donation Updates</h2>
         </div>
         
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
+        <div className="overflow-x-auto pb-4">
+          <table className="w-full text-left min-w-[700px]">
             <thead>
-              <tr className="bg-gray-50 text-gray-500 text-sm border-b border-gray-100">
-                <th className="py-3 px-4 font-semibold rounded-tl-lg">Donation ID</th>
-                <th className="py-3 px-4 font-semibold">Donor Name</th>
-                <th className="py-3 px-4 font-semibold">Amount</th>
-                <th className="py-3 px-4 font-semibold">Date</th>
-                <th className="py-3 px-4 font-semibold rounded-tr-lg">Status</th>
+              <tr className="bg-gray-50 text-gray-500 text-xs md:text-sm border-b border-gray-100 uppercase tracking-wider">
+                <th className="py-3 px-4 font-semibold rounded-tl-lg whitespace-nowrap">Donation ID</th>
+                <th className="py-3 px-4 font-semibold whitespace-nowrap">Donor Name</th>
+                <th className="py-3 px-4 font-semibold whitespace-nowrap">Amount</th>
+                <th className="py-3 px-4 font-semibold whitespace-nowrap">Date</th>
+                <th className="py-3 px-4 font-semibold rounded-tr-lg whitespace-nowrap">Status</th>
               </tr>
             </thead>
             <tbody>
@@ -113,12 +113,12 @@ const Dashboard = () => {
                 <tr><td colSpan="5" className="text-center py-8 text-gray-400">No recent activity</td></tr>
               ) : (
                 recentDonations.map(don => (
-                  <tr key={don._id} className="border-b border-gray-50 hover:bg-gray-50/50">
-                    <td className="py-4 px-4 font-medium text-gray-900">{don.donationReference || don._id.substring(0,8)}</td>
-                    <td className="py-4 px-4 text-gray-600">{don.donorName}</td>
-                    <td className="py-4 px-4 font-bold text-gray-900">₹{don.amount.toLocaleString()}</td>
-                    <td className="py-4 px-4 text-gray-500">{new Date(don.createdAt).toLocaleDateString()}</td>
-                    <td className="py-4 px-4">
+                  <tr key={don._id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors text-sm">
+                    <td className="py-4 px-4 font-medium text-gray-900 whitespace-nowrap">{don.donationReference || don._id.substring(0,8)}</td>
+                    <td className="py-4 px-4 text-gray-600 whitespace-nowrap">{don.donorName}</td>
+                    <td className="py-4 px-4 font-bold text-gray-900 whitespace-nowrap">₹{don.amount.toLocaleString()}</td>
+                    <td className="py-4 px-4 text-gray-500 whitespace-nowrap">{new Date(don.createdAt).toLocaleDateString()}</td>
+                    <td className="py-4 px-4 whitespace-nowrap">
                       <span className={`px-3 py-1 rounded-full text-xs font-bold ${
                         don.status === 'APPROVED' ? 'bg-green-100 text-green-700' :
                         don.status === 'REJECTED' ? 'bg-red-100 text-red-700' :

@@ -170,12 +170,12 @@ const Layout = ({ children, user }) => {
       
       {/* Mobile Sidebar Overlay */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 bg-black/60 z-20 md:hidden" onClick={() => setIsMobileMenuOpen(false)}></div>
+        <div className="fixed inset-0 bg-black/60 z-30 md:hidden" onClick={() => setIsMobileMenuOpen(false)}></div>
       )}
 
       {/* Sidebar */}
       <aside 
-        className={`fixed md:relative top-0 left-0 h-full bg-[#05051F] border-r border-[#0A0A2A] flex-col items-center py-8 z-30 text-white shadow-2xl transition-all duration-300 ${isMobileMenuOpen ? 'translate-x-0 flex' : '-translate-x-full md:translate-x-0 hidden md:flex'} ${isCollapsed ? 'w-20' : 'w-64'}`}
+        className={`fixed md:relative top-0 left-0 h-full bg-[#05051F] border-r border-[#0A0A2A] flex-col items-center py-8 z-40 text-white shadow-2xl transition-transform duration-300 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} flex ${isCollapsed ? 'md:w-20 w-64' : 'w-64'}`}
       >
         
         {/* Mobile Close Button */}
