@@ -62,7 +62,7 @@ const ManageAnnadan = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2 text-slate-900"><FiHeart className="text-rose-500" /> Annadan Management</h1>
+          <h1 className="text-2xl font-bold flex flex-wrap items-center gap-2 text-slate-900"><FiHeart className="text-rose-500" /> Annadan Management</h1>
           <p className="text-gray-500 text-sm mt-1">Manage food donation requests, track beneficiaries, and monitor expenses.</p>
         </div>
         <div className="flex items-center gap-3">
@@ -136,7 +136,8 @@ const ManageAnnadan = () => {
       {/* List */}
       <div className="bg-white border border-gray-100 shadow-sm rounded-2xl overflow-hidden flex flex-col border-t-4 border-t-saffron-500">
         <div className="overflow-auto max-h-[500px] custom-scrollbar">
-          <table className="w-full text-left border-collapse relative">
+          <div className="overflow-x-auto w-full">
+<table className="w-full text-left border-collapse relative">
             <thead className="sticky top-0 z-20">
               <tr className="bg-slate-100 border-b border-slate-200 text-xs uppercase tracking-wider text-slate-700 shadow-sm">
                 <th className="p-4 font-bold cursor-pointer hover:bg-slate-200 transition-colors bg-slate-100" onClick={() => handleSort('name')}>
@@ -196,6 +197,7 @@ const ManageAnnadan = () => {
               )}
             </tbody>
           </table>
+</div>
         </div>
         <TablePagination 
           currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage}

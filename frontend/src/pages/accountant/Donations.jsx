@@ -119,7 +119,7 @@ const Donations = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2 text-slate-900"><FiDollarSign className="text-blue-500" /> Processed Donations</h1>
+          <h1 className="text-2xl font-bold flex flex-wrap items-center gap-2 text-slate-900"><FiDollarSign className="text-blue-500" /> Processed Donations</h1>
           <p className="text-slate-600 font-medium text-sm mt-1">Track financial contributions and generate reports.</p>
         </div>
         <div className="flex items-center gap-3">
@@ -136,10 +136,10 @@ const Donations = () => {
           <button onClick={() => setShowFilters(!showFilters)} className={`flex items-center gap-2 px-4 py-2.5 bg-transparent text-black hover:bg-gray-100 rounded-xl text-sm font-black transition-colors`}>
             <FiFilter /> Filter
           </button>
-          <button onClick={handleExport} className="flex items-center gap-2 px-4 py-2.5 bg-gray-900 hover:bg-black text-white rounded-xl text-sm font-black shadow-md transition-colors">
+          <button onClick={handleExport} className="flex items-center gap-2 px-4 py-2.5 bg-gray-900 hover:bg-slate-900 hover:bg-black w-full md:w-auto justify-center text-white rounded-xl text-sm font-black shadow-md transition-colors">
             <FiDownload /> Export
           </button>
-          <button onClick={handleGenerateReport} className="flex items-center gap-2 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-black shadow-md transition-colors">
+          <button onClick={handleGenerateReport} className="flex items-center gap-2 px-4 py-2.5 bg-red-600 hover:bg-red-700 w-full md:w-auto justify-center text-white rounded-xl text-sm font-black shadow-md transition-colors">
             <FiDownload /> Report
           </button>
         </div>
@@ -309,3 +309,4 @@ const Donations = () => {
 };
 
 export default Donations;
+

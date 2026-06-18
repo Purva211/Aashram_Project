@@ -124,7 +124,7 @@ const Receipts = () => {
             <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 rounded-t-2xl">
               <h2 className="text-lg font-bold text-gray-800">Receipt Details</h2>
               <div className="flex gap-2">
-                <button onClick={handlePrint} className="flex items-center gap-2 bg-blue-900 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-800 transition">
+                <button onClick={handlePrint} className="flex items-center gap-2 bg-slate-900 hover:bg-black w-full md:w-auto justify-center text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-800 transition">
                   <Printer size={16} /> Print
                 </button>
                 <button onClick={() => generateDonationReceipt(selectedDonation)} className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition">

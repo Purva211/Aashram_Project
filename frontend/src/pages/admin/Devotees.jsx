@@ -78,7 +78,7 @@ const Devotees = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2 text-slate-900"><FiUsers className="text-saffron-500" /> Devotee Management</h1>
+          <h1 className="text-2xl font-bold flex flex-wrap items-center gap-2 text-slate-900"><FiUsers className="text-saffron-500" /> Devotee Management</h1>
           <p className="text-slate-600 font-medium text-sm mt-1">Manage devotee records, contact information, and registry.</p>
         </div>
         <div className="flex items-center gap-4">
@@ -131,7 +131,8 @@ const Devotees = () => {
       {/* List */}
       <div className="bg-white border border-gray-100 shadow-sm rounded-2xl overflow-hidden flex flex-col border-t-4 border-t-saffron-500">
         <div className="overflow-auto max-h-[500px] custom-scrollbar">
-          <table className="w-full text-left border-collapse relative">
+          <div className="overflow-x-auto w-full">
+<table className="w-full text-left border-collapse relative">
             <thead className="sticky top-0 z-20">
               <tr className="bg-slate-100 border-b border-slate-200 text-xs uppercase tracking-wider text-slate-700 shadow-sm">
                 <th className="p-4 font-bold w-1/3 cursor-pointer hover:bg-slate-200 transition-colors bg-slate-100" onClick={() => handleSort('name')}>
@@ -175,6 +176,7 @@ const Devotees = () => {
               )}
             </tbody>
           </table>
+</div>
         </div>
         <TablePagination 
           currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage}
@@ -216,7 +218,7 @@ const Devotees = () => {
                 
                 <div className="pt-4 flex justify-end gap-3 border-t border-gray-100">
                   <button type="button" onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 rounded-xl text-gray-600 hover:bg-gray-100 font-bold transition-colors">Cancel</button>
-                  <button disabled={submitting} type="submit" className="bg-blue-900 hover:bg-blue-800 text-white px-8 py-2.5 rounded-xl font-black shadow-lg transition-colors disabled:opacity-50 text-sm tracking-wide">
+                  <button disabled={submitting} type="submit" className="bg-blue-900 hover:bg-slate-900 hover:bg-black w-full md:w-auto justify-center text-white px-8 py-2.5 rounded-xl font-black shadow-lg transition-colors disabled:opacity-50 text-sm tracking-wide">
                     {submitting ? 'Saving...' : 'Save Changes'}
                   </button>
                 </div>

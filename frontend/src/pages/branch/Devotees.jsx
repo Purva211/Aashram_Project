@@ -56,7 +56,7 @@ const Devotees = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2 text-slate-900"><FiUsers className="text-saffron-500" /> Devotee Management</h1>
+          <h1 className="text-2xl font-bold flex flex-wrap items-center gap-2 text-slate-900"><FiUsers className="text-saffron-500" /> Devotee Management</h1>
           <p className="text-slate-600 font-medium text-sm mt-1">Manage devotee records, contact information, and registry.</p>
         </div>
         <div className="flex items-center gap-4">

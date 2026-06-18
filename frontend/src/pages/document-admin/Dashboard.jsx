@@ -469,7 +469,7 @@ const DocumentAdminDashboard = () => {
                 </div>
                 <div className="flex gap-3 pt-4 border-t border-slate-100">
                   <button type="button" onClick={() => setIsUploadModalOpen(false)} className="flex-1 px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl font-medium hover:bg-slate-50">Cancel</button>
-                  <button type="submit" disabled={formLoading} className="flex-1 px-4 py-2.5 bg-blue-900 hover:bg-blue-800 text-white rounded-xl font-medium disabled:opacity-70 flex items-center justify-center gap-2">
+                  <button type="submit" disabled={formLoading} className="flex-1 px-4 py-2.5 bg-blue-900 hover:bg-slate-900 hover:bg-black w-full md:w-auto justify-center text-white rounded-xl font-medium disabled:opacity-70 flex items-center justify-center gap-2">
                     {formLoading && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                     {currentDocument ? "Update Document" : "Upload Document"}
                   </button>
@@ -495,7 +495,7 @@ const DocumentAdminDashboard = () => {
               />
               <div className="flex gap-3">
                 <button onClick={() => setIsDeleteModalOpen(false)} className="flex-1 px-4 py-2.5 bg-slate-100 text-slate-700 rounded-xl font-medium hover:bg-slate-200">Cancel</button>
-                <button onClick={handleDelete} disabled={!deletionReason.trim()} className="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 disabled:opacity-50">Submit Request</button>
+                <button onClick={handleDelete} disabled={!deletionReason.trim()} className="flex-1 px-4 py-2.5 bg-slate-900 hover:bg-black w-full md:w-auto justify-center text-white rounded-xl font-medium hover:bg-red-700 disabled:opacity-50">Submit Request</button>
               </div>
             </motion.div>
           </div>

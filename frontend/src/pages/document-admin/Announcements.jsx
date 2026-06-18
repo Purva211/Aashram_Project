@@ -342,7 +342,7 @@ const Announcements = () => {
               className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 w-64 shadow-sm transition-all"
             />
           </div>
-          <button onClick={handleOpenNew} className="flex items-center gap-2 px-6 py-3 bg-gray-900 hover:bg-black text-white font-black rounded-xl shadow-lg transition-all whitespace-nowrap">
+          <button onClick={handleOpenNew} className="flex items-center gap-2 px-6 py-3 bg-gray-900 hover:bg-slate-900 hover:bg-black w-full md:w-auto justify-center text-white font-black rounded-xl shadow-lg transition-all whitespace-nowrap">
             <FiPlus /> New Announcement
           </button>
         </div>
@@ -752,7 +752,7 @@ const Announcements = () => {
               {/* Modal Footer */}
               <div className="p-6 border-t border-slate-100 bg-white shrink-0 flex justify-end gap-4">
                 <button type="button" onClick={() => setIsModalOpen(false)} className="px-6 py-2.5 rounded-xl text-slate-500 hover:bg-slate-50 font-bold transition-colors">Cancel</button>
-                <button form="announcementForm" disabled={submitting || !formData.title || !formData.message} type="submit" className="flex items-center gap-2 px-8 py-2.5 bg-blue-900 hover:bg-blue-800 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 transition-all disabled:opacity-50">
+                <button form="announcementForm" disabled={submitting || !formData.title || !formData.message} type="submit" className="flex items-center gap-2 px-8 py-2.5 bg-blue-900 hover:bg-slate-900 hover:bg-black w-full md:w-auto justify-center text-white font-bold rounded-xl shadow-lg shadow-indigo-200 transition-all disabled:opacity-50">
                   {submitting ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <><FiSend /> {editingId ? 'Update Broadcast' : 'Dispatch Broadcast'}</>}
                 </button>
               </div>
