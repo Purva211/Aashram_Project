@@ -172,7 +172,7 @@ exports.deleteAccountant = async (req, res) => {
 // Accountant Profile Update (Self)
 exports.updateProfile = async (req, res) => {
   try {
-    const { fullName, phone, address, profilePhoto } = req.body;
+    const { fullName, phone, address, profilePhoto, password } = req.body;
     
     // Accountant is logged in
     const accountant = await Accountant.findById(req.user._id);
@@ -182,6 +182,7 @@ exports.updateProfile = async (req, res) => {
     if (phone !== undefined) accountant.phone = phone;
     if (address !== undefined) accountant.address = address;
     if (profilePhoto !== undefined) accountant.profilePhoto = profilePhoto;
+    if (password) accountant.password = password;
 
     if (req.file) {
       accountant.profilePhoto = `/uploads/${req.file.filename}`;

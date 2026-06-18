@@ -128,7 +128,21 @@ exports.createTrustee = async (req, res) => {
     let exists = await Trustee.findOne({ email });
     if (exists) return res.status(400).json({ success: false, message: "Trustee email already exists" });
 
-    const trustee = await Trustee.create({ name, email, mobile, designation, address, password, systemRole, permissions, status });
+    let audioTrack = "";
+    if (req.file) {
+      audioTrack = `/uploads/${req.file.filename}`;
+    }
+
+    let parsedPermissions = permissions;
+    if (typeof permissions === 'string') {
+      try {
+        parsedPermissions = JSON.parse(permissions);
+      } catch (e) {
+        parsedPermissions = [];
+      }
+    }
+
+    const trustee = await Trustee.create({ name, email, mobile, designation, address, password, systemRole, permissions: parsedPermissions, status, audioTrack });
     
     const response = trustee.toObject();
     delete response.password;
@@ -142,9 +156,24 @@ exports.updateTrustee = async (req, res) => {
   try {
     const { name, email, mobile, designation, address, password, systemRole, permissions, status } = req.body;
     
-    const updateData = { name, email, mobile, designation, address, systemRole, permissions, status };
+    let parsedPermissions = permissions;
+    if (typeof permissions === 'string') {
+      try {
+        parsedPermissions = JSON.parse(permissions);
+      } catch (e) {
+        parsedPermissions = undefined;
+      }
+    }
+
+    const updateData = { name, email, mobile, designation, address, systemRole, status };
+    if (parsedPermissions !== undefined) updateData.permissions = parsedPermissions;
+
     if (password) {
       updateData.password = password; // In a real app this should be hashed if handled here, but Schema usually handles it
+    }
+
+    if (req.file) {
+      updateData.audioTrack = `/uploads/${req.file.filename}`;
     }
 
     const trustee = await Trustee.findByIdAndUpdate(req.params.id, updateData, { returnDocument: 'after' });
