@@ -196,7 +196,7 @@ const ManageTrustees = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2 text-slate-900"><FiShield className="text-saffron-500" /> Trust Members Management</h1>
+          <h1 className="text-2xl font-bold flex flex-wrap items-center gap-2 text-slate-900"><FiShield className="text-saffron-500" /> Trust Members Management</h1>
           <p className="text-gray-500 text-sm mt-1">Manage hierarchy, roles, and system access permissions.</p>
         </div>
         <div className="flex flex-col sm:flex-row items-center gap-4">
@@ -471,7 +471,7 @@ const ManageTrustees = () => {
 
                 <div className="pt-6 flex justify-end gap-3 border-t border-gray-100">
                   <button type="button" onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 rounded-xl text-gray-600 hover:bg-gray-100 font-bold transition-colors">Cancel</button>
-                  <button type="submit" className="bg-blue-900 hover:bg-blue-800 text-white px-8 py-2.5 rounded-xl font-black transition-colors shadow-lg">
+                  <button type="submit" className="bg-blue-900 hover:bg-slate-900 hover:bg-black w-full md:w-auto justify-center text-white px-8 py-2.5 rounded-xl font-black transition-colors shadow-lg">
                     {editingId ? 'Save Changes' : 'Create Trust Member'}
                   </button>
                 </div>

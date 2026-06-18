@@ -257,7 +257,7 @@ const Profile = () => {
 
                 <div className="pt-4 flex justify-end">
                   <button type="submit" disabled={loading}
-                    className="bg-[#070B23] hover:bg-[#1E3A8A] text-white px-8 py-3 rounded-xl font-medium shadow-sm transition-colors flex items-center gap-2">
+                    className="bg-slate-900 hover:bg-black text-white px-8 py-3 rounded-xl font-medium shadow-sm transition-colors flex items-center gap-2 w-full sm:w-auto justify-center">
                     {loading ? 'Saving...' : <><Save className="w-5 h-5"/> Save Changes</>}
                   </button>
                 </div>
@@ -298,7 +298,7 @@ const Profile = () => {
                       className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none transition-all" />
                   </div>
                   <button type="submit" disabled={loading}
-                    className="bg-[#070B23] hover:bg-[#1E3A8A] text-white px-6 py-2.5 rounded-xl font-medium shadow-sm transition-colors mt-2">
+                    className="bg-slate-900 hover:bg-black text-white px-6 py-2.5 rounded-xl font-medium shadow-sm transition-colors mt-2">
                     Save Password
                   </button>
                 </form>

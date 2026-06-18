@@ -155,7 +155,7 @@ const AdminProfile = () => {
     <div className="max-w-5xl mx-auto space-y-8 text-gray-800 pb-12">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2 text-slate-900">
+          <h1 className="text-2xl font-bold flex flex-wrap items-center gap-2 text-slate-900">
             <FiUser className="text-sky-500" /> Admin Profile
           </h1>
           <p className="text-gray-500 text-sm mt-1">Manage your administrative identity and security preferences.</p>
@@ -278,7 +278,7 @@ const AdminProfile = () => {
                       <button type="button" onClick={() => { setIsEditing(false); setSuccessMsg(''); setImagePreview(null); setProfileImage(null); }} className="px-5 py-2.5 rounded-xl font-bold text-gray-600 hover:bg-gray-100 transition-colors">
                         Cancel
                       </button>
-                      <button type="submit" disabled={loading} className="px-6 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl font-bold shadow-lg transition-colors flex items-center gap-2 disabled:opacity-50">
+                      <button type="submit" disabled={loading} className="px-6 py-2.5 bg-sky-600 hover:bg-slate-900 hover:bg-black w-full md:w-auto justify-center text-white rounded-xl font-bold shadow-lg transition-colors flex items-center gap-2 disabled:opacity-50">
                         {loading ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <><FiSave /> Save Changes</>}
                       </button>
                     </div>
@@ -313,7 +313,7 @@ const AdminProfile = () => {
                   </div>
 
                   <div className="pt-4">
-                    <button type="submit" disabled={loading} className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold shadow-md transition-colors flex justify-center items-center gap-2 disabled:opacity-50">
+                    <button type="submit" disabled={loading} className="w-full py-3 bg-slate-900 hover:bg-slate-900 hover:bg-black w-full md:w-auto justify-center text-white rounded-xl font-bold shadow-md transition-colors flex justify-center items-center gap-2 disabled:opacity-50">
                       {loading ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : 'Update Password'}
                     </button>
                   </div>

@@ -79,7 +79,7 @@ const AdminEvents = () => {
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2 text-slate-900"><FiCalendar className="text-saffron-500" /> Event Management</h1>
+          <h1 className="text-2xl font-bold flex flex-wrap items-center gap-2 text-slate-900"><FiCalendar className="text-saffron-500" /> Event Management</h1>
           <p className="text-gray-500 text-sm mt-1">Manage spiritual events, schedules, and publications.</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">

@@ -143,14 +143,14 @@ export const MyDonations = () => {
       {/* Title and Filters Toggle */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2 text-slate-900"><FaDonate className="text-blue-500" /> My Donations</h1>
+          <h1 className="text-2xl font-bold flex flex-wrap items-center gap-2 text-slate-900"><FaDonate className="text-blue-500" /> My Donations</h1>
           <p className="text-slate-600 font-medium text-sm mt-1">Track your contributions and generate reports.</p>
         </div>
         <div className="flex items-center gap-3">
           <button onClick={() => setShowFilters(!showFilters)} className={`flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-xl text-sm font-bold shadow-sm transition-all hover:shadow`}>
             <FiFilter /> Filter
           </button>
-          <button onClick={handleGenerateReport} className="flex items-center gap-2 px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-sm font-bold shadow-sm transition-all hover:shadow-md">
+          <button onClick={handleGenerateReport} className="flex items-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-700 w-full md:w-auto justify-center text-white rounded-xl text-sm font-bold shadow-sm transition-all hover:shadow-md">
             <FiDownload /> Report
           </button>
         </div>
@@ -349,3 +349,4 @@ export const MyDonations = () => {
 };
 
 export default MyDonations;
+

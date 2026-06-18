@@ -160,7 +160,7 @@ const ManageBranchManagers = () => {
 
   return (
     <div className="h-full flex flex-col relative z-10">
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-bold text-slate-900 mb-2 font-serif">Branch Managers</h1>
           <p className="text-gray-500">Manage branch managers and assign them to specific branches.</p>
