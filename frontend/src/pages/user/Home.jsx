@@ -12,6 +12,7 @@ import herobg1 from "../../assets/kolekar1.jpeg";
 import heroBg from "../../assets/hero_bg.jpeg";
 import api from "../../utils/api";
 import { getCurrentLiveStream } from '../../services/liveService';
+import AudioPlayerWithLyrics from '../../components/AudioPlayerWithLyrics';
 
 const ASSETS_URL = import.meta.env.VITE_ASSETS_URL || "http://localhost:5000";
 
@@ -587,6 +588,13 @@ const Home = () => {
               </Link>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Audio Player Section */}
+      <section className="relative z-30 bg-[#FDFBF7] px-6 py-12">
+        <div className="max-w-7xl mx-auto">
+          <AudioPlayerWithLyrics />
         </div>
       </section>
 
