@@ -342,7 +342,7 @@ const Announcements = () => {
               className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 w-64 shadow-sm transition-all"
             />
           </div>
-          <button onClick={handleOpenNew} className="flex items-center gap-2 px-6 py-3 bg-gray-900 hover:bg-slate-900 hover:bg-black w-full md:w-auto justify-center text-white font-black rounded-xl shadow-lg transition-all whitespace-nowrap">
+          <button onClick={handleOpenNew} className="flex items-center gap-2 px-6 py-3 bg-gray-900 hover:bg-black text-white font-black rounded-xl shadow-lg transition-all whitespace-nowrap">
             <FiPlus /> New Announcement
           </button>
         </div>
@@ -362,8 +362,8 @@ const Announcements = () => {
         {activeTab === 'list' && (
           <div className="flex bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
             <button onClick={() => setOwnershipFilter('all')} className={`px-4 py-2 text-xs font-bold transition-colors ${ownershipFilter === 'all' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50'}`}>All</button>
-            <button onClick={() => setOwnershipFilter('mine')} className={`px-4 py-2 text-xs font-bold border-l border-gray-200 transition-colors ${ownershipFilter === 'mine' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50'}`}>My Broadcasts</button>
-            <button onClick={() => setOwnershipFilter('others')} className={`px-4 py-2 text-xs font-bold border-l border-gray-200 transition-colors ${ownershipFilter === 'others' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50'}`}>Others</button>
+            <button onClick={() => setOwnershipFilter('mine')} className={`px-4 py-2 text-xs font-bold border-l border-gray-200 transition-colors ${ownershipFilter === 'mine' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50'}`}>Sent by Me</button>
+            <button onClick={() => setOwnershipFilter('others')} className={`px-4 py-2 text-xs font-bold border-l border-gray-200 transition-colors ${ownershipFilter === 'others' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50'}`}>Received by Me</button>
           </div>
         )}
       </div>
@@ -511,13 +511,13 @@ const Announcements = () => {
             </div>
             <h3 className="text-2xl font-black text-slate-900 mb-2">Delivery Analytics</h3>
             <p className="text-slate-500 font-medium max-w-md mx-auto">Track Dashboard Read Status, Email settings across your enterprise notifications.</p>
-            <div className="flex flex-col md:flex-row justify-center items-center gap-6 mt-10">
-              <div className="w-full md:w-64 p-6 bg-slate-50 rounded-xl border border-slate-100">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-10">
+              <div className="p-6 bg-slate-50 rounded-xl border border-slate-100">
                 <p className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1">Total Sent</p>
                 <p className="text-4xl font-black text-slate-900">{announcements.length}</p>
               </div>
               
-              <div className="w-full md:w-64 p-6 bg-blue-50 rounded-xl border border-blue-100">
+              <div className="p-6 bg-blue-50 rounded-xl border border-blue-100">
                 <p className="text-sm font-bold text-blue-600 uppercase tracking-widest mb-1">Email Enabled</p>
                 <p className="text-4xl font-black text-blue-700">{announcements.filter(a => a.emailIntegration).length}</p>
               </div>
@@ -752,7 +752,7 @@ const Announcements = () => {
               {/* Modal Footer */}
               <div className="p-6 border-t border-slate-100 bg-white shrink-0 flex justify-end gap-4">
                 <button type="button" onClick={() => setIsModalOpen(false)} className="px-6 py-2.5 rounded-xl text-slate-500 hover:bg-slate-50 font-bold transition-colors">Cancel</button>
-                <button form="announcementForm" disabled={submitting || !formData.title || !formData.message} type="submit" className="flex items-center gap-2 px-8 py-2.5 bg-blue-900 hover:bg-slate-900 hover:bg-black w-full md:w-auto justify-center text-white font-bold rounded-xl shadow-lg shadow-indigo-200 transition-all disabled:opacity-50">
+                <button form="announcementForm" disabled={submitting || !formData.title || !formData.message} type="submit" className="flex items-center gap-2 px-8 py-2.5 bg-blue-900 hover:bg-blue-800 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 transition-all disabled:opacity-50">
                   {submitting ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <><FiSend /> {editingId ? 'Update Broadcast' : 'Dispatch Broadcast'}</>}
                 </button>
               </div>

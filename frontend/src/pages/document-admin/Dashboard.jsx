@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiSearch, FiPlus, FiFileText, FiEye, FiEdit2, FiTrash2, FiDownload, FiX, FiUploadCloud, FiClock } from "react-icons/fi";
+import { FiSearch, FiPlus, FiFileText, FiEye, FiEdit2, FiTrash2, FiDownload, FiX, FiUploadCloud, FiClock, FiActivity, FiShield } from "react-icons/fi";
 import api from "../../utils/api";
+import { useAuth } from "../../context/AuthContext";
 import AnimatedCounter from '../../components/dashboard/AnimatedCounter';
 
 const ASSETS_URL = import.meta.env.VITE_ASSETS_URL || "http://localhost:5000";
@@ -12,6 +13,27 @@ const DocumentAdminDashboard = () => {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [activities, setActivities] = useState([]);
+  const { user } = useAuth();
+
+  const [preferences, setPreferences] = useState({
+    showActivities: true, showBranches: true, showDonations: true, showEvents: true
+  });
+
+  const loadPreferences = () => {
+    const saved = localStorage.getItem('adminPreferences');
+    if (saved) {
+      try {
+        setPreferences(prev => ({...prev, ...JSON.parse(saved)}));
+      } catch (e) {}
+    }
+  };
+
+  useEffect(() => {
+    loadPreferences();
+    window.addEventListener('preferencesUpdated', loadPreferences);
+    return () => window.removeEventListener('preferencesUpdated', loadPreferences);
+  }, []);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [branches, setBranches] = useState([]);
   const [selectedBranch, setSelectedBranch] = useState("All");
@@ -43,6 +65,23 @@ const DocumentAdminDashboard = () => {
   useEffect(() => {
     fetchDocuments();
   }, [searchTerm, selectedCategory, selectedBranch]);
+
+  useEffect(() => {
+    const fetchActivities = async () => {
+      if (user && user._id) {
+        try {
+          const threeHoursAgo = new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString();
+          const logsRes = await api.get(`/audit-logs?userId=${user._id}&startDate=${threeHoursAgo}`);
+          if (logsRes.data && logsRes.data.logs) {
+            setActivities(logsRes.data.logs);
+          }
+        } catch (err) {
+          console.error("Error fetching activities", err);
+        }
+      }
+    };
+    fetchActivities();
+  }, [user]);
 
   const fetchBranches = async () => {
     try {
@@ -218,10 +257,11 @@ const DocumentAdminDashboard = () => {
         </div>
 
         {isDashboard ? (
+          <>
           <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                <FiClock className="text-indigo-500" /> Recent Activity Feed
+                <FiClock className="text-indigo-500" /> Recent Document Activity
               </h3>
               <Link to="/document-handler/documents" className="text-sm font-semibold text-indigo-600 hover:text-indigo-700">View All Documents &rarr;</Link>
             </div>
@@ -258,6 +298,43 @@ const DocumentAdminDashboard = () => {
               )}
             </div>
           </div>
+
+          {/* New System Activity Section */}
+          {preferences.showActivities && activities.length > 0 && (
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mt-6">
+              <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2 mb-6">
+                <FiActivity className="text-emerald-500" /> My System Activity (Last 3 Hours)
+              </h3>
+              <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
+                {activities.map((log, idx) => (
+                  <div key={idx} className="flex items-start gap-4 p-4 rounded-xl border border-slate-50 bg-slate-50/50 hover:bg-slate-50 transition-colors">
+                    <div className="w-10 h-10 rounded-full bg-white border border-slate-100 text-slate-500 flex items-center justify-center shrink-0 shadow-sm">
+                      <FiShield />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm text-slate-800 font-medium">
+                        <span className="font-bold">{log.role}</span> performed action: <span className="font-bold text-sky-600">{log.action}</span>
+                      </p>
+                      <p className="text-xs text-slate-500 mt-1">IP: {log.ipAddress} {log.details && log.details.method ? `| Method: ${log.details.method}` : ''}</p>
+                    </div>
+                    <div className="text-xs text-slate-400 font-medium shrink-0 flex items-center gap-1.5">
+                      <FiClock /> {new Date(log.timestamp || log.createdAt).toLocaleString()}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {preferences.showActivities && activities.length === 0 && (
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mt-6 text-center">
+              <h3 className="text-lg font-bold text-slate-800 flex items-center justify-center gap-2 mb-2">
+                <FiActivity className="text-emerald-500" /> My System Activity (Last 3 Hours)
+              </h3>
+              <p className="text-slate-500 text-sm font-medium">You have no system activity in the last 3 hours.</p>
+            </div>
+          )}
+          </>
         ) : (
           <>
             {/* Action Bar */}
@@ -469,7 +546,7 @@ const DocumentAdminDashboard = () => {
                 </div>
                 <div className="flex gap-3 pt-4 border-t border-slate-100">
                   <button type="button" onClick={() => setIsUploadModalOpen(false)} className="flex-1 px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl font-medium hover:bg-slate-50">Cancel</button>
-                  <button type="submit" disabled={formLoading} className="flex-1 px-4 py-2.5 bg-blue-900 hover:bg-slate-900 hover:bg-black w-full md:w-auto justify-center text-white rounded-xl font-medium disabled:opacity-70 flex items-center justify-center gap-2">
+                  <button type="submit" disabled={formLoading} className="flex-1 px-4 py-2.5 bg-blue-900 hover:bg-blue-800 text-white rounded-xl font-medium disabled:opacity-70 flex items-center justify-center gap-2">
                     {formLoading && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                     {currentDocument ? "Update Document" : "Upload Document"}
                   </button>
@@ -495,7 +572,7 @@ const DocumentAdminDashboard = () => {
               />
               <div className="flex gap-3">
                 <button onClick={() => setIsDeleteModalOpen(false)} className="flex-1 px-4 py-2.5 bg-slate-100 text-slate-700 rounded-xl font-medium hover:bg-slate-200">Cancel</button>
-                <button onClick={handleDelete} disabled={!deletionReason.trim()} className="flex-1 px-4 py-2.5 bg-slate-900 hover:bg-black w-full md:w-auto justify-center text-white rounded-xl font-medium hover:bg-red-700 disabled:opacity-50">Submit Request</button>
+                <button onClick={handleDelete} disabled={!deletionReason.trim()} className="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 disabled:opacity-50">Submit Request</button>
               </div>
             </motion.div>
           </div>

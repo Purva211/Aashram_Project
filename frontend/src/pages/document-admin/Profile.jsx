@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { motion } from 'framer-motion';
-import { FiUser, FiMail, FiPhone, FiLock, FiShield, FiSave, FiBell, FiGlobe, FiClock } from 'react-icons/fi';
+import { FiUser, FiMail, FiPhone, FiLock, FiShield, FiSave, FiBell, FiGlobe, FiClock, FiActivity, FiMoon, FiSun } from 'react-icons/fi';
 import { useTranslation } from 'react-i18next';
 import api from '../../utils/api';
 
@@ -17,13 +17,40 @@ const DocumentAdminProfile = () => {
   });
   
   const [preferences, setPreferences] = useState({
-    notifyEmail: true, notifySms: false, notifyDonation: true, notifyEvent: true, notifyAnnadan: false,
     language: 'English', theme: 'Light',
-    showActivities: true, showBranches: true, showDonations: true, showEvents: true,
-    dateFormat: 'DD/MM/YYYY', timezone: 'Asia/Kolkata'
+    showActivities: true, showBranches: true, showDonations: true, showEvents: true
   });
-  
-  const handleTogglePref = (key) => setPreferences(prev => ({ ...prev, [key]: !prev[key] }));
+
+  useEffect(() => {
+    // Load preferences from global adminPreferences for consistency
+    const savedPrefs = localStorage.getItem('adminPreferences');
+    if (savedPrefs) {
+      try {
+        const parsed = JSON.parse(savedPrefs);
+        setPreferences(prev => ({ ...prev, ...parsed }));
+      } catch (e) {
+        console.error("Failed to parse preferences", e);
+      }
+    }
+  }, []);
+
+  const handleTogglePref = (key) => {
+    setPreferences(prev => {
+      const updated = { ...prev, [key]: !prev[key] };
+      localStorage.setItem('adminPreferences', JSON.stringify(updated));
+      window.dispatchEvent(new Event('preferencesUpdated'));
+      return updated;
+    });
+  };
+
+  const handleThemeChange = (newTheme) => {
+    setPreferences(prev => {
+      const updated = { ...prev, theme: newTheme };
+      localStorage.setItem('adminPreferences', JSON.stringify(updated));
+      return updated;
+    });
+    window.dispatchEvent(new Event('preferencesUpdated'));
+  };
   
   const Toggle = ({ enabled, onChange }) => (
     <div 
@@ -291,31 +318,53 @@ const DocumentAdminProfile = () => {
               <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
                 <FiBell className="text-indigo-500" /> Preferences
               </h3>
-              <button 
-                onClick={() => {
-                  let lngCode = 'en';
-                  if (preferences.language === 'Hindi') lngCode = 'hi';
-                  if (preferences.language === 'Marathi') lngCode = 'mr';
-                  
-                  i18n.changeLanguage(lngCode);
-                  document.cookie = `googtrans=/en/${lngCode}; path=/;`;
-                  document.cookie = `googtrans=/en/${lngCode}; path=/; domain=${window.location.hostname};`;
-                  
-                  setMessage({ type: 'success', text: 'Preferences saved successfully.' });
-                  setTimeout(() => {
-                    setMessage({ type: '', text: '' });
-                    window.location.reload();
-                  }, 1000);
-                }}
-                className="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-4 py-2 rounded-xl font-medium flex items-center gap-2 transition-colors"
-              >
-                <FiSave /> Save Prefs
-              </button>
             </div>
             
             <div className="space-y-6">
+              
+              {/* Dashboard Items */}
               <div>
-                <h4 className="font-semibold text-slate-800 mb-3">Language & Theme</h4>
+                <h4 className="font-semibold text-slate-800 mb-3 flex items-center gap-2"><FiActivity className="text-indigo-500" /> Dashboard Items</h4>
+                <div className="bg-slate-50 rounded-xl p-5 space-y-4 border border-slate-100">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-slate-700">Show Recent Activities</span>
+                    <Toggle enabled={preferences.showActivities} onChange={() => handleTogglePref('showActivities')} />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-slate-700">Show Branch Statistics</span>
+                    <Toggle enabled={preferences.showBranches} onChange={() => handleTogglePref('showBranches')} />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-slate-700">Show Donation Analytics</span>
+                    <Toggle enabled={preferences.showDonations} onChange={() => handleTogglePref('showDonations')} />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-slate-700">Show Upcoming Events</span>
+                    <Toggle enabled={preferences.showEvents} onChange={() => handleTogglePref('showEvents')} />
+                  </div>
+                </div>
+              </div>
+
+              {/* Localization */}
+              <div>
+                <div className="flex justify-between items-center mb-3">
+                  <h4 className="font-semibold text-slate-800 flex items-center gap-2"><FiGlobe className="text-indigo-500" /> Localization</h4>
+                  <button 
+                    onClick={() => {
+                      let lngCode = 'en';
+                      if (preferences.language === 'Hindi') lngCode = 'hi';
+                      if (preferences.language === 'Marathi') lngCode = 'mr';
+                      i18n.changeLanguage(lngCode);
+                      document.cookie = `googtrans=/en/${lngCode}; path=/;`;
+                      document.cookie = `googtrans=/en/${lngCode}; path=/; domain=${window.location.hostname};`;
+                      setMessage({ type: 'success', text: 'Language saved.' });
+                      setTimeout(() => { setMessage({ type: '', text: '' }); window.location.reload(); }, 1000);
+                    }}
+                    className="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
+                  >
+                    Save Language
+                  </button>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Display Language</label>
@@ -331,14 +380,20 @@ const DocumentAdminProfile = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Theme</label>
-                    <select 
-                      value={preferences.theme} 
-                      onChange={(e) => setPreferences({...preferences, theme: e.target.value})}
-                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/50 outline-none"
-                    >
-                      <option value="Light">Light</option>
-                      <option value="Dark">Dark</option>
-                    </select>
+                    <div className="flex gap-3">
+                      <button 
+                        onClick={() => handleThemeChange('Light')}
+                        className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border font-medium transition-all ${preferences.theme === 'Light' ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'}`}
+                      >
+                        <FiSun className="text-lg" /> Light
+                      </button>
+                      <button 
+                        onClick={() => handleThemeChange('Dark')}
+                        className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border font-medium transition-all ${preferences.theme === 'Dark' ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'}`}
+                      >
+                        <FiMoon className="text-lg" /> Dark
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

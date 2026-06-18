@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../utils/api';
-import { User, Phone, MapPin, Mail, Shield, Lock, Save, Camera, Globe, Moon, Sun, Bell } from 'lucide-react';
+import { User, Phone, MapPin, Mail, Shield, Lock, Save, Camera, Globe, Moon, Sun, Bell, Activity } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 
@@ -18,13 +18,24 @@ const Profile = () => {
   const [imagePreview, setImagePreview] = useState(null);
   
   const [preferences, setPreferences] = useState({
-    notifyEmail: true, notifySms: false, notifyDonation: true, notifyEvent: true, notifyAnnadan: false,
     language: 'English', theme: 'Light',
-    showActivities: true, showBranches: true, showDonations: true, showEvents: true,
-    dateFormat: 'DD/MM/YYYY', timezone: 'Asia/Kolkata'
+    showActivities: true, showBranches: true, showDonations: true, showEvents: true
   });
   
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+  useEffect(() => {
+    // Load preferences from global adminPreferences for consistency
+    const savedPrefs = localStorage.getItem('adminPreferences');
+    if (savedPrefs) {
+      try {
+        const parsed = JSON.parse(savedPrefs);
+        setPreferences(prev => ({ ...prev, ...parsed }));
+      } catch (e) {
+        console.error("Failed to parse preferences", e);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -39,6 +50,33 @@ const Profile = () => {
       }
     }
   }, [user]);
+
+  const handleTogglePref = (key) => {
+    setPreferences(prev => {
+      const updated = { ...prev, [key]: !prev[key] };
+      localStorage.setItem('adminPreferences', JSON.stringify(updated));
+      window.dispatchEvent(new Event('preferencesUpdated'));
+      return updated;
+    });
+  };
+
+  const handleThemeChange = (newTheme) => {
+    setPreferences(prev => {
+      const updated = { ...prev, theme: newTheme };
+      localStorage.setItem('adminPreferences', JSON.stringify(updated));
+      return updated;
+    });
+    window.dispatchEvent(new Event('preferencesUpdated'));
+  };
+
+  const Toggle = ({ enabled, onChange }) => (
+    <div 
+      onClick={onChange}
+      className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-300 ${enabled ? 'bg-indigo-600' : 'bg-gray-300'}`}
+    >
+      <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${enabled ? 'translate-x-6' : ''}`} />
+    </div>
+  );
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -56,9 +94,6 @@ const Profile = () => {
       dataToUpdate.append('fullName', formData.fullName);
       dataToUpdate.append('phone', formData.phone);
       dataToUpdate.append('address', formData.address);
-      if (formData.password && formData.password.trim() !== '') {
-        dataToUpdate.append('password', formData.password);
-      }
       if (profileImageFile) {
         dataToUpdate.append('profileImage', profileImageFile);
       }
@@ -170,16 +205,15 @@ const Profile = () => {
             </div>
             <div className="col-span-1 md:col-span-2">
               <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                <Lock size={16} className="text-gray-400" /> Password (Leave blank to keep current)
+                <Lock size={16} className="text-gray-400" /> Password (Read Only)
               </label>
               <div className="relative">
                 <input 
-                  type="password"
-                  placeholder="Enter new password to change"
-                  value={formData.password || ''}
-                  onChange={e => setFormData({...formData, password: e.target.value})}
-                  className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 outline-none transition"
+                  type="password" disabled
+                  value="****************"
+                  className="w-full border border-gray-200 bg-gray-50 text-gray-500 rounded-lg p-3 outline-none cursor-not-allowed"
                 />
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-400 bg-gray-200 px-2 py-1 rounded">Managed by Trustee</span>
               </div>
             </div>
 
@@ -203,55 +237,85 @@ const Profile = () => {
           <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
             <Bell size={20} className="text-indigo-600" /> Preferences
           </h2>
-          <button 
-            onClick={() => {
-              let lngCode = 'en';
-              if (preferences.language === 'Hindi') lngCode = 'hi';
-              if (preferences.language === 'Marathi') lngCode = 'mr';
-              
-              i18n.changeLanguage(lngCode);
-              document.cookie = `googtrans=/en/${lngCode}; path=/;`;
-              document.cookie = `googtrans=/en/${lngCode}; path=/; domain=${window.location.hostname};`;
-              
-              toast.success('Preferences saved successfully.');
-              setTimeout(() => {
-                window.location.reload();
-              }, 1000);
-            }}
-            className="bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-4 py-2 rounded-xl font-medium transition"
-          >
-            Save Preferences
-          </button>
         </div>
         <div className="p-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                <Globe size={16} className="text-gray-400" /> Display Language
-              </label>
-              <select 
-                value={preferences.language}
-                onChange={e => setPreferences({...preferences, language: e.target.value})}
-                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 outline-none transition"
-              >
-                <option value="English">English</option>
-                <option value="Hindi">Hindi (हिंदी)</option>
-                <option value="Marathi">Marathi (मराठी)</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                <Sun size={16} className="text-gray-400" /> Theme
-              </label>
-              <select 
-                value={preferences.theme}
-                onChange={e => setPreferences({...preferences, theme: e.target.value})}
-                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 outline-none transition"
-              >
-                <option value="Light">Light</option>
-                <option value="Dark">Dark</option>
-              </select>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            
+            {/* Section: Dashboard Preferences */}
+            <section className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100 space-y-6">
+              <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2"><Activity className="w-5 h-5 text-indigo-500"/> Dashboard Items</h3>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-gray-700">Show Recent Activities</span>
+                  <Toggle enabled={preferences.showActivities} onChange={() => handleTogglePref('showActivities')} />
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-gray-700">Show Branch Statistics</span>
+                  <Toggle enabled={preferences.showBranches} onChange={() => handleTogglePref('showBranches')} />
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-gray-700">Show Donation Analytics</span>
+                  <Toggle enabled={preferences.showDonations} onChange={() => handleTogglePref('showDonations')} />
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-gray-700">Show Upcoming Events</span>
+                  <Toggle enabled={preferences.showEvents} onChange={() => handleTogglePref('showEvents')} />
+                </div>
+              </div>
+            </section>
+
+            {/* Section: Localization */}
+            <section className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100 space-y-6">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2"><Globe className="w-5 h-5 text-indigo-500"/> Localization</h3>
+                <button 
+                  onClick={() => {
+                    let lngCode = 'en';
+                    if (preferences.language === 'Hindi') lngCode = 'hi';
+                    if (preferences.language === 'Marathi') lngCode = 'mr';
+                    i18n.changeLanguage(lngCode);
+                    document.cookie = `googtrans=/en/${lngCode}; path=/;`;
+                    document.cookie = `googtrans=/en/${lngCode}; path=/; domain=${window.location.hostname};`;
+                    toast.success('Language preferences saved successfully.');
+                    setTimeout(() => window.location.reload(), 1000);
+                  }}
+                  className="bg-white border border-indigo-500 text-indigo-600 hover:bg-indigo-50 px-4 py-1.5 rounded-lg text-sm font-medium shadow-sm transition"
+                >
+                  Save Language
+                </button>
+              </div>
+              <div className="space-y-5">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Display Language</label>
+                  <select 
+                    value={preferences.language}
+                    onChange={e => setPreferences({...preferences, language: e.target.value})}
+                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition"
+                  >
+                    <option value="English">English</option>
+                    <option value="Hindi">Hindi (हिंदी)</option>
+                    <option value="Marathi">Marathi (मराठी)</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Interface Theme</label>
+                  <div className="flex gap-3">
+                    <button 
+                      onClick={() => handleThemeChange('Light')}
+                      className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg border font-medium transition-all ${preferences.theme === 'Light' ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+                    >
+                      <Sun className="w-4 h-4" /> Light
+                    </button>
+                    <button 
+                      onClick={() => handleThemeChange('Dark')}
+                      className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg border font-medium transition-all ${preferences.theme === 'Dark' ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+                    >
+                      <Moon className="w-4 h-4" /> Dark
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
           </div>
         </div>
       </div>

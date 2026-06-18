@@ -3,7 +3,6 @@ const router = express.Router();
 const adminController = require("../controllers/adminController");
 const authMiddleware = require("../middleware/authMiddleware");
 const checkRole = require("../middleware/roleMiddleware");
-const upload = require("../middleware/uploadMiddleware");
 
 // All routes here are protected and require 'Admin' role
 router.use(authMiddleware, checkRole("Admin"));
@@ -14,8 +13,8 @@ router.get("/stats", adminController.getStats);
 router.get("/trustees", adminController.getTrustees);
 router.post("/trustees/send-otp", adminController.sendTrusteeOtp);
 router.post("/trustees/verify-otp", adminController.verifyTrusteeOtp);
-router.post("/trustees", upload.single("audioTrack"), adminController.createTrustee);
-router.put("/trustees/:id", upload.single("audioTrack"), adminController.updateTrustee);
+router.post("/trustees", adminController.createTrustee);
+router.put("/trustees/:id", adminController.updateTrustee);
 router.delete("/trustees/:id", adminController.deleteTrustee);
 
 // Branch Managers

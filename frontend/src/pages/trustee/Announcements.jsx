@@ -339,18 +339,18 @@ const Announcements = () => {
           </h2>
           <p className="text-slate-500 mt-2 font-medium">Enterprise announcement engine with omnichannel distribution.</p>
         </div>
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full md:w-auto">
-          <div className="relative flex-1 sm:flex-none">
+        <div className="flex items-center gap-4">
+          <div className="relative">
             <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input 
               type="text" 
               placeholder="Search announcements..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 w-full sm:w-64 shadow-sm transition-all"
+              className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 w-64 shadow-sm transition-all"
             />
           </div>
-          <button onClick={handleOpenNew} className="flex items-center justify-center gap-2 px-6 py-3 bg-slate-900 hover:bg-black text-white font-black rounded-xl shadow-lg transition-all whitespace-nowrap">
+          <button onClick={handleOpenNew} className="flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl shadow-lg transition-all whitespace-nowrap">
             <FiPlus /> New Announcement
           </button>
         </div>
@@ -370,8 +370,8 @@ const Announcements = () => {
         {activeTab === 'list' && (
           <div className="flex bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
             <button onClick={() => setOwnershipFilter('all')} className={`px-4 py-2 text-xs font-bold transition-colors ${ownershipFilter === 'all' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50'}`}>All</button>
-            <button onClick={() => setOwnershipFilter('mine')} className={`px-4 py-2 text-xs font-bold border-l border-gray-200 transition-colors ${ownershipFilter === 'mine' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50'}`}>My Broadcasts</button>
-            <button onClick={() => setOwnershipFilter('others')} className={`px-4 py-2 text-xs font-bold border-l border-gray-200 transition-colors ${ownershipFilter === 'others' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50'}`}>Others</button>
+            <button onClick={() => setOwnershipFilter('mine')} className={`px-4 py-2 text-xs font-bold border-l border-gray-200 transition-colors ${ownershipFilter === 'mine' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50'}`}>Sent by Me</button>
+            <button onClick={() => setOwnershipFilter('others')} className={`px-4 py-2 text-xs font-bold border-l border-gray-200 transition-colors ${ownershipFilter === 'others' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50'}`}>Received by Me</button>
           </div>
         )}
       </div>
