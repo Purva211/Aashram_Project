@@ -44,3 +44,5 @@ services:
     envVars:
       - key: VITE_RAZORPAY_KEY_ID
         sync: false
+      - key: VITE_API_URL
+        value: https://aashram-project-1.onrender.com/api
