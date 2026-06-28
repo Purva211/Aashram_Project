@@ -45,6 +45,9 @@ const ForgotPassword = () => {
     if (newPassword !== confirmPassword) {
       return toast.error("Passwords do not match");
     }
+    if (!/^[a-zA-Z0-9]+$/.test(newPassword)) {
+      return toast.error("Password must contain only alphanumeric characters (letters and numbers)");
+    }
     if (newPassword.length < 6) {
       return toast.error("Password must be at least 6 characters long");
     }

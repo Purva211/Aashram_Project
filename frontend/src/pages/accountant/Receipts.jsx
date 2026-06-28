@@ -140,7 +140,7 @@ const Receipts = () => {
                <div ref={printRef} className="w-full max-w-xl bg-white shadow-sm">
                   {/* Using existing receipt component or fallback */}
                   {Receipt ? (
-                    <Receipt transaction={selectedDonation} />
+                    <Receipt donation={selectedDonation} />
                   ) : (
                     <div className="p-8 border-2 border-gray-800 m-4">
                       <h1 className="text-center text-2xl font-bold mb-4">Official Receipt</h1>

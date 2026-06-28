@@ -331,15 +331,15 @@ const Announcements = () => {
           </h2>
           <p className="text-slate-500 mt-2 font-medium">Enterprise announcement engine with omnichannel distribution.</p>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="relative">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full md:w-auto mt-4 md:mt-0">
+          <div className="relative w-full sm:w-auto">
             <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input 
               type="text" 
               placeholder="Search announcements..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 w-64 shadow-sm transition-all"
+              className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 w-full sm:w-64 shadow-sm transition-all"
             />
           </div>
           <button onClick={handleOpenNew} className="flex items-center gap-2 px-6 py-3 bg-gray-900 hover:bg-black text-white font-black rounded-xl shadow-lg transition-all whitespace-nowrap">
@@ -456,7 +456,7 @@ const Announcements = () => {
 
                       {/* Footer Stats & Tags */}
                       <div className="mt-3 pt-3 pl-1 md:pl-[60px] border-t border-slate-100 flex flex-wrap items-center justify-between gap-4">
-                        <div className="flex items-center gap-3">
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
                           <div className="text-[11px] font-bold text-slate-500 flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded-md border border-slate-100">
                             <FiEye /> {ann.totalRead || 0} views
                           </div>
@@ -470,7 +470,7 @@ const Announcements = () => {
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-3">
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
                            <div className="flex gap-1.5">
                               {ann.dashboardNotification && <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] bg-slate-100 text-slate-500 hover:bg-blue-50 hover:text-blue-500 transition-colors" title="Dashboard"><FiBell /></div>}
                               {ann.emailIntegration && <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] bg-slate-100 text-slate-500 hover:bg-indigo-50 hover:text-indigo-500 transition-colors" title="Email"><FiMail /></div>}
@@ -635,7 +635,7 @@ const Announcements = () => {
                               <input type="checkbox" checked={audienceSettings.allAdmins} onChange={() => handleAudienceToggle('allAdmins')} className="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4" />
                               <span className="text-slate-800 font-bold">All Admins</span>
                             </label>
-                            <div className="relative">
+                            <div className="relative w-full sm:w-auto">
                               <FiSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 w-3 h-3" />
                               <input type="text" placeholder="Search specific admin..." value={searchAdmins} onChange={e => setSearchAdmins(e.target.value)} className="pl-7 pr-3 py-1.5 text-xs bg-white border border-slate-200 rounded-md outline-none focus:border-indigo-500 w-full md:w-48" />
                             </div>
@@ -658,7 +658,7 @@ const Announcements = () => {
                               <input type="checkbox" checked={audienceSettings.allTrustees} onChange={() => handleAudienceToggle('allTrustees')} className="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4" />
                               <span className="text-slate-800 font-bold">All Trustees</span>
                             </label>
-                            <div className="relative">
+                            <div className="relative w-full sm:w-auto">
                               <FiSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 w-3 h-3" />
                               <input type="text" placeholder="Search specific trustee..." value={searchTr} onChange={e => setSearchTr(e.target.value)} className="pl-7 pr-3 py-1.5 text-xs bg-white border border-slate-200 rounded-md outline-none focus:border-indigo-500 w-full md:w-48" />
                             </div>
@@ -681,7 +681,7 @@ const Announcements = () => {
                               <input type="checkbox" checked={audienceSettings.allBranchManagers} onChange={() => handleAudienceToggle('allBranchManagers')} className="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4" />
                               <span className="text-slate-800 font-bold">All Branch Managers</span>
                             </label>
-                            <div className="relative">
+                            <div className="relative w-full sm:w-auto">
                               <FiSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 w-3 h-3" />
                               <input type="text" placeholder="Search specific manager..." value={searchBm} onChange={e => setSearchBm(e.target.value)} className="pl-7 pr-3 py-1.5 text-xs bg-white border border-slate-200 rounded-md outline-none focus:border-indigo-500 w-full md:w-48" />
                             </div>
@@ -704,7 +704,7 @@ const Announcements = () => {
                               <input type="checkbox" checked={audienceSettings.allAccountants} onChange={() => handleAudienceToggle('allAccountants')} className="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4" />
                               <span className="text-slate-800 font-bold">All Accountants</span>
                             </label>
-                            <div className="relative">
+                            <div className="relative w-full sm:w-auto">
                               <FiSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 w-3 h-3" />
                               <input type="text" placeholder="Search specific accountant..." value={searchAcc} onChange={e => setSearchAcc(e.target.value)} className="pl-7 pr-3 py-1.5 text-xs bg-white border border-slate-200 rounded-md outline-none focus:border-indigo-500 w-full md:w-48" />
                             </div>
@@ -727,7 +727,7 @@ const Announcements = () => {
                               <input type="checkbox" checked={audienceSettings.allDocHandlers} onChange={() => handleAudienceToggle('allDocHandlers')} className="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4" />
                               <span className="text-slate-800 font-bold">All Document Handlers</span>
                             </label>
-                            <div className="relative">
+                            <div className="relative w-full sm:w-auto">
                               <FiSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 w-3 h-3" />
                               <input type="text" placeholder="Search specific handler..." value={searchDh} onChange={e => setSearchDh(e.target.value)} className="pl-7 pr-3 py-1.5 text-xs bg-white border border-slate-200 rounded-md outline-none focus:border-indigo-500 w-full md:w-48" />
                             </div>

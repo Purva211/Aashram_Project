@@ -438,3 +438,33 @@ exports.verifyReceipt = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+exports.downloadReceipt = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const donation = await Donation.findById(id);
+
+    if (!donation) {
+      return res.status(404).json({ success: false, message: "Donation record not found." });
+    }
+
+    if (donation.status !== "APPROVED") {
+      return res.status(400).json({ success: false, message: "Receipt is only available for approved donations." });
+    }
+
+    // Branch Managers should only access their branch's receipts
+    if (req.user.role === "BranchManager" && donation.branchId && donation.branchId.toString() !== req.user.branch.toString()) {
+      return res.status(403).json({ success: false, message: "Unauthorized to access this receipt." });
+    }
+
+    const pdfBuffer = await generateReceiptPdf(donation.toObject());
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename=Donation_Receipt_${donation.receiptNumber}.pdf`);
+    return res.send(pdfBuffer);
+  } catch (err) {
+    console.error("[donationController][ERROR] downloadReceipt:", err.message);
+    return res.status(500).json({ success: false, message: "Failed to generate receipt PDF." });
+  }
+};
+

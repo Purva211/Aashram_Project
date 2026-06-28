@@ -116,6 +116,11 @@ const DocumentAdminProfile = () => {
       return;
     }
 
+    if (!/^[a-zA-Z0-9]+$/.test(formData.newPassword)) {
+      setPasswordMessage({ type: 'error', text: 'Password must contain only alphanumeric characters' });
+      return;
+    }
+
     setPasswordLoading(true);
     setPasswordMessage({ type: '', text: '' });
 

@@ -147,6 +147,10 @@ const Profile = () => {
       setMessage({ type: 'error', text: 'New passwords do not match.' });
       return;
     }
+    if (!/^[a-zA-Z0-9]+$/.test(passwords.new)) {
+      setMessage({ type: 'error', text: 'Password must contain only alphanumeric characters.' });
+      return;
+    }
     setLoading(true);
     try {
       await api.put('/trustees/profile', { password: passwords.new });
