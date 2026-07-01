@@ -180,7 +180,7 @@ exports.updateAdmin = async (req, res) => {
 // Document Handler self-update methods
 exports.updateProfile = async (req, res) => {
   try {
-    const { contactNo } = req.body;
+    const { contactNo, name, address } = req.body;
     
     // Check for either req.user._id or req.user.id depending on auth middleware
     const adminId = req.user._id || req.user.id;
@@ -191,6 +191,8 @@ exports.updateProfile = async (req, res) => {
     }
 
     if (contactNo !== undefined) admin.contactNo = contactNo;
+    if (name !== undefined) admin.name = name;
+    if (address !== undefined) admin.address = address;
 
     if (req.file) {
       admin.profilePhoto = `/uploads/${req.file.filename}`;

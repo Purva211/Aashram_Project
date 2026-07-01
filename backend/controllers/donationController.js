@@ -46,10 +46,19 @@ const generateReceiptRef = async () => {
 
 exports.createDonation = async (req, res) => {
   try {
-    const { donorName, email, phone, address, amount, branchId, message, utrNumber, upiId, paymentApp } = req.body;
+    const { donorName, email, phone, address, amount, branchId, message, utrNumber, upiId, paymentApp, donationType } = req.body;
     
     const branch = await Branch.findById(branchId);
     if (!branch) return res.status(404).json({ success: false, message: "Branch not found" });
+
+    // Enforce branch-specific donation type
+    const isMainBranch = branch.name.toLowerCase().includes("kole") || branch.location.toLowerCase().includes("kole");
+    let finalDonationType = donationType;
+    if (!isMainBranch) {
+      finalDonationType = "shakha_pavti";
+    } else if (donationType === "shakha_pavti") {
+      finalDonationType = "dengi_pavti";
+    }
 
     if (!utrNumber) {
       if (req.file) fs.unlinkSync(req.file.path);
@@ -98,6 +107,7 @@ exports.createDonation = async (req, res) => {
           upiId,
           paymentApp,
           screenshotUrl,
+          donationType: finalDonationType || "dengi_pavti",
           status: "PENDING_VERIFICATION",
           userId: req.user ? req.user._id : undefined
         });
@@ -143,8 +153,20 @@ exports.updateDonation = async (req, res) => {
     donation.phone = phone || donation.phone;
     donation.address = address || donation.address;
     donation.amount = amount || donation.amount;
-    donation.branchId = branchId || donation.branchId;
     donation.message = message !== undefined ? message : donation.message;
+
+    if (branchId) {
+      const branch = await Branch.findById(branchId);
+      if (!branch) return res.status(404).json({ success: false, message: "Branch not found" });
+      donation.branchId = branchId;
+      
+      const isMainBranch = branch.name.toLowerCase().includes("kole") || branch.location.toLowerCase().includes("kole");
+      if (!isMainBranch) {
+        donation.donationType = "shakha_pavti";
+      } else if (donation.donationType === "shakha_pavti") {
+        donation.donationType = "dengi_pavti";
+      }
+    }
 
     await donation.save();
 

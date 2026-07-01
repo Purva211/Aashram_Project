@@ -26,9 +26,15 @@ const Donation = () => {
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [message, setMessage] = useState('');
+  const [donationType, setDonationType] = useState('dengi_pavti');
   
   const [branches, setBranches] = useState([]);
   const [selectedBranchId, setSelectedBranchId] = useState('');
+  
+  const selectedBranch = branches.find(b => b._id === selectedBranchId);
+  const isMainBranch = selectedBranch 
+    ? (selectedBranch.name.toLowerCase().includes("kole") || selectedBranch.location.toLowerCase().includes("kole")) 
+    : true;
   
   // Tracking Reference
   const [donationId, setDonationId] = useState(null);
@@ -56,7 +62,12 @@ const Donation = () => {
         const response = await api.get('/branches');
         if (response.data?.success && response.data.branches?.length > 0) {
           setBranches(response.data.branches);
-          setSelectedBranchId(response.data.branches[0]._id);
+          const firstBranch = response.data.branches[0];
+          setSelectedBranchId(firstBranch._id);
+          const isMain = firstBranch.name.toLowerCase().includes("kole") || firstBranch.location.toLowerCase().includes("kole");
+          if (!isMain) {
+            setDonationType("shakha_pavti");
+          }
         }
       } catch (error) {
         console.error("Error fetching branches:", error);
@@ -104,6 +115,7 @@ const Donation = () => {
       formData.append('amount', Number(amount));
       formData.append('branchId', selectedBranchId);
       formData.append('message', message);
+      formData.append('donationType', donationType);
       
       formData.append('utrNumber', utrNumber);
       formData.append('paymentApp', paymentApp);
@@ -219,11 +231,59 @@ const Donation = () => {
                     </div>
                   </div>
 
+                  <div>
+                    <label className="block text-sm font-bold text-mahakal-burgundy uppercase tracking-widest mb-3">पावती प्रकार / Receipt Type</label>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {[
+                        { id: 'dengi_pavti', labelMarathi: 'देणगी पावती', labelEnglish: 'Dengi Pavti (Donation)' },
+                        { id: 'shakha_pavti', labelMarathi: 'शाखा पावती', labelEnglish: 'Shakha Pavti (Branch)' },
+                        { id: 'jama_pavti', labelMarathi: 'जमा पावती', labelEnglish: 'Jama Pavti (Collection)' }
+                      ].map((opt) => {
+                        const isDisabled = isMainBranch ? opt.id === 'shakha_pavti' : opt.id !== 'shakha_pavti';
+                        return (
+                          <button
+                            type="button"
+                            key={opt.id}
+                            disabled={isDisabled}
+                            onClick={() => setDonationType(opt.id)}
+                            className={`py-3 px-4 rounded-xl border-2 flex flex-col items-center justify-center transition-all ${
+                              donationType === opt.id 
+                                ? 'border-mahakal-saffron bg-amber-50 text-mahakal-saffron shadow-sm' 
+                                : isDisabled
+                                  ? 'border-stone-100 bg-stone-50 text-stone-300 cursor-not-allowed opacity-50'
+                                  : 'border-stone-200 text-stone-600 hover:border-amber-200'
+                            }`}
+                          >
+                            <span className="font-bold text-base">{opt.labelMarathi}</span>
+                            <span className="text-xs text-stone-400 font-medium mt-0.5">{opt.labelEnglish}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
                   {branches.length > 0 && (
                     <div>
                       <label className="block text-sm font-bold text-mahakal-burgundy uppercase tracking-widest mb-3">Select Branch</label>
                       <div className="relative">
-                        <select required value={selectedBranchId} onChange={(e) => setSelectedBranchId(e.target.value)} className="w-full px-6 py-4 rounded-xl border-2 border-stone-200 focus:ring-2 focus:ring-mahakal-saffron focus:border-mahakal-saffron outline-none bg-white text-mahakal-burgundy font-medium appearance-none">
+                        <select 
+                          required 
+                          value={selectedBranchId} 
+                          onChange={(e) => {
+                            const newBranchId = e.target.value;
+                            setSelectedBranchId(newBranchId);
+                            const newBranch = branches.find(b => b._id === newBranchId);
+                            if (newBranch) {
+                              const isMain = newBranch.name.toLowerCase().includes("kole") || newBranch.location.toLowerCase().includes("kole");
+                              if (!isMain) {
+                                setDonationType("shakha_pavti");
+                              } else {
+                                setDonationType("dengi_pavti");
+                              }
+                            }
+                          }}
+                          className="w-full px-6 py-4 rounded-xl border-2 border-stone-200 focus:ring-2 focus:ring-mahakal-saffron focus:border-mahakal-saffron outline-none bg-white text-mahakal-burgundy font-medium appearance-none"
+                        >
                           <option value="" disabled>Select a branch</option>
                           {branches.map(b => (
                             <option key={b._id} value={b._id}>{b.name}</option>
