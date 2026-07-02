@@ -1,10 +1,9 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, XCircle, Search, Eye, AlertCircle, MapPin, Receipt, X } from 'lucide-react';
 import { toast, Toaster } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
-import { generateDonationReceipt } from '../../utils/pdfGenerator';
 
 const DonationVerification = () => {
   const navigate = useNavigate();
@@ -47,14 +46,10 @@ const DonationVerification = () => {
       });
       if (res.data.success) {
         toast.success("Donation Approved! Generating receipt...");
-        // Auto-download receipt
-        if (res.data.data) {
-          try {
-            generateDonationReceipt(res.data.data);
-          } catch (pdfError) {
-             console.error("PDF Generation error:", pdfError);
-             toast.error("Receipt generation failed, but donation was approved.");
-          }
+        if (res.data.pdfUrl) {
+           window.open(res.data.pdfUrl, '_blank');
+        } else {
+           toast.error("Donation approved, but backend did not return a PDF receipt URL.");
         }
         setShowApproveModal(false);
         setSelectedDonation(null);

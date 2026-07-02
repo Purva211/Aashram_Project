@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8">
+  <title>Official Correspondence</title>
+  <style>
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+    @import url('https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Marathi:ital@0;1&family=Mukta:wght@400;600;700;800&display=swap');
+    
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Mukta', 'Arial', sans-serif;
+      background-color: #ffffff;
+      color: #333;
+    }
+    
+    .letter-container {
+      width: 100%;
+      min-height: 297mm; /* Minimum 1 A4 page */
+      padding: 10mm 10mm;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header Section */
+    .header-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: stretch;
+      border-bottom: 1px solid #c62828;
+      padding-bottom: 5px;
+      margin-bottom: 10px;
+    }
+
+    .header-left, .header-right {
+      width: 15%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end; /* Forces bottoms (photos) to align perfectly */
+    }
+
+    .header-center {
+      width: 70%;
+      text-align: center;
+      padding-top: 5px;
+    }
+
+    .pithadhipati-text {
+      font-size: 10pt;
+      color: #283593; /* Blue */
+      font-weight: bold;
+      margin-bottom: 2px;
+    }
+    
+    .trust-no {
+      font-size: 9pt;
+      color: #c62828; /* Red */
+      margin-bottom: 2px;
+      white-space: nowrap;
+    }
+
+    .photo-circle {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      border: 1px solid #283593; /* Blue border */
+      object-fit: cover;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+    }
+
+    .photo-circle img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .mantra {
+      font-size: 11pt;
+      color: #c62828; /* Red */
+      font-weight: bold;
+      margin: 2px 0;
+    }
+
+    .trust-name {
+      font-size: 22pt;
+      color: #c2297a; /* Vibrant pink/purple */
+      font-weight: 800;
+      margin: 5px 0;
+      white-space: nowrap;
+      letter-spacing: -0.5px; /* helps it fit in 70% width */
+    }
+
+    .address-line1 {
+      font-size: 11pt;
+      color: #283593; /* Blue */
+      font-weight: bold;
+      margin: 2px 0;
+    }
+
+    .address-line2 {
+      font-size: 10pt;
+      color: #283593; /* Blue */
+      margin: 2px 0;
+    }
+
+    /* Body Section */
+    .body-wrapper {
+      display: flex;
+      width: 100%;
+      flex-grow: 1; /* Stretch to fill minimum height */
+    }
+
+    .left-sidebar {
+      width: 25%;
+      border-right: 1px dashed #c62828; /* Red dotted line */
+      padding-right: 10px;
+      padding-top: 5px;
+      text-align: left; /* Ensure left alignment */
+    }
+
+    .sidebar-role {
+      color: #283593; /* Blue */
+      font-size: 11pt;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .sidebar-name {
+      color: #c62828; /* Red */
+      font-size: 13pt;
+      font-weight: bold;
+      line-height: 1.4;
+    }
+
+    .main-content {
+      width: 75%;
+      padding-left: 20px;
+      padding-top: 10px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .meta-info {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      font-size: 12pt;
+    }
+    
+    .meta-info div {
+      font-weight: bold;
+    }
+
+    .meta-label {
+      color: #283593; /* Blue */
+      font-weight: bold;
+    }
+
+    .recipient-details {
+      margin-bottom: 20px;
+      font-size: 12pt;
+      line-height: 1.4;
+    }
+
+    .subject-line {
+      margin-bottom: 20px;
+      font-size: 13pt;
+      font-weight: bold;
+    }
+    
+    .subject-label {
+      color: #283593; /* Blue */
+      font-weight: bold;
+    }
+
+    .letter-body {
+      flex-grow: 1;
+      font-size: 12pt;
+      line-height: 1.6;
+      text-align: justify;
+    }
+
+    .letter-body p {
+      margin: 0 0 10px 0;
+    }
+
+    /* React-Quill Alignment Classes */
+    .ql-align-center { text-align: center; }
+    .ql-align-right { text-align: right; }
+    .ql-align-justify { text-align: justify; }
+    .ql-align-left { text-align: left; }
+
+    .signature-wrapper {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 50px;
+      margin-bottom: 30px;
+      padding-right: 20px;
+    }
+    
+    .signature-content {
+      text-align: center;
+      color: #283593; /* Blue */
+      font-size: 13pt;
+      font-weight: bold;
+      line-height: 1.3;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="letter-container">
+    
+    <!-- Header -->
+    <div class="header-section">
+      <div class="header-left">
+        <div class="pithadhipati-text">२९ वे पिठाधिपती</div>
+        <div class="photo-circle">
+          <img src="{{baseUrl}}/uploads/swami29.jpg" alt="Swami 29" onerror="this.style.display='none'" />
+        </div>
+      </div>
+      <div class="header-center">
+        <div class="mantra">।। ॐ श्री गुरुनिर्वाण रुद्रपशुपति प्रसन्न ।।</div>
+        <div class="mantra">।। मुळ पुरुष उपासकर्णलिंग वडदेवरु प्रसन्न ।।</div>
+        <h1 class="trust-name">श्री गुरुमुर्ती रुद्रपशुपती लिंगायत मठ, मिरज</h1>
+        <div class="address-line1">मिरज पंढरपूर रोड, शासकीय मेडिकल कॉलेज समोर, मिरज जि. सांगली</div>
+        <div class="address-line2">पत्रव्यवहार पत्ता : श्री गुरुमुर्ती रुद्रपशुपती मठ, मु.पो. कोळे ता. सांगोला, जि. सोलापूर 413314</div>
+      </div>
+      <div class="header-right">
+        <div class="trust-no">ट्रस्ट नं. ए/१७५० - सांगली</div>
+        <div class="pithadhipati-text">३० वे पिठाधिपती</div>
+        <div class="photo-circle">
+          <img src="{{baseUrl}}/uploads/swami30.jpg" alt="Swami 30" onerror="this.style.display='none'" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div class="body-wrapper">
+      
+      <!-- Left Sidebar -->
+      <div class="left-sidebar">
+        <div class="sidebar-role">अध्यक्ष</div>
+        <div class="sidebar-name">
+          <div>श्रीश्रीश्री १०८</div>
+          <div>गुरुमुर्ती रुद्रपशुपती</div>
+          <div>कोळेकर महास्वामीजी</div>
+          <div>(राजाराम स्वामीजी)</div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        
+        <div class="meta-info">
+          <div>
+            <span class="meta-label">जावक क्र. :</span> <strong>{{referenceNumber}}</strong>
+          </div>
+          <div>
+            <span class="meta-label">दिनांक :</span> <strong>{{date}}</strong>
+          </div>
+        </div>
+
+        <div class="recipient-details">
+          {{recipientDetails}}
+        </div>
+
+        <div class="subject-line">
+          <span class="subject-label">विषय : </span> {{subject}}
+        </div>
+
+        <div class="letter-body">
+          {{body}}
+        </div>
+
+        <div class="signature-wrapper">
+          <div class="signature-content">
+            <div>सचिव</div>
+            <div>श्री गुरुमुर्ती रुद्रपशुपती</div>
+            <div>लिंगायत मठ</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

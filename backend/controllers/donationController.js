@@ -4,7 +4,7 @@ const cloudinary = require("../config/cloudinary");
 const fs = require("fs");
 const crypto = require("crypto");
 const sendEmail = require("../utils/sendEmail");
-const { generateReceiptPdf } = require("../utils/generateReceipt");
+const { issueReceipt } = require("../utils/receiptEngine");
 // Based on previous task, nodemailer logic might be in authController, but let's assume a generic mailer or just console log if not available.
 // Let's check for an email utility later.
 
@@ -298,33 +298,52 @@ exports.approveDonation = async (req, res) => {
     donation.approvalDate = new Date();
     donation.approvalRemarks = remarks;
     
-    if (!donation.receiptNumber) {
-        donation.receiptNumber = await generateReceiptRef();
+    let pdfUrl = null;
+    let archive = null;
+    try {
+      const dynamicData = {
+        donorName: donation.donorName,
+        date: new Date(donation.date).toLocaleDateString("en-IN", { day: '2-digit', month: '2-digit', year: 'numeric' }),
+        address: donation.address,
+        phone: donation.phone,
+        amount: donation.amount,
+        amountInWords: `Rupees ${donation.amount} Only`, // You could add a number-to-words library here
+        paymentMethod: donation.paymentApp || "Online",
+        utrNumber: donation.utrNumber
+      };
+
+      archive = await issueReceipt({
+        category: 'Donation',
+        year: new Date().getFullYear(),
+        dynamicData,
+        referenceId: donation._id,
+        referenceModel: 'Donation',
+        generatedBy: req.user._id,
+        generatedByModel: req.user.role,
+        branchId: donation.branchId
+      });
+
+      pdfUrl = archive.pdfUrl;
+      donation.receiptNumber = archive.receiptNumber;
+      donation.receiptPdfUrl = archive.pdfUrl;
+      await donation.save();
+    } catch (receiptError) {
+      console.error("Error generating receipt via engine:", receiptError);
     }
 
-    await donation.save();
-
     try {
-      if (donation.email) {
-        const pdfBuffer = await generateReceiptPdf(donation.toObject());
+      if (donation.email && pdfUrl) {
         await sendEmail({
           email: donation.email,
           subject: "Your Donation Receipt - Kolekar Maha Swamiji Monastery",
-          message: `Dear ${donation.donorName},\n\nWe sincerely thank you for your generous donation of INR ${donation.amount}/-. Your payment has been successfully verified and approved.\n\nPlease find your official donation receipt attached to this email.\n\nMay the divine blessings of Kolekar Maha Swamiji be always with you and your family.\n\nRegards,\nShri Gurumurti Rudrapashupati Lingayat Monastery Trust`,
-          attachments: [
-            {
-              filename: `Donation_Receipt_${donation.receiptNumber}.pdf`,
-              content: pdfBuffer,
-              contentType: 'application/pdf'
-            }
-          ]
+          message: `Dear ${donation.donorName},\n\nWe sincerely thank you for your generous donation of INR ${donation.amount}/-. Your payment has been successfully verified and approved.\n\nYou can download your official receipt here: ${pdfUrl}\n\nMay the divine blessings of Kolekar Maha Swamiji be always with you and your family.\n\nRegards,\nShri Gurumurti Rudrapashupati Lingayat Monastery Trust`,
         });
       }
     } catch (emailError) {
       console.error("Error sending approval email:", emailError);
     }
 
-    res.status(200).json({ success: true, message: "Donation approved successfully.", data: donation });
+    res.status(200).json({ success: true, message: "Donation approved successfully.", data: donation, pdfUrl: pdfUrl });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8">
+  <title>Donation Receipt</title>
+  <style>
+    @page {
+      size: A5 landscape;
+      margin: 0;
+    }
+    @import url('https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Marathi:ital@0;1&family=Mukta:wght@400;600;700;800&display=swap');
+    
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Mukta', 'Arial', sans-serif;
+      background-color: #f6f3eb; /* Light cream background matching the image */
+      width: 210mm;
+      height: 148mm; /* A5 Landscape */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #be1e4d; /* Deep magenta/red text color */
+    }
+    
+    .receipt-container {
+      width: 190mm;
+      height: 128mm;
+      border: 3px solid #be1e4d;
+      padding: 5mm;
+      position: relative;
+      box-sizing: border-box;
+      background-color: #f6f3eb;
+    }
+
+    /* Inner dashed/dotted border decoration */
+    .receipt-inner {
+      width: 100%;
+      height: 100%;
+      border-top: 5px solid #be1e4d;
+      border-bottom: 5px solid #be1e4d;
+      padding: 10px;
+      box-sizing: border-box;
+      position: relative;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 10px;
+      line-height: 1.2;
+    }
+
+    .mantra {
+      font-size: 11pt;
+      font-weight: 600;
+      margin-bottom: 5px;
+      letter-spacing: 1px;
+    }
+
+    .title-main {
+      font-size: 22pt;
+      font-weight: 800;
+      margin: 2px 0;
+    }
+
+    .title-sub {
+      font-size: 18pt;
+      font-weight: 800;
+      margin: 2px 0;
+    }
+
+    .address {
+      font-size: 14pt;
+      font-weight: 700;
+      margin: 2px 0 10px 0;
+    }
+
+    .badge-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 15px;
+    }
+
+    .badge {
+      background-color: #be1e4d;
+      color: white;
+      padding: 4px 25px;
+      border-radius: 20px;
+      font-size: 16pt;
+      font-weight: 800;
+    }
+
+    .flex-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 12px;
+    }
+
+    .field-label {
+      font-size: 12pt;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .field-value {
+      flex-grow: 1;
+      border-bottom: 1px solid #be1e4d;
+      margin: 0 10px;
+      font-size: 14pt;
+      font-weight: 600;
+      color: #333;
+      padding-left: 10px;
+    }
+
+    .amount-box-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-top: 20px;
+    }
+
+    .amount-box {
+      display: flex;
+      border: 2px solid #be1e4d;
+      height: 40px;
+      width: 200px;
+    }
+
+    .amount-symbol {
+      background-color: #be1e4d;
+      color: white;
+      font-size: 20pt;
+      font-weight: 800;
+      width: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .amount-value {
+      font-size: 18pt;
+      font-weight: 700;
+      color: #333;
+      display: flex;
+      align-items: center;
+      padding-left: 10px;
+      flex-grow: 1;
+    }
+
+    .footer-text {
+      font-size: 16pt;
+      font-weight: 800;
+    }
+
+    .signature {
+      font-size: 12pt;
+      font-weight: 700;
+    }
+
+    .qr-container {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 60px;
+      mix-blend-mode: multiply;
+    }
+  </style>
+</head>
+<body>
+  <div class="receipt-container">
+    <div class="receipt-inner">
+      
+      <div class="header">
+        <div class="mantra">।। ॐ नमः शिवाय ।। ।। गुरुनिर्वाण प्रसाद ।।</div>
+        <div class="title-main">श्री श्री श्री १०८ ष.ब्र.गुरुमुर्ती गुरुनिर्वाण</div>
+        <div class="title-sub">रुद्रपशुपती कोळेकर महास्वामीजी</div>
+        <div class="address">कोळे ता.सांगोला जि.सोलापूर</div>
+      </div>
+
+      <div class="badge-container">
+        <div class="badge">देणगी पावती</div>
+      </div>
+
+      <div class="flex-row">
+        <div class="flex-row" style="width: 45%; margin-bottom: 0;">
+          <span class="field-label">पावती क्र.</span>
+          <span class="field-value" style="color: #be1e4d; font-size: 16pt;">{{receiptNumber}}</span>
+        </div>
+        <div class="flex-row" style="width: 45%; margin-bottom: 0;">
+          <span class="field-label">दिनांक :</span>
+          <span class="field-value">{{date}}</span>
+        </div>
+      </div>
+
+      <div class="flex-row">
+        <span class="field-label">श्री / सौ / श्रीमती</span>
+        <span class="field-value">{{donorName}}</span>
+      </div>
+
+      <div class="flex-row">
+        <span class="field-label">राहणार</span>
+        <span class="field-value">{{address}} {{phone}}</span>
+        <span class="field-label" style="font-size: 11pt;">आपणाकडून आज रोजी दिशाविधी कार्यक्रमाकरीता देणगी</span>
+      </div>
+
+      <div class="flex-row">
+        <span class="field-label">अक्षरी रुपये</span>
+        <span class="field-value">{{amountInWords}}</span>
+        <span class="field-label" style="font-size: 11pt;">आज रोख मिळाले.</span>
+      </div>
+
+      <div class="amount-box-container">
+        <div class="amount-box">
+          <div class="amount-symbol">₹</div>
+          <div class="amount-value">{{amount}}</div>
+        </div>
+        
+        <div class="qr-container">
+          {{qrCode}}
+        </div>
+
+        <div class="footer-text">धन्यवाद !</div>
+        
+        <div class="signature">
+          <br><br>
+          देणगी स्विकारणाऱ्याची सही
+        </div>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>

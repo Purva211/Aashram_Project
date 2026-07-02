@@ -82,12 +82,17 @@ import TrusteeAccountants from "./pages/trustee/Accountants";
 import AccountantDashboard from "./pages/accountant/Dashboard";
 import AccountantProfile from "./pages/accountant/Profile";
 import AccountantDonations from "./pages/accountant/Donations";
-import AccountantReceipts from "./pages/accountant/Receipts";
 import AccountantAnnouncements from "./pages/accountant/Announcements";
 
 // CMS Pages for Monastery History and Lineage
 import ManageMathHistory from "./pages/admin/ManageMathHistory";
 import ManageLineage from "./pages/admin/ManageLineage";
+
+// Shared Pages
+import ReceiptHistory from "./pages/shared/ReceiptHistory";
+import NoticeGenerator from "./pages/admin/NoticeGenerator";
+
+
 
 // New RBAC Route Wrapper
 const RoleProtectedRoute = ({ children, allowedRoles }) => {
@@ -198,6 +203,8 @@ function AppRoutes() {
           <Route path="/admin/documents" element={<RoleProtectedRoute allowedRoles={['Admin']}><AdminDocuments /></RoleProtectedRoute>} />
           <Route path="/admin/math-history" element={<RoleProtectedRoute allowedRoles={['Admin']}><ManageMathHistory /></RoleProtectedRoute>} />
           <Route path="/admin/lineage" element={<RoleProtectedRoute allowedRoles={['Admin']}><ManageLineage /></RoleProtectedRoute>} />
+          <Route path="/admin/receipts" element={<RoleProtectedRoute allowedRoles={['Admin']}><ReceiptHistory /></RoleProtectedRoute>} />
+          <Route path="/admin/notice-generator" element={<RoleProtectedRoute allowedRoles={['Admin']}><NoticeGenerator /></RoleProtectedRoute>} />
 
           {/* Trustee Protected Routes */}
           <Route path="/trustee/dashboard" element={<RoleProtectedRoute allowedRoles={['Trustee']}><TrusteeDashboard /></RoleProtectedRoute>} />
@@ -214,6 +221,13 @@ function AppRoutes() {
           <Route path="/trustee/math-history" element={<RoleProtectedRoute allowedRoles={['Trustee']}><ManageMathHistory /></RoleProtectedRoute>} />
           <Route path="/trustee/lineage" element={<RoleProtectedRoute allowedRoles={['Trustee']}><ManageLineage /></RoleProtectedRoute>} />
           <Route path="/trustee/accountants" element={<RoleProtectedRoute allowedRoles={['Trustee']}><TrusteeAccountants /></RoleProtectedRoute>} />
+<<<<<<< Updated upstream
+=======
+          <Route path="/trustee/audio" element={<RoleProtectedRoute allowedRoles={['Trustee']}><TrusteeAudioTracks /></RoleProtectedRoute>} />
+          <Route path="/trustee/receipts" element={<RoleProtectedRoute allowedRoles={['Trustee']}><ReceiptHistory /></RoleProtectedRoute>} />
+          <Route path="/trustee/notice-generator" element={<RoleProtectedRoute allowedRoles={['Trustee']}><NoticeGenerator /></RoleProtectedRoute>} />
+
+>>>>>>> Stashed changes
 
           {/* Branch Manager Protected Routes */}
           <Route path="/branch/dashboard" element={<RoleProtectedRoute allowedRoles={['BranchManager']}><BranchDashboard /></RoleProtectedRoute>} />
@@ -224,6 +238,7 @@ function AppRoutes() {
           <Route path="/branch/announcements" element={<RoleProtectedRoute allowedRoles={['BranchManager']}><BranchAnnouncements /></RoleProtectedRoute>} />
           <Route path="/branch/branches" element={<RoleProtectedRoute allowedRoles={['BranchManager']}><BranchBranches /></RoleProtectedRoute>} />
           <Route path="/branch/documents" element={<RoleProtectedRoute allowedRoles={['BranchManager']}><BranchDocuments /></RoleProtectedRoute>} />
+          <Route path="/branch/receipts" element={<RoleProtectedRoute allowedRoles={['BranchManager']}><ReceiptHistory /></RoleProtectedRoute>} />
 
           {/* Devotee Protected Routes */}
           <Route path="/devotee/dashboard" element={<DevoteeLayout allowedRoles={['Devotee']}><DevoteeDashboardHome /></DevoteeLayout>} />
@@ -238,7 +253,7 @@ function AppRoutes() {
           <Route path="/accountant/profile" element={<RoleProtectedRoute allowedRoles={['Accountant']}><AccountantProfile /></RoleProtectedRoute>} />
           <Route path="/accountant/donations" element={<RoleProtectedRoute allowedRoles={['Accountant']}><AccountantDonations /></RoleProtectedRoute>} />
           <Route path="/accountant/verify-donations" element={<RoleProtectedRoute allowedRoles={['Accountant']}><AccountantDonationVerification /></RoleProtectedRoute>} />
-          <Route path="/accountant/receipts" element={<RoleProtectedRoute allowedRoles={['Accountant']}><AccountantReceipts /></RoleProtectedRoute>} />
+          <Route path="/accountant/receipts" element={<RoleProtectedRoute allowedRoles={['Accountant']}><ReceiptHistory /></RoleProtectedRoute>} />
           <Route path="/accountant/announcements" element={<RoleProtectedRoute allowedRoles={['Accountant']}><AccountantAnnouncements /></RoleProtectedRoute>} />
 
           {/* Document Handler Routes */}
@@ -247,6 +262,7 @@ function AppRoutes() {
           <Route path="/document-handler/deletion-requests" element={<RoleProtectedRoute allowedRoles={['DocumentHandler', 'document_admin']}><DocumentAdminDeletionRequests /></RoleProtectedRoute>} />
           <Route path="/document-handler/documents" element={<RoleProtectedRoute allowedRoles={['DocumentHandler', 'document_admin']}><DocumentAdminDashboard /></RoleProtectedRoute>} />
           <Route path="/document-handler/announcements" element={<RoleProtectedRoute allowedRoles={['DocumentHandler', 'document_admin']}><DocumentAdminAnnouncements /></RoleProtectedRoute>} />
+          <Route path="/document-handler/receipts" element={<RoleProtectedRoute allowedRoles={['DocumentHandler', 'document_admin']}><ReceiptHistory /></RoleProtectedRoute>} />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" />} />

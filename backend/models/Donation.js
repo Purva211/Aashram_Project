@@ -73,6 +73,10 @@ const donationSchema = new mongoose.Schema({
     sparse: true,
     required: false
   },
+  receiptPdfUrl: {
+    type: String,
+    required: false
+  },
   approvedBy: {
     type: mongoose.Schema.Types.ObjectId,
     refPath: 'approvedByModel',

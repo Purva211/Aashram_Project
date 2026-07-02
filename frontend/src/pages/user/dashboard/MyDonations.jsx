@@ -93,7 +93,13 @@ export const MyDonations = () => {
       <td className="px-6 py-4 text-center">
         {d.status === 'APPROVED' ? (
           <button
-            onClick={() => handleDownloadReceipt(d._id)}
+            onClick={() => {
+              if (d.receiptPdfUrl) {
+                window.open(d.receiptPdfUrl, '_blank');
+              } else {
+                handleDownloadReceipt(d._id);
+              }
+            }}
             disabled={downloadingId === d._id}
             className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-wait"
           >

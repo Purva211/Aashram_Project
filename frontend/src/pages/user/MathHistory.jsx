@@ -56,7 +56,12 @@ const MathHistory = () => {
               </span>
             </div>
             
+<<<<<<< Updated upstream
             <h1 className="text-5xl lg:text-7xl font-serif font-black text-mahakal-burgundy mb-6 leading-[1.1] tracking-tight">
+=======
+            {/* Title */}
+            <h1 className="text-4xl sm:text-5xl lg:text-[5.5rem] font-serif font-bold text-mahakal-burgundy mb-8 leading-[1.1] tracking-tight drop-shadow-sm">
+>>>>>>> Stashed changes
               Monastery Importance <br />
               <span className="text-mahakal-saffron drop-shadow-sm">Sacred History</span>
             </h1>

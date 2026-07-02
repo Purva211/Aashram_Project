@@ -5,6 +5,13 @@ import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import api from '../../utils/api';
 
+const getImageUrl = (url) => {
+  if (!url) return '';
+  if (url.startsWith('http')) return url;
+  const baseUrl = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace(/\/api\/?$/, '');
+  return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+};
+
 const LineageCard = ({ node, isRoot }) => (
   <div className="bg-white p-6 lg:p-8 rounded-[2rem] shadow-xl hover:shadow-2xl transition-all duration-700 border border-stone-200 relative group overflow-hidden w-full h-full flex flex-col">
      {/* Subtle glow behind card top */}
@@ -21,7 +28,7 @@ const LineageCard = ({ node, isRoot }) => (
         <div className="absolute inset-0 border-[2px] border-mahakal-saffron/20 rounded-full scale-[1.15] animate-[spin_10s_linear_infinite_reverse]"></div>
         <div className="w-full h-full rounded-full flex items-center justify-center border-[4px] border-white shadow-[0_5px_15px_rgba(0,0,0,0.1)] overflow-hidden relative z-10 bg-stone-50">
             {node.profileImage ? (
-               <img src={node.profileImage.startsWith('http') ? node.profileImage : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${node.profileImage.startsWith('/') ? '' : '/'}${node.profileImage}`} alt={node.name} className="w-full h-full object-cover object-[50%_15%] group-hover:scale-110 transition-transform duration-700 ease-out" />
+               <img src={getImageUrl(node.profileImage)} alt={node.name} className="w-full h-full object-cover object-[50%_15%] group-hover:scale-110 transition-transform duration-700 ease-out" />
             ) : (
                <Crown className="w-10 h-10 text-mahakal-saffron/40" />
             )}
@@ -64,7 +71,7 @@ const ExtendedLineageCard = ({ node, index }) => {
        <div className="relative w-full lg:w-[400px] h-[300px] lg:h-[450px] shrink-0">
           <div className="w-full h-full rounded-[2.5rem] flex items-center justify-center shadow-lg overflow-hidden relative z-10 bg-stone-50 border-8 border-white group-hover:shadow-2xl transition-all duration-700">
               {node.profileImage ? (
-                 <img src={node.profileImage.startsWith('http') ? node.profileImage : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${node.profileImage.startsWith('/') ? '' : '/'}${node.profileImage}`} alt={node.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.5s] ease-out" />
+                 <img src={getImageUrl(node.profileImage)} alt={node.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.5s] ease-out" />
               ) : (
                  <Crown className="w-20 h-20 text-mahakal-saffron/30" />
               )}
@@ -97,7 +104,7 @@ const ExtendedLineageCard = ({ node, index }) => {
                 <h5 className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-4 text-left">Sacred Gallery</h5>
                 <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar">
                   {node.galleryImages.map((img, idx) => (
-                     <img key={idx} src={img.startsWith('http') ? img : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${img.startsWith('/') ? '' : '/'}${img}`} alt={`Gallery ${idx}`} className="h-28 w-40 lg:h-32 lg:w-48 object-cover rounded-2xl shadow-sm border border-stone-200 shrink-0 hover:shadow-md transition-shadow cursor-pointer hover:scale-105 duration-300" />
+                     <img key={idx} src={getImageUrl(img)} alt={`Gallery ${idx}`} className="h-28 w-40 lg:h-32 lg:w-48 object-cover rounded-2xl shadow-sm border border-stone-200 shrink-0 hover:shadow-md transition-shadow cursor-pointer hover:scale-105 duration-300" />
                   ))}
                 </div>
              </div>
@@ -192,61 +199,49 @@ const Lineage = () => {
     <div className="min-h-screen bg-[#FFFDF6] flex flex-col font-sans text-mahakal-burgundy selection:bg-mahakal-saffron selection:text-white overflow-x-hidden">
       <Navbar />
 
-      {/* ADVANCED LIGHT THEME HERO SECTION (SIDE-BY-SIDE) */}
-      <section className="relative min-h-[50vh] flex items-center justify-center overflow-hidden pt-24 pb-12 border-b border-stone-200 bg-white">
-        <div className="absolute inset-0 z-0 bg-white">
-           <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-orange-50 rounded-full blur-[120px] translate-x-1/3 -translate-y-1/3"></div>
-           <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-amber-50 rounded-full blur-[100px] -translate-x-1/4 translate-y-1/4"></div>
-           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/arabesque.png')] opacity-[0.03] mix-blend-overlay pointer-events-none"></div>
+      {/* PREMIUM CENTERED HERO SECTION */}
+      <section className="relative flex flex-col items-center justify-center overflow-hidden pt-32 pb-24 border-b border-stone-200/50 bg-[#FFFDF6]">
+        {/* Dynamic Background Elements */}
+        <div className="absolute inset-0 z-0">
+           <div className="absolute top-[-10%] right-[-10%] w-[800px] h-[800px] bg-gradient-to-br from-orange-200/40 to-rose-200/20 rounded-full blur-[120px] mix-blend-multiply pointer-events-none"></div>
+           <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-gradient-to-tr from-amber-200/40 to-orange-300/20 rounded-full blur-[100px] mix-blend-multiply pointer-events-none"></div>
+           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/arabesque.png')] opacity-[0.04] mix-blend-overlay pointer-events-none"></div>
         </div>
         
-        <div className="relative z-10 max-w-7xl mx-auto px-6 w-full flex flex-col md:flex-row items-center justify-between gap-12 lg:gap-20">
+        <div className="relative z-10 max-w-5xl mx-auto px-6 w-full flex flex-col items-center text-center">
+          
           <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.2, ease: "easeOut" }}
-            className="flex-1 text-center md:text-left"
+            className="flex flex-col items-center"
           >
-            <div className="mb-6 flex items-center justify-center md:justify-start gap-4">
-              <span className="w-12 h-[2px] bg-mahakal-saffron/40"></span>
-              <span className="text-mahakal-saffron font-bold tracking-[0.3em] text-xs uppercase">
-                Sacred Tradition
+            {/* Tag */}
+            <div className="mb-8 flex items-center justify-center gap-4">
+              <span className="w-16 h-[2px] bg-gradient-to-r from-transparent to-mahakal-saffron"></span>
+              <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/60 backdrop-blur-md border border-white/80 text-mahakal-saffron font-bold text-xs uppercase tracking-[0.25em] shadow-sm">
+                 Sacred Tradition
               </span>
+              <span className="w-16 h-[2px] bg-gradient-to-l from-transparent to-mahakal-saffron"></span>
             </div>
-
-            <h1 className="text-5xl lg:text-7xl font-serif font-black text-mahakal-burgundy mb-6 leading-[1.1] tracking-tight">
-              Guru <br />
-              <span className="text-mahakal-saffron drop-shadow-sm">Parampara</span>
-            </h1>
             
-            <p className="text-lg lg:text-xl text-stone-600 max-w-2xl leading-relaxed font-medium italic border-l-4 border-mahakal-saffron/30 pl-6">
-              "The unbroken chain of divine spiritual masters, passing profound wisdom, spiritual authority, and unconditional grace from generation to generation."
+            {/* Title */}
+            <h1 className="text-4xl sm:text-5xl lg:text-[5.5rem] font-serif font-bold text-mahakal-burgundy mb-8 leading-[1.1] tracking-tight drop-shadow-sm">
+              Guru <br />
+              <span className="text-mahakal-saffron relative inline-block mt-2">
+                Parampara
+                <svg className="absolute w-full h-4 -bottom-1 left-0 text-orange-200/60 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none">
+                  <path d="M0 5 Q 50 10 100 5" fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round"/>
+                </svg>
+              </span>
+            </h1>
+
+            {/* Subtitle */}
+            <p className="text-lg lg:text-2xl text-stone-600 max-w-3xl leading-relaxed font-medium">
+              The unbroken chain of divine spiritual masters, passing profound wisdom, spiritual authority, and unconditional grace from generation to generation.
             </p>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8, x: 50 }}
-            animate={{ opacity: 1, scale: 1, x: 0 }}
-            transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
-            className="flex-shrink-0 relative flex justify-center"
-          >
-            <div className="relative group">
-              <div className="absolute inset-0 bg-mahakal-saffron/10 blur-[60px] rounded-full scale-150"></div>
-              <motion.div 
-                animate={{ rotate: 360 }} 
-                transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-                className="absolute inset-0 border-[2px] border-mahakal-saffron/30 rounded-full scale-[1.4] border-dashed"
-              ></motion.div>
-              <motion.div 
-                animate={{ y: [0, -10, 0] }} 
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                className="w-40 h-40 lg:w-64 lg:h-64 bg-white rounded-full flex items-center justify-center border-4 border-orange-100 shadow-2xl relative z-10 overflow-hidden"
-              >
-                <div className="absolute inset-0 bg-gradient-to-tr from-transparent to-orange-50"></div>
-                <Users className="w-16 h-16 lg:w-28 lg:h-28 text-mahakal-saffron drop-shadow-md relative z-10" />
-              </motion.div>
-            </div>
-          </motion.div>
         </div>
       </section>
 

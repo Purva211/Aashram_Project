@@ -345,7 +345,6 @@ const LoginSelection = () => {
                   <GoogleLogin 
                     onSuccess={handleGoogleSuccess} 
                     onError={handleGoogleError} 
-                    useOneTap 
                     shape="pill" 
                     theme="outline" 
                     size="large"

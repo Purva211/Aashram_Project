@@ -8,7 +8,8 @@ import TablePagination from '../../components/TablePagination';
 const availablePermissions = [
   'Dashboard', 'Devotees', 'Donations', 'Events', 
   'Announcements', 'Branches', 'Documents', 'Annadan',
-  'Sansthan Updates', 'Gallery', 'Monastery History', 'Lineage', 'Accountants'
+  'Sansthan Updates', 'Gallery', 'Monastery History', 'Lineage', 'Accountants',
+  'Issue Notice'
 ];
 
 const systemRoles = ['Chairman', 'Vice Chairman', 'Secretary', 'Treasurer', 'Trust Member'];
@@ -98,7 +99,11 @@ const ManageTrustees = () => {
            alert("Passwords do not match");
            return;
         }
+<<<<<<< Updated upstream
         await api.put(`/admins/trustees/${editingId}`, formData);
+=======
+        await api.put(`/admins/trustees/${editingId}`, dataToSubmit);
+>>>>>>> Stashed changes
       } else {
         if (!otpVerified) {
           alert("Please verify email first");
@@ -108,7 +113,12 @@ const ManageTrustees = () => {
           alert("Passwords do not match");
           return;
         }
+<<<<<<< Updated upstream
         await api.post('/admins/trustees', { ...formData, verifiedToken });
+=======
+        dataToSubmit.append('verifiedToken', verifiedToken);
+        await api.post('/admins/trustees', dataToSubmit);
+>>>>>>> Stashed changes
       }
       setIsModalOpen(false);
       setEditingId(null);

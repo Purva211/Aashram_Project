@@ -108,7 +108,7 @@ const Navbar = () => {
       {bulletins.length > 0 && (
       <div className="w-full bg-mahakal-burgundy py-2 overflow-hidden flex items-center relative z-[60]">
         <motion.div 
-          className="whitespace-nowrap flex items-center font-medium text-[13px] tracking-wide text-white px-4"
+          className="whitespace-nowrap flex items-center font-medium text-[11px] sm:text-[13px] tracking-wide text-white px-2 sm:px-4"
           animate={{ x: ["0%", "-50%"] }}
           transition={{ repeat: Infinity, ease: "linear", duration: 40 }}
         >
@@ -151,7 +151,7 @@ const Navbar = () => {
             : 'bg-gradient-to-r from-mahakal-cream via-white to-mahakal-cream border-transparent py-4'
         }`}
       >
-      <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 flex justify-between items-center w-full">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-4 group">
           <img 
@@ -159,7 +159,7 @@ const Navbar = () => {
             alt="Kolekar Maharaj Logo" 
             className="w-14 h-14 object-contain group-hover:scale-105 transition-all duration-300 drop-shadow-md rounded-full bg-white" 
           />
-          <div className="flex flex-col hidden sm:flex">
+          <div className="flex flex-col hidden md:flex">
             <span className="font-serif text-xl font-bold tracking-wide text-mahakal-burgundy leading-tight">
               {t('global.logo_title') || 'Kolekar Maharaj'}
             </span>

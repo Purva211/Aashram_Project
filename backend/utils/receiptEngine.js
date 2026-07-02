@@ -1,0 +1,160 @@
+const puppeteer = require('puppeteer');
+const fs = require('fs');
+const path = require('path');
+const Sequence = require('../models/Sequence');
+const ReceiptArchive = require('../models/ReceiptArchive');
+const cloudinary = require('../config/cloudinary');
+const QRCode = require('qrcode');
+
+/**
+ * Generates the next sequential number for a given prefix.
+ * @param {string} prefix - e.g., 'DON-2026', 'BDN-MRJ-2026'
+ * @returns {Promise<string>}
+ */
+const generateNextReceiptNumber = async (prefix) => {
+  const sequence = await Sequence.findOneAndUpdate(
+    { sequenceName: prefix },
+    { $inc: { currentValue: 1 } },
+    { new: true, upsert: true }
+  );
+
+  const paddingLength = 6;
+  const numStr = sequence.currentValue.toString().padStart(paddingLength, '0');
+  return `${prefix}-${numStr}`;
+};
+
+const savePdfLocally = (pdfBuffer, fileName) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const uploadDir = path.join(__dirname, '../uploads/receipts');
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+      const filePath = path.join(uploadDir, `${fileName}.pdf`);
+      fs.writeFileSync(filePath, pdfBuffer);
+      const baseUrl = process.env.BASE_URL || 'http://localhost:5000';
+      resolve(`${baseUrl}/uploads/receipts/${fileName}.pdf`);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+/**
+ * Renders the HTML template into a PDF using Puppeteer
+ */
+const generateReceiptPdf = async (templateName, data, receiptNumber) => {
+  const templatePath = path.join(__dirname, '../templates', `${templateName}.html`);
+  if (!fs.existsSync(templatePath)) {
+    throw new Error(`Template ${templateName} not found.`);
+  }
+
+  let htmlContent = fs.readFileSync(templatePath, 'utf8');
+
+  // Simple string replacement for data fields
+  // In a real scenario, consider using Handlebars or EJS
+  for (const [key, value] of Object.entries(data)) {
+    const regex = new RegExp(`{{${key}}}`, 'g');
+    htmlContent = htmlContent.replace(regex, value || '');
+  }
+  
+  // Inject receipt number
+  htmlContent = htmlContent.replace(/{{receiptNumber}}/g, receiptNumber);
+  
+  // Optional: Generate QR Code for verification
+  try {
+     const qrData = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verify-receipt/${receiptNumber}`;
+     const qrDataUrl = await QRCode.toDataURL(qrData);
+     htmlContent = htmlContent.replace(/{{qrCode}}/g, `<img src="${qrDataUrl}" width="100" height="100" />`);
+  } catch (err) {
+     console.error("Failed to generate QR", err);
+     htmlContent = htmlContent.replace(/{{qrCode}}/g, '');
+  }
+
+  // Add backend base URL for absolute image paths if needed
+  htmlContent = htmlContent.replace(/{{baseUrl}}/g, process.env.BASE_URL || 'http://localhost:5000');
+
+  const browser = await puppeteer.launch({
+    headless: "new",
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
+  });
+  
+  const page = await browser.newPage();
+  
+  // Emulate print media for exact sizing
+  await page.emulateMediaType('print');
+  await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+
+  // Generate PDF
+  const pdfBuffer = await page.pdf({
+    format: 'A4',
+    printBackground: true,
+    margin: { top: 0, right: 0, bottom: 0, left: 0 } // No margins, let template handle it
+  });
+
+  await browser.close();
+
+  // Save locally instead of Cloudinary to avoid 401 Unauthorized PDF restrictions
+  const pdfUrl = await savePdfLocally(pdfBuffer, receiptNumber);
+  return pdfUrl;
+};
+
+/**
+ * Main engine function to create, generate, and store a receipt.
+ */
+const issueReceipt = async ({
+  category,
+  branchCode = 'KOL',
+  year = new Date().getFullYear(),
+  dynamicData,
+  referenceId,
+  referenceModel,
+  generatedBy,
+  generatedByModel,
+  branchId
+}) => {
+  
+  // Determine Prefix
+  let prefix = '';
+  let templateName = '';
+  switch(category) {
+    case 'Notice': prefix = `NOT-${year}`; templateName = 'noticeTemplate'; break;
+    case 'Donation': prefix = `DON-${year}`; templateName = 'donationTemplate'; break;
+    case 'Branch Donation': prefix = `BDN-${branchCode}-${year}`; templateName = 'branchDonationTemplate'; break;
+    case 'Annadan': prefix = `ANN-${year}`; templateName = 'annadanTemplate'; break;
+    case 'Prasad': prefix = `PRA-${year}`; templateName = 'prasadTemplate'; break;
+    case 'Payment': prefix = `PAY-${year}`; templateName = 'paymentTemplate'; break;
+    case 'Expense': prefix = `EXP-${year}`; templateName = 'expenseTemplate'; break;
+    default: throw new Error("Invalid receipt category");
+  }
+
+  // 1. Get Number
+  const receiptNumber = await generateNextReceiptNumber(prefix);
+
+  // 2. Generate PDF
+  const pdfUrl = await generateReceiptPdf(templateName, dynamicData, receiptNumber);
+
+  // 3. Save Archive
+  const archive = new ReceiptArchive({
+    receiptNumber,
+    category,
+    branchId,
+    referenceId,
+    referenceModel,
+    dynamicData,
+    pdfUrl,
+    status: 'Generated',
+    generatedBy,
+    generatedByModel
+  });
+
+  await archive.save();
+
+  return archive;
+};
+
+module.exports = {
+  generateNextReceiptNumber,
+  generateReceiptPdf,
+  issueReceipt
+};

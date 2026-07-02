@@ -39,6 +39,12 @@ app.use("/api/math-history", require("./routes/mathHistoryRoutes"));
 app.use("/api/lineage", require("./routes/lineageRoutes"));
 app.use("/api/user", require("./routes/userDashboardRoutes"));
 app.use("/api/contact", require("./routes/contactRoutes"));
+<<<<<<< Updated upstream
+=======
+app.use("/api/audio", require("./routes/audioRoutes"));
+app.use("/api/receipts", require("./routes/receiptArchiveRoutes"));
+app.use("/api/correspondence", require("./routes/correspondenceRoutes"));
+>>>>>>> Stashed changes
 
 app.get("/", (req, res) => {
   res.send("Temple Management System API is running...");
