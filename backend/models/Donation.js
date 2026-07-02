@@ -91,6 +91,11 @@ const donationSchema = new mongoose.Schema({
     type: String,
     required: false
   },
+  donationType: {
+    type: String,
+    enum: ["dengi_pavti", "shakha_pavti", "jama_pavti"],
+    default: "dengi_pavti"
+  },
   date: {
     type: Date,
     default: Date.now
