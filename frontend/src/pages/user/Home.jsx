@@ -5,7 +5,7 @@ const CountUp = CountUpRaw.default || CountUpRaw;
 import { Link } from 'react-router-dom';
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
-import { FaBookOpen, FaCalendarAlt, FaChevronRight, FaHands, FaLeaf, FaMapMarkerAlt, FaOm, FaPlay, FaPrayingHands, FaQuoteLeft, FaSearch, FaVideo } from 'react-icons/fa';
+import { FaBookOpen, FaCalendarAlt, FaChevronRight, FaHands, FaLeaf, FaMapMarkerAlt, FaOm, FaPlay, FaPrayingHands, FaQuoteLeft, FaSearch, FaVideo, FaTimes } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 
 import herobg1 from "../../assets/kolekar1.jpeg";
@@ -52,6 +52,10 @@ const Home = () => {
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [allEvents, setAllEvents] = useState([]);
   const [branches, setBranches] = useState([]);
+  const [sliderNews, setSliderNews] = useState([]);
+  const [sliderIndex, setSliderIndex] = useState(0);
+  const [selectedNews, setSelectedNews] = useState(null);
+  const [selectedNewsSlideIdx, setSelectedNewsSlideIdx] = useState(0);
   const [isLive, setIsLive] = useState(false);
   const [greeting, setGreeting] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -126,8 +130,35 @@ const Home = () => {
     }
   };
 
+  const fetchSliderNews = async () => {
+    try {
+      const res = await api.get('/news/slider');
+      setSliderNews(res.data.data || []);
+    } catch (error) {
+      console.error("Failed to fetch slider news", error);
+    }
+  };
+
+  useEffect(() => {
+    if (sliderNews.length <= 1) return;
+    const timer = setInterval(() => {
+      setSliderIndex(prev => (prev + 1) % sliderNews.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [sliderNews]);
+
+  const formatDateString = (date) => {
+    if (!date) return '';
+    return new Date(date).toLocaleDateString('en-US', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    });
+  };
+
   useEffect(() => {
     fetchUpcomingEvents();
+    fetchSliderNews();
     const fetchStats = async () => {
       try {
         const response = await api.get('/stats/public');
@@ -509,6 +540,89 @@ const Home = () => {
         </div>
       </section>
 
+      {/* News & Announcements Slider Section */}
+      <section className="py-16 lg:py-24 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden border-y border-stone-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-12 sm:mb-16">
+            <span className="text-orange-500 font-bold tracking-[0.2em] uppercase text-[10px] sm:text-sm block mb-2 sm:mb-3">LATEST NEWS</span>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-gray-900">News & Announcements</h2>
+          </div>
+
+          {sliderNews.length > 0 ? (
+            <div className="relative group max-w-4xl mx-auto">
+              <div 
+                onClick={() => {
+                  setSelectedNews(sliderNews[sliderIndex]);
+                  setSelectedNewsSlideIdx(0);
+                }}
+                className="bg-stone-900 rounded-[2.5rem] shadow-2xl overflow-hidden h-[300px] sm:h-[450px] md:h-[500px] relative cursor-pointer group/slider border border-stone-200/20"
+              >
+                {/* Slide contents with transitions */}
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={sliderIndex}
+                    initial={{ opacity: 0, scale: 0.98 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.98 }}
+                    transition={{ duration: 0.4 }}
+                    className="w-full h-full"
+                  >
+                    <img 
+                      src={getImageUrl(sliderNews[sliderIndex].coverImage)} 
+                      alt={sliderNews[sliderIndex].title} 
+                      className="w-full h-full object-contain object-center group-hover/slider:scale-102 transition-transform duration-[1.5s]" 
+                    />
+                    {/* Shadow overlay to make navigation arrows visible */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10"></div>
+                  </motion.div>
+                </AnimatePresence>
+
+                {/* Bullet indicators */}
+                {sliderNews.length > 1 && (
+                  <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2" onClick={(e) => e.stopPropagation()}>
+                    {sliderNews.map((_, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setSliderIndex(idx)}
+                        className={`w-2.5 h-2.5 rounded-full transition-all ${sliderIndex === idx ? 'bg-orange-500 w-6 shadow-md shadow-orange-500/50' : 'bg-white/50 hover:bg-white'}`}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Manual navigation arrows outside the clickable image to prevent clicking image when clicking arrows */}
+              {sliderNews.length > 1 && (
+                <>
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSliderIndex(prev => (prev - 1 + sliderNews.length) % sliderNews.length);
+                    }}
+                    className="absolute left-[-20px] sm:left-[-60px] top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-white border border-stone-100 shadow-xl text-stone-700 flex items-center justify-center hover:bg-orange-50 hover:text-orange-600 transition-all opacity-0 group-hover:opacity-100 hidden sm:flex"
+                  >
+                    <FaChevronRight className="rotate-180 text-sm" />
+                  </button>
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSliderIndex(prev => (prev + 1) % sliderNews.length);
+                    }}
+                    className="absolute right-[-20px] sm:right-[-60px] top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-white border border-stone-100 shadow-xl text-stone-700 flex items-center justify-center hover:bg-orange-50 hover:text-orange-600 transition-all opacity-0 group-hover:opacity-100 hidden sm:flex"
+                  >
+                    <FaChevronRight className="text-sm" />
+                  </button>
+                </>
+              )}
+            </div>
+          ) : (
+            <div className="text-center py-12 bg-[#FAF9F5] rounded-[2rem] border border-stone-200/50 max-w-lg mx-auto">
+              <p className="text-stone-500 font-light text-sm">No news updates available in the slider at this time.</p>
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* 3. Elegantly Layered Leadership Section */}
       <section className="py-16 lg:py-24 bg-gray-50 relative overflow-hidden">
         {/* Soft Background Accent */}
@@ -825,6 +939,122 @@ const Home = () => {
       </section>
 
       <Footer />
+
+      {/* Detailed News Modal Popup */}
+      <AnimatePresence>
+        {selectedNews && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4"
+            onClick={() => setSelectedNews(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white rounded-3xl overflow-hidden shadow-2xl max-w-5xl w-full flex flex-col md:flex-row relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Left Side: Image Slider / Carousel */}
+              <div className="relative w-full md:w-[50%] h-[300px] md:h-[480px] bg-stone-900 flex items-center justify-center overflow-hidden group/modal shrink-0">
+                {(() => {
+                  const mediaList = [selectedNews.coverImage, ...(selectedNews.galleryImages || [])];
+                  const currentImgUrl = mediaList[selectedNewsSlideIdx % mediaList.length];
+                  
+                  return (
+                    <>
+                      <img src={getImageUrl(currentImgUrl)} alt={selectedNews.title} className="w-full h-full object-contain" />
+                      <div className="absolute inset-0 bg-black/20 pointer-events-none"></div>
+                      
+                      {/* Nav Arrows inside modal carousel */}
+                      {mediaList.length > 1 && (
+                        <>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedNewsSlideIdx(prev => (prev - 1 + mediaList.length) % mediaList.length);
+                            }}
+                            className="absolute left-4 w-10 h-10 rounded-full bg-white/20 hover:bg-white/40 text-white flex items-center justify-center transition-all opacity-0 group-hover/modal:opacity-100 shadow"
+                          >
+                            <FaChevronRight className="rotate-180" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedNewsSlideIdx(prev => (prev + 1) % mediaList.length);
+                            }}
+                            className="absolute right-4 w-10 h-10 rounded-full bg-white/20 hover:bg-white/40 text-white flex items-center justify-center transition-all opacity-0 group-hover/modal:opacity-100 shadow"
+                          >
+                            <FaChevronRight />
+                          </button>
+
+                          {/* Slide Indicator */}
+                          <div className="absolute bottom-4 right-4 px-3 py-1 bg-black/60 rounded-full text-white text-[10px] font-mono">
+                            { (selectedNewsSlideIdx % mediaList.length) + 1 } / { mediaList.length }
+                          </div>
+                        </>
+                      )}
+                    </>
+                  );
+                })()}
+              </div>
+
+              {/* Right Side: News Information */}
+              <div className="w-full md:w-[50%] p-6 md:p-10 flex flex-col justify-between max-h-[400px] md:max-h-[480px] overflow-y-auto bg-[#FAF9F5]">
+                <div>
+                  <div className="flex flex-wrap items-center gap-2 mb-4">
+                    <span className="px-2.5 py-1 bg-saffron-500 text-white rounded-md text-[10px] font-bold uppercase tracking-wider shadow">
+                      {selectedNews.category}
+                    </span>
+                    {selectedNews.priority === 'High' && (
+                      <span className="px-2.5 py-1 bg-red-500 text-white rounded-md text-[10px] font-bold uppercase tracking-wider shadow">
+                        High Priority
+                      </span>
+                    )}
+                  </div>
+
+                  <h3 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 leading-tight mb-4">
+                    {selectedNews.title}
+                  </h3>
+
+                  <div className="text-xs text-stone-400 font-semibold mb-6 flex flex-wrap items-center gap-2 border-b border-stone-200/40 pb-4">
+                    <span>{formatDateString(selectedNews.publishDate)}</span>
+                    {selectedNews.branch?.name && (
+                      <>
+                        <span>•</span>
+                        <span>Branch: {selectedNews.branch.name}</span>
+                      </>
+                    )}
+                  </div>
+
+                  <div className="text-stone-600 text-sm sm:text-base leading-relaxed font-light whitespace-pre-wrap">
+                    {selectedNews.fullDescription || selectedNews.shortDescription}
+                  </div>
+                </div>
+
+                <div className="mt-8 pt-4 border-t border-stone-200/40 flex justify-end">
+                  <button
+                    onClick={() => setSelectedNews(null)}
+                    className="px-6 py-2.5 bg-stone-900 hover:bg-black text-white font-bold rounded-xl transition-colors text-xs uppercase tracking-wider shadow-md hover:shadow-lg"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+
+              {/* Close Button Top-Right */}
+              <button
+                onClick={() => setSelectedNews(null)}
+                className="absolute top-4 right-4 w-10 h-10 bg-white/95 hover:bg-red-600 hover:text-white text-stone-500 rounded-full flex items-center justify-center transition-all border border-stone-200 shadow z-50"
+              >
+                <FaTimes />
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

@@ -118,6 +118,7 @@ const Layout = ({ children, user }) => {
       { name: 'Monastery History', path: '/trustee/math-history', icon: <FaHistory /> },
       { name: 'Sansthan Updates', path: '/trustee/bulletins', icon: <FaBullhorn /> },
       { name: 'Audio Tracks', path: '/trustee/audio', icon: <FaMusic /> },
+      { name: 'News', path: '/trustee/news', icon: <FaBullhorn /> },
     ];
   } else if (user?.role === 'BranchManager') {
     navItems = [
@@ -129,6 +130,7 @@ const Layout = ({ children, user }) => {
       { name: 'Documents', path: '/branch/documents', icon: <FaFileAlt /> },
       { name: 'Donations', path: '/branch/donations', icon: <FaDonate /> },
       { name: 'Events', path: '/branch/events', icon: <FaCalendarAlt /> },
+      { name: 'News', path: '/branch/news', icon: <FaBullhorn /> },
     ];
   } else if (user?.role === 'Accountant') {
     navItems = [
@@ -162,6 +164,7 @@ const Layout = ({ children, user }) => {
       { name: 'Events', path: '/admin/events', icon: <FaCalendarAlt /> },
       { name: 'Sansthan Updates', path: '/trustee/bulletins', icon: <FaBullhorn /> },
       { name: 'Trustees', path: '/admin/trustees', icon: <FaUserShield /> },
+      { name: 'News', path: '/admin/news', icon: <FaBullhorn /> },
     ];
   }
 

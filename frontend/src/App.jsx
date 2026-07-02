@@ -89,6 +89,9 @@ import AccountantAnnouncements from "./pages/accountant/Announcements";
 // CMS Pages for Monastery History and Lineage
 import ManageMathHistory from "./pages/admin/ManageMathHistory";
 import ManageLineage from "./pages/admin/ManageLineage";
+import ManageNews from "./pages/admin/ManageNews";
+import TrusteeManageNews from "./pages/trustee/ManageNews";
+import BranchManageNews from "./pages/branch/ManageNews";
 
 // New RBAC Route Wrapper
 const RoleProtectedRoute = ({ children, allowedRoles }) => {
@@ -199,6 +202,7 @@ function AppRoutes() {
           <Route path="/admin/documents" element={<RoleProtectedRoute allowedRoles={['Admin']}><AdminDocuments /></RoleProtectedRoute>} />
           <Route path="/admin/math-history" element={<RoleProtectedRoute allowedRoles={['Admin']}><ManageMathHistory /></RoleProtectedRoute>} />
           <Route path="/admin/lineage" element={<RoleProtectedRoute allowedRoles={['Admin']}><ManageLineage /></RoleProtectedRoute>} />
+          <Route path="/admin/news" element={<RoleProtectedRoute allowedRoles={['Admin']}><ManageNews /></RoleProtectedRoute>} />
 
           {/* Trustee Protected Routes */}
           <Route path="/trustee/dashboard" element={<RoleProtectedRoute allowedRoles={['Trustee']}><TrusteeDashboard /></RoleProtectedRoute>} />
@@ -216,6 +220,7 @@ function AppRoutes() {
           <Route path="/trustee/lineage" element={<RoleProtectedRoute allowedRoles={['Trustee']}><ManageLineage /></RoleProtectedRoute>} />
           <Route path="/trustee/accountants" element={<RoleProtectedRoute allowedRoles={['Trustee']}><TrusteeAccountants /></RoleProtectedRoute>} />
           <Route path="/trustee/audio" element={<RoleProtectedRoute allowedRoles={['Trustee']}><TrusteeAudioTracks /></RoleProtectedRoute>} />
+          <Route path="/trustee/news" element={<RoleProtectedRoute allowedRoles={['Trustee']}><TrusteeManageNews /></RoleProtectedRoute>} />
 
           {/* Branch Manager Protected Routes */}
           <Route path="/branch/dashboard" element={<RoleProtectedRoute allowedRoles={['BranchManager']}><BranchDashboard /></RoleProtectedRoute>} />
@@ -226,6 +231,7 @@ function AppRoutes() {
           <Route path="/branch/announcements" element={<RoleProtectedRoute allowedRoles={['BranchManager']}><BranchAnnouncements /></RoleProtectedRoute>} />
           <Route path="/branch/branches" element={<RoleProtectedRoute allowedRoles={['BranchManager']}><BranchBranches /></RoleProtectedRoute>} />
           <Route path="/branch/documents" element={<RoleProtectedRoute allowedRoles={['BranchManager']}><BranchDocuments /></RoleProtectedRoute>} />
+          <Route path="/branch/news" element={<RoleProtectedRoute allowedRoles={['BranchManager']}><BranchManageNews /></RoleProtectedRoute>} />
 
           {/* Devotee Protected Routes */}
           <Route path="/devotee/dashboard" element={<DevoteeLayout allowedRoles={['Devotee']}><DevoteeDashboardHome /></DevoteeLayout>} />

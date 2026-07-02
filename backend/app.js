@@ -34,6 +34,7 @@ app.use("/api/documents", require("./routes/documentRoutes"));
 app.use("/api/live", require("./routes/liveRoutes"));
 app.use("/api/annadaan", require("./routes/annadaanRoutes"));
 app.use("/api/gallery", require("./routes/galleryRoutes"));
+app.use("/api/news", require("./routes/newsRoutes"));
 app.use("/api/stats", require("./routes/statsRoutes"));
 app.use("/api/math-history", require("./routes/mathHistoryRoutes"));
 app.use("/api/lineage", require("./routes/lineageRoutes"));

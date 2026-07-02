@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { FiDollarSign, FiCalendar, FiFileText, FiShield, FiClock, FiActivity } from 'react-icons/fi';
+import { FiDollarSign, FiCalendar, FiFileText, FiShield, FiClock, FiActivity, FiBell } from 'react-icons/fi';
 import api from "../../utils/api";
 import { useAuth } from "../../context/AuthContext";
 import AnimatedCounter from '../../components/dashboard/AnimatedCounter';
@@ -110,7 +110,7 @@ const BranchDashboard = () => {
         <h2 className="text-lg font-bold text-gray-700 mb-6 flex items-center gap-2 border-b border-gray-100 pb-2 uppercase tracking-wide">
           <FiCalendar className="text-emerald-500" /> Branch Metrics Overview
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {preferences.showDonations && <StatCard 
             title="Branch Donations" 
             value={<AnimatedCounter value={stats?.totalDonations || 0} prefix="₹ " />} 
@@ -131,6 +131,13 @@ const BranchDashboard = () => {
             icon={<FiFileText />} 
             gradient="from-orange-400 to-red-500"
             delay={0.3} 
+          />}
+          {preferences.showNews !== false && <StatCard 
+            title="Branch News" 
+            value={<AnimatedCounter value={stats?.totalNews || 0} />} 
+            icon={<FiBell />} 
+            gradient="from-purple-400 to-pink-600"
+            delay={0.4} 
           />}
         </div>
       </div>

@@ -2,6 +2,7 @@ const Donation = require("../models/Donation");
 const Event = require("../models/Event");
 const Document = require("../models/Document");
 const BranchManager = require("../models/BranchManager");
+const News = require("../models/News");
 
 exports.updateProfile = async (req, res) => {
   try {
@@ -46,12 +47,20 @@ exports.getStats = async (req, res) => {
     ]);
     const totalDonations = donations.length > 0 ? donations[0].total : 0;
 
+    const totalNews = await News.countDocuments({
+      $or: [
+        { branch: branchId },
+        { branchSelection: 'All Branches' }
+      ]
+    });
+
     res.status(200).json({
       success: true,
       stats: {
         totalEvents,
         pendingDocuments,
-        totalDonations
+        totalDonations,
+        totalNews
       }
     });
   } catch (err) {
