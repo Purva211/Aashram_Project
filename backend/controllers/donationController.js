@@ -26,10 +26,15 @@ const generateDonationRef = async () => {
   return `DON-${year}-${sequence}`;
 };
 
-// Generate Receipt Number (RCT-YYYY-XXXXX)
-const generateReceiptRef = async () => {
+// Generate Receipt Number
+const generateReceiptRef = async (donationType) => {
   const year = new Date().getFullYear();
-  const latest = await Donation.findOne({ receiptNumber: new RegExp(`^RCT-${year}-`) })
+  let prefix = "RCT";
+  if (donationType === "jama_pavti") prefix = "JP";
+  else if (donationType === "shakha_pavti") prefix = "SP";
+  else if (donationType === "dengi_pavti") prefix = "DP";
+
+  const latest = await Donation.findOne({ receiptNumber: new RegExp(`^${prefix}-${year}-`) })
     .sort({ receiptNumber: -1 })
     .collation({ locale: "en_US", numericOrdering: true });
 
@@ -40,25 +45,30 @@ const generateReceiptRef = async () => {
       nextSeq = parseInt(parts[2], 10) + 1;
     }
   }
-  const sequence = String(nextSeq).padStart(5, '0');
-  return `RCT-${year}-${sequence}`;
+  const sequence = String(nextSeq).padStart(6, '0'); // requested format JP-2026-000101
+  return `${prefix}-${year}-${sequence}`;
 };
 
 exports.createDonation = async (req, res) => {
   try {
     const { donorName, email, phone, address, amount, branchId, message, utrNumber, upiId, paymentApp, donationType } = req.body;
     
-    const branch = await Branch.findById(branchId);
-    if (!branch) return res.status(404).json({ success: false, message: "Branch not found" });
-
-    // Enforce branch-specific donation type
-    const isMainBranch = branch.name.toLowerCase().includes("kole") || branch.location.toLowerCase().includes("kole");
-    let finalDonationType = donationType;
-    if (!isMainBranch) {
-      finalDonationType = "shakha_pavti";
-    } else if (donationType === "shakha_pavti") {
-      finalDonationType = "dengi_pavti";
+    let dbBranchId = undefined;
+    const cleanBranchId = branchId ? String(branchId).trim() : '';
+    if (cleanBranchId && cleanBranchId !== 'global' && cleanBranchId !== 'undefined' && cleanBranchId !== 'null') {
+      try {
+        const branch = await Branch.findById(cleanBranchId);
+        if (!branch) return res.status(404).json({ success: false, message: "Branch not found" });
+        dbBranchId = cleanBranchId;
+      } catch (err) {
+        if (err.name === 'CastError') {
+          return res.status(400).json({ success: false, message: "Invalid Branch ID." });
+        }
+        throw err;
+      }
     }
+    
+    let finalDonationType = donationType || "dengi_pavti";
 
     if (!utrNumber) {
       if (req.file) fs.unlinkSync(req.file.path);
@@ -101,13 +111,13 @@ exports.createDonation = async (req, res) => {
           phone,
           address,
           amount,
-          branchId,
+          branchId: dbBranchId,
           message,
           utrNumber,
           upiId,
           paymentApp,
           screenshotUrl,
-          donationType: finalDonationType || "dengi_pavti",
+          donationType: finalDonationType,
           status: "PENDING_VERIFICATION",
           userId: req.user ? req.user._id : undefined
         });
@@ -156,15 +166,20 @@ exports.updateDonation = async (req, res) => {
     donation.message = message !== undefined ? message : donation.message;
 
     if (branchId) {
-      const branch = await Branch.findById(branchId);
-      if (!branch) return res.status(404).json({ success: false, message: "Branch not found" });
-      donation.branchId = branchId;
-      
-      const isMainBranch = branch.name.toLowerCase().includes("kole") || branch.location.toLowerCase().includes("kole");
-      if (!isMainBranch) {
-        donation.donationType = "shakha_pavti";
-      } else if (donation.donationType === "shakha_pavti") {
-        donation.donationType = "dengi_pavti";
+      const cleanBranchId = String(branchId).trim();
+      if (cleanBranchId === 'global' || cleanBranchId === 'undefined' || cleanBranchId === 'null') {
+        donation.branchId = undefined;
+      } else {
+        try {
+          const branch = await Branch.findById(cleanBranchId);
+          if (!branch) return res.status(404).json({ success: false, message: "Branch not found" });
+          donation.branchId = cleanBranchId;
+        } catch (err) {
+          if (err.name === 'CastError') {
+            return res.status(400).json({ success: false, message: "Invalid Branch ID." });
+          }
+          throw err;
+        }
       }
     }
 
@@ -321,7 +336,7 @@ exports.approveDonation = async (req, res) => {
     donation.approvalRemarks = remarks;
     
     if (!donation.receiptNumber) {
-        donation.receiptNumber = await generateReceiptRef();
+        donation.receiptNumber = await generateReceiptRef(donation.donationType);
     }
 
     await donation.save();

@@ -239,19 +239,15 @@ const Donation = () => {
                         { id: 'shakha_pavti', labelMarathi: 'शाखा पावती', labelEnglish: 'Shakha Pavti (Branch)' },
                         { id: 'jama_pavti', labelMarathi: 'जमा पावती', labelEnglish: 'Jama Pavti (Collection)' }
                       ].map((opt) => {
-                        const isDisabled = isMainBranch ? opt.id === 'shakha_pavti' : opt.id !== 'shakha_pavti';
                         return (
                           <button
                             type="button"
                             key={opt.id}
-                            disabled={isDisabled}
                             onClick={() => setDonationType(opt.id)}
                             className={`py-3 px-4 rounded-xl border-2 flex flex-col items-center justify-center transition-all ${
                               donationType === opt.id 
                                 ? 'border-mahakal-saffron bg-amber-50 text-mahakal-saffron shadow-sm' 
-                                : isDisabled
-                                  ? 'border-stone-100 bg-stone-50 text-stone-300 cursor-not-allowed opacity-50'
-                                  : 'border-stone-200 text-stone-600 hover:border-amber-200'
+                                : 'border-stone-200 text-stone-600 hover:border-amber-200'
                             }`}
                           >
                             <span className="font-bold text-base">{opt.labelMarathi}</span>
@@ -272,19 +268,18 @@ const Donation = () => {
                           onChange={(e) => {
                             const newBranchId = e.target.value;
                             setSelectedBranchId(newBranchId);
-                            const newBranch = branches.find(b => b._id === newBranchId);
-                            if (newBranch) {
-                              const isMain = newBranch.name.toLowerCase().includes("kole") || newBranch.location.toLowerCase().includes("kole");
-                              if (!isMain) {
-                                setDonationType("shakha_pavti");
-                              } else {
-                                setDonationType("dengi_pavti");
+                            if (newBranchId !== 'global') {
+                              const newBranch = branches.find(b => b._id === newBranchId);
+                              if (newBranch) {
+                                const isMain = newBranch.name.toLowerCase().includes("kole") || newBranch.location.toLowerCase().includes("kole");
+                                // We don't automatically override donation type anymore
                               }
                             }
                           }}
                           className="w-full px-6 py-4 rounded-xl border-2 border-stone-200 focus:ring-2 focus:ring-mahakal-saffron focus:border-mahakal-saffron outline-none bg-white text-mahakal-burgundy font-medium appearance-none"
                         >
                           <option value="" disabled>Select a branch</option>
+                          <option value="global">Global Trust / Math (Common)</option>
                           {branches.map(b => (
                             <option key={b._id} value={b._id}>{b.name}</option>
                           ))}
@@ -310,6 +305,10 @@ const Donation = () => {
                     <div>
                       <label className="block text-sm font-bold text-mahakal-burgundy uppercase tracking-widest mb-3">City/Address</label>
                       <input type="text" required value={address} onChange={(e) => setAddress(e.target.value)} className="w-full px-6 py-4 rounded-xl border-2 border-stone-200 focus:ring-2 focus:ring-mahakal-saffron focus:border-mahakal-saffron outline-none bg-white" />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-bold text-mahakal-burgundy uppercase tracking-widest mb-3">Donation Purpose (e.g. देणगी / अन्नदान)</label>
+                      <input type="text" required value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Enter purpose of donation" className="w-full px-6 py-4 rounded-xl border-2 border-stone-200 focus:ring-2 focus:ring-mahakal-saffron focus:border-mahakal-saffron outline-none bg-white" />
                     </div>
                   </div>
 
