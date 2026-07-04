@@ -5,8 +5,7 @@ const fs = require("fs");
 const crypto = require("crypto");
 const sendEmail = require("../utils/sendEmail");
 const { issueReceipt } = require("../utils/receiptEngine");
-// Based on previous task, nodemailer logic might be in authController, but let's assume a generic mailer or just console log if not available.
-// Let's check for an email utility later.
+const { generateReceiptPdf } = require("../utils/generateReceipt");
 
 // Generate Unique Reference (DON-YYYY-XXXXX)
 const generateDonationRef = async () => {
@@ -26,10 +25,15 @@ const generateDonationRef = async () => {
   return `DON-${year}-${sequence}`;
 };
 
-// Generate Receipt Number (RCT-YYYY-XXXXX)
-const generateReceiptRef = async () => {
+// Generate Receipt Number
+const generateReceiptRef = async (donationType) => {
   const year = new Date().getFullYear();
-  const latest = await Donation.findOne({ receiptNumber: new RegExp(`^RCT-${year}-`) })
+  let prefix = "RCT";
+  if (donationType === "jama_pavti") prefix = "JP";
+  else if (donationType === "shakha_pavti") prefix = "SP";
+  else if (donationType === "dengi_pavti") prefix = "DP";
+
+  const latest = await Donation.findOne({ receiptNumber: new RegExp(`^${prefix}-${year}-`) })
     .sort({ receiptNumber: -1 })
     .collation({ locale: "en_US", numericOrdering: true });
 
@@ -40,16 +44,30 @@ const generateReceiptRef = async () => {
       nextSeq = parseInt(parts[2], 10) + 1;
     }
   }
-  const sequence = String(nextSeq).padStart(5, '0');
-  return `RCT-${year}-${sequence}`;
+  const sequence = String(nextSeq).padStart(6, '0'); // requested format JP-2026-000101
+  return `${prefix}-${year}-${sequence}`;
 };
 
 exports.createDonation = async (req, res) => {
   try {
-    const { donorName, email, phone, address, amount, branchId, message, utrNumber, upiId, paymentApp } = req.body;
+    const { donorName, email, phone, address, amount, branchId, message, utrNumber, upiId, paymentApp, donationType } = req.body;
     
-    const branch = await Branch.findById(branchId);
-    if (!branch) return res.status(404).json({ success: false, message: "Branch not found" });
+    let dbBranchId = undefined;
+    const cleanBranchId = branchId ? String(branchId).trim() : '';
+    if (cleanBranchId && cleanBranchId !== 'global' && cleanBranchId !== 'undefined' && cleanBranchId !== 'null') {
+      try {
+        const branch = await Branch.findById(cleanBranchId);
+        if (!branch) return res.status(404).json({ success: false, message: "Branch not found" });
+        dbBranchId = cleanBranchId;
+      } catch (err) {
+        if (err.name === 'CastError') {
+          return res.status(400).json({ success: false, message: "Invalid Branch ID." });
+        }
+        throw err;
+      }
+    }
+    
+    let finalDonationType = donationType || "dengi_pavti";
 
     if (!utrNumber) {
       if (req.file) fs.unlinkSync(req.file.path);
@@ -92,12 +110,13 @@ exports.createDonation = async (req, res) => {
           phone,
           address,
           amount,
-          branchId,
+          branchId: dbBranchId,
           message,
           utrNumber,
           upiId,
           paymentApp,
           screenshotUrl,
+          donationType: finalDonationType,
           status: "PENDING_VERIFICATION",
           userId: req.user ? req.user._id : undefined
         });
@@ -143,8 +162,25 @@ exports.updateDonation = async (req, res) => {
     donation.phone = phone || donation.phone;
     donation.address = address || donation.address;
     donation.amount = amount || donation.amount;
-    donation.branchId = branchId || donation.branchId;
     donation.message = message !== undefined ? message : donation.message;
+
+    if (branchId) {
+      const cleanBranchId = String(branchId).trim();
+      if (cleanBranchId === 'global' || cleanBranchId === 'undefined' || cleanBranchId === 'null') {
+        donation.branchId = undefined;
+      } else {
+        try {
+          const branch = await Branch.findById(cleanBranchId);
+          if (!branch) return res.status(404).json({ success: false, message: "Branch not found" });
+          donation.branchId = cleanBranchId;
+        } catch (err) {
+          if (err.name === 'CastError') {
+            return res.status(400).json({ success: false, message: "Invalid Branch ID." });
+          }
+          throw err;
+        }
+      }
+    }
 
     await donation.save();
 
@@ -298,34 +334,10 @@ exports.approveDonation = async (req, res) => {
     donation.approvalDate = new Date();
     donation.approvalRemarks = remarks;
     
-    let pdfUrl = null;
-    let archive = null;
+    let pdfUrl = `/api/donations/${donation._id}/receipt`;
     try {
-      const dynamicData = {
-        donorName: donation.donorName,
-        date: new Date(donation.date).toLocaleDateString("en-IN", { day: '2-digit', month: '2-digit', year: 'numeric' }),
-        address: donation.address,
-        phone: donation.phone,
-        amount: donation.amount,
-        amountInWords: `Rupees ${donation.amount} Only`, // You could add a number-to-words library here
-        paymentMethod: donation.paymentApp || "Online",
-        utrNumber: donation.utrNumber
-      };
-
-      archive = await issueReceipt({
-        category: 'Donation',
-        year: new Date().getFullYear(),
-        dynamicData,
-        referenceId: donation._id,
-        referenceModel: 'Donation',
-        generatedBy: req.user._id,
-        generatedByModel: req.user.role,
-        branchId: donation.branchId
-      });
-
-      pdfUrl = archive.pdfUrl;
-      donation.receiptNumber = archive.receiptNumber;
-      donation.receiptPdfUrl = archive.pdfUrl;
+      donation.receiptNumber = donation.donationReference;
+      donation.receiptPdfUrl = pdfUrl;
       await donation.save();
     } catch (receiptError) {
       console.error("Error generating receipt via engine:", receiptError);
@@ -333,10 +345,18 @@ exports.approveDonation = async (req, res) => {
 
     try {
       if (donation.email && pdfUrl) {
+        const pdfBuffer = await generateReceiptPdf(donation.toObject());
         await sendEmail({
           email: donation.email,
           subject: "Your Donation Receipt - Kolekar Maha Swamiji Monastery",
-          message: `Dear ${donation.donorName},\n\nWe sincerely thank you for your generous donation of INR ${donation.amount}/-. Your payment has been successfully verified and approved.\n\nYou can download your official receipt here: ${pdfUrl}\n\nMay the divine blessings of Kolekar Maha Swamiji be always with you and your family.\n\nRegards,\nShri Gurumurti Rudrapashupati Lingayat Monastery Trust`,
+          message: `Dear ${donation.donorName},\n\nWe sincerely thank you for your generous donation of INR ${donation.amount}/-. Your payment has been successfully verified and approved.\n\nPlease find your official donation receipt attached to this email.\n\nYou can also download it from our portal here: ${pdfUrl}\n\nMay the divine blessings of Kolekar Maha Swamiji be always with you and your family.\n\nRegards,\nShri Gurumurti Rudrapashupati Lingayat Monastery Trust`,
+          attachments: [
+            {
+              filename: `Donation_Receipt_${donation.receiptNumber || donation.donationReference}.pdf`,
+              content: pdfBuffer,
+              contentType: 'application/pdf'
+            }
+          ]
         });
       }
     } catch (emailError) {
@@ -457,3 +477,37 @@ exports.verifyReceipt = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+exports.downloadReceipt = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const donation = await Donation.findById(id);
+
+    if (!donation) {
+      return res.status(404).json({ success: false, message: "Donation record not found." });
+    }
+
+    if (donation.status !== "APPROVED") {
+      return res.status(400).json({ success: false, message: "Receipt is only available for approved donations." });
+    }
+
+    // Branch Managers should only access their branch's receipts
+    if (req.user.role === "BranchManager" && donation.branchId && donation.branchId.toString() !== req.user.branch.toString()) {
+      return res.status(403).json({ success: false, message: "Unauthorized to access this receipt." });
+    }
+
+    // Update last downloaded timestamp
+    donation.lastReceiptDownloadedAt = new Date();
+    await donation.save();
+
+    const pdfBuffer = await generateReceiptPdf(donation.toObject());
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename=Donation_Receipt_${donation.receiptNumber || donation.donationReference}.pdf`);
+    return res.send(pdfBuffer);
+  } catch (err) {
+    console.error("[donationController][ERROR] downloadReceipt:", err.message);
+    return res.status(500).json({ success: false, message: "Failed to generate receipt PDF." });
+  }
+};
+

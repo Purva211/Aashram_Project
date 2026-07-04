@@ -55,7 +55,7 @@ const DonationVerification = () => {
         setSelectedDonation(null);
         setRemarks('');
         fetchPendingDonations();
-        navigate('/accountant/donations');
+        navigate('/accountant/receipts');
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Approval failed.");
@@ -79,7 +79,7 @@ const DonationVerification = () => {
         setSelectedDonation(null);
         setRejectReason('');
         fetchPendingDonations();
-        navigate('/accountant/donations');
+        navigate('/accountant/receipts');
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Rejection failed.");
@@ -264,7 +264,7 @@ const DonationVerification = () => {
 
              <div className="flex gap-3">
                <button onClick={() => setShowApproveModal(false)} className="flex-1 py-3 rounded-xl bg-stone-100 text-stone-600 font-bold hover:bg-stone-200">Cancel</button>
-               <button onClick={handleApprove} disabled={isProcessing} className="flex-1 py-3 rounded-xl bg-green-600 text-white font-bold hover:bg-green-700 shadow flex items-center justify-center gap-2">
+               <button onClick={handleApprove} disabled={isProcessing} className="flex-1 py-3 rounded-xl bg-slate-900 hover:bg-black w-full md:w-auto justify-center text-white font-bold hover:bg-green-700 shadow flex items-center justify-center gap-2">
                  {isProcessing ? "Approving..." : <><Receipt className="w-5 h-5"/> Confirm & Issue</>}
                </button>
              </div>
@@ -298,7 +298,7 @@ const DonationVerification = () => {
 
              <div className="flex gap-3">
                <button onClick={() => setShowRejectModal(false)} className="flex-1 py-3 rounded-xl bg-stone-100 text-stone-600 font-bold hover:bg-stone-200">Cancel</button>
-               <button onClick={handleReject} disabled={isProcessing} className="flex-1 py-3 rounded-xl bg-red-600 text-white font-bold hover:bg-red-700 shadow">
+               <button onClick={handleReject} disabled={isProcessing} className="flex-1 py-3 rounded-xl bg-slate-900 hover:bg-black w-full md:w-auto justify-center text-white font-bold hover:bg-red-700 shadow">
                  {isProcessing ? "Rejecting..." : "Confirm Rejection"}
                </button>
              </div>

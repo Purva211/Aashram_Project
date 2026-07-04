@@ -35,13 +35,43 @@ const AdminProfile = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const [preferences, setPreferences] = useState({
-    notifyEmail: true, notifySms: false, notifyDonation: true, notifyEvent: true, notifyAnnadan: false,
     language: 'English', theme: 'Light',
-    showActivities: true, showBranches: true, showDonations: true, showEvents: true,
-    dateFormat: 'DD/MM/YYYY', timezone: 'Asia/Kolkata'
+    showActivities: true, showBranches: true, showDonations: true
   });
   
-  const handleTogglePref = (key) => setPreferences(prev => ({ ...prev, [key]: !prev[key] }));
+  useEffect(() => {
+    const savedPrefs = localStorage.getItem('adminPreferences');
+    if (savedPrefs) {
+      try {
+        setPreferences(prev => ({ ...prev, ...JSON.parse(savedPrefs) }));
+      } catch (e) {
+        console.error("Failed to parse preferences", e);
+      }
+    }
+  }, []);
+
+  const handleTogglePref = (key) => {
+    setPreferences(prev => {
+      const updated = { ...prev, [key]: !prev[key] };
+      localStorage.setItem('adminPreferences', JSON.stringify(updated));
+      window.dispatchEvent(new Event('preferencesUpdated'));
+      return updated;
+    });
+  };
+
+  const handleThemeChange = (newTheme) => {
+    setPreferences(prev => {
+      const updated = { ...prev, theme: newTheme };
+      localStorage.setItem('adminPreferences', JSON.stringify(updated));
+      return updated;
+    });
+    if (newTheme === 'Dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    window.dispatchEvent(new Event('preferencesUpdated'));
+  };
   
   const Toggle = ({ enabled, onChange }) => (
     <div 
@@ -138,7 +168,20 @@ const AdminProfile = () => {
     setLoading(true);
     setSuccessMsg('');
     try {
-      await new Promise(res => setTimeout(res, 800)); 
+      localStorage.setItem('adminPreferences', JSON.stringify(preferences));
+      
+      let lngCode = 'en';
+      if (preferences.language === 'Hindi') lngCode = 'hi';
+      if (preferences.language === 'Marathi') lngCode = 'mr';
+      
+      i18n.changeLanguage(lngCode);
+      document.cookie = `googtrans=/en/${lngCode}; path=/;`;
+      document.cookie = `googtrans=/en/${lngCode}; path=/; domain=${window.location.hostname};`;
+      
+      // Dispatch event to notify other components
+      window.dispatchEvent(new Event('preferencesUpdated'));
+
+      await new Promise(res => setTimeout(res, 400)); 
       setSuccessMsg('Preferences saved successfully!');
     } catch (err) {
       console.error(err);
@@ -330,49 +373,14 @@ const AdminProfile = () => {
                     <p className="text-gray-500 mt-1">Customize your admin dashboard experience.</p>
                   </div>
                   <button 
-                    onClick={() => {
-                      let lngCode = 'en';
-                      if (preferences.language === 'Hindi') lngCode = 'hi';
-                      if (preferences.language === 'Marathi') lngCode = 'mr';
-                      
-                      i18n.changeLanguage(lngCode);
-                      document.cookie = `googtrans=/en/${lngCode}; path=/;`;
-                      document.cookie = `googtrans=/en/${lngCode}; path=/; domain=${window.location.hostname};`;
-                      
-                      setSuccessMsg('Preferences saved successfully!');
-                      setTimeout(() => {
-                        setSuccessMsg('');
-                        window.location.reload();
-                      }, 1000);
-                    }}
+                    onClick={handleUpdatePreferences}
                     className="bg-white border border-sky-500 text-sky-600 hover:bg-sky-50 px-6 py-2.5 rounded-xl font-medium shadow-sm transition-colors flex items-center gap-2">
                     <FiSave className="w-4 h-4"/> Save Preferences
                   </button>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {/* Section 1: Notifications */}
-                  <section className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100 space-y-6">
-                    <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2"><FiBell className="w-5 h-5 text-sky-500"/> Notifications</h3>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-gray-700">Email Notifications</span>
-                        <Toggle enabled={preferences.notifyEmail} onChange={() => handleTogglePref('notifyEmail')} />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-gray-700">SMS Notifications</span>
-                        <Toggle enabled={preferences.notifySms} onChange={() => handleTogglePref('notifySms')} />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-gray-700">Donation Alerts</span>
-                        <Toggle enabled={preferences.notifyDonation} onChange={() => handleTogglePref('notifyDonation')} />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-gray-700">Event Reminders</span>
-                        <Toggle enabled={preferences.notifyEvent} onChange={() => handleTogglePref('notifyEvent')} />
-                      </div>
-                    </div>
-                  </section>
+                  {/* Removed Notifications Section */}
 
                   {/* Section 2: Dashboard Items */}
                   <section className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100 space-y-6">
@@ -417,13 +425,13 @@ const AdminProfile = () => {
                         <label className="text-sm font-medium text-gray-700">Interface Theme</label>
                         <div className="flex gap-3">
                           <button 
-                            onClick={() => setPreferences({...preferences, theme: 'Light'})}
+                            onClick={() => handleThemeChange('Light')}
                             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg border font-medium transition-all ${preferences.theme === 'Light' ? 'bg-sky-50 border-sky-500 text-sky-700' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
                           >
                             <Sun className="w-4 h-4" /> Light
                           </button>
                           <button 
-                            onClick={() => setPreferences({...preferences, theme: 'Dark'})}
+                            onClick={() => handleThemeChange('Dark')}
                             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg border font-medium transition-all ${preferences.theme === 'Dark' ? 'bg-sky-50 border-sky-500 text-sky-700' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
                           >
                             <Moon className="w-4 h-4" /> Dark
@@ -433,43 +441,7 @@ const AdminProfile = () => {
                     </div>
                   </section>
 
-                  {/* Section 4: Date & Time Settings */}
-                  <section className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100 space-y-6">
-                    <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2"><Clock className="w-5 h-5 text-sky-500"/> Date & Time</h3>
-                    <div className="space-y-5">
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700">Date Format</label>
-                        <div className="relative">
-                          <select 
-                            value={preferences.dateFormat} 
-                            onChange={(e) => setPreferences({...preferences, dateFormat: e.target.value})}
-                            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none appearance-none transition-all"
-                          >
-                            <option value="DD/MM/YYYY">DD/MM/YYYY (31/12/2023)</option>
-                            <option value="MM/DD/YYYY">MM/DD/YYYY (12/31/2023)</option>
-                            <option value="DD-MMM-YYYY">DD-MMM-YYYY (31-Dec-2023)</option>
-                          </select>
-                          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700">Timezone</label>
-                        <div className="relative">
-                          <select 
-                            value={preferences.timezone} 
-                            onChange={(e) => setPreferences({...preferences, timezone: e.target.value})}
-                            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none appearance-none transition-all"
-                          >
-                            <option value="Asia/Kolkata">Asia/Kolkata (IST)</option>
-                            <option value="UTC">UTC (Universal Coordinated Time)</option>
-                            <option value="America/New_York">America/New_York (EST)</option>
-                          </select>
-                          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-                        </div>
-                      </div>
-                    </div>
-                  </section>
+                  {/* Removed Date & Time Section */}
                 </div>
               </motion.div>
             )}

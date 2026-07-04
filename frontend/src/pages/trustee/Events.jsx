@@ -264,27 +264,27 @@ const AdminEvents = () => {
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+          <h1 className="text-3xl font-bold text-gray-900 flex flex-wrap items-center gap-3">
             <FaCalendarAlt className="text-gray-700" /> Event Management
             {!hasManage && <span className="bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full shadow-sm">View Only Access</span>}
           </h1>
           <p className="text-sm text-gray-500 mt-2">Manage all temple spiritual events, live aarati, and past videos.</p>
         </div>
         {activeTab === 'upcoming' && hasManage && (
-        <button onClick={() => openModal()} className="bg-[#FF7A2F] hover:bg-[#e66a22] transition-colors px-6 py-3 rounded-xl text-white font-bold flex items-center gap-2 shadow-[0_4px_14px_0_rgba(255,122,47,0.39)]">
+        <button onClick={() => openModal()} className="bg-slate-900 hover:bg-black transition-colors px-6 py-3 rounded-xl text-white font-bold flex justify-center items-center gap-2 shadow-lg w-full md:w-auto">
             <FaPlus /> Add Event
           </button>
         )}
       </div>
 
       {/* TABS */}
-      <div className="flex gap-4 mb-8 bg-white border border-gray-100 p-1.5 rounded-2xl w-fit shadow-sm">
-        <button onClick={() => setActiveTab('upcoming')} className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all ${activeTab === 'upcoming' ? 'bg-[#05051F] text-white shadow-md' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}`}>Upcoming Events</button>
-        <button onClick={() => setActiveTab('live')} className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${activeTab === 'live' ? 'bg-[#05051F] text-white shadow-md' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}`}>
+      <div className="flex flex-wrap gap-2 mb-8 bg-white border border-gray-100 p-1.5 rounded-2xl w-full sm:w-fit shadow-sm">
+        <button onClick={() => setActiveTab('upcoming')} className={`flex-1 sm:flex-none justify-center px-4 sm:px-6 py-2.5 rounded-xl font-bold text-sm transition-all ${activeTab === 'upcoming' ? 'bg-[#05051F] text-white shadow-md' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}`}>Upcoming Events</button>
+        <button onClick={() => setActiveTab('live')} className={`flex-1 sm:flex-none justify-center px-4 sm:px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${activeTab === 'live' ? 'bg-[#05051F] text-white shadow-md' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}`}>
           {liveStream?.isLive && <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>}
           Live Aarati
         </button>
-        <button onClick={() => setActiveTab('past')} className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all ${activeTab === 'past' ? 'bg-[#05051F] text-white shadow-md' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}`}>Past Videos</button>
+        <button onClick={() => setActiveTab('past')} className={`flex-1 sm:flex-none justify-center px-4 sm:px-6 py-2.5 rounded-xl font-bold text-sm transition-all ${activeTab === 'past' ? 'bg-[#05051F] text-white shadow-md' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}`}>Past Videos</button>
       </div>
 
       {activeTab === 'upcoming' && (

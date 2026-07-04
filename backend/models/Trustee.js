@@ -9,6 +9,7 @@ const trusteeSchema = new mongoose.Schema({
   address: { type: String, required: true },
   aadhaar: { type: String },
   profilePhoto: { type: String },
+  audioTrack: { type: String },
   password: { type: String, required: true },
   role: { type: String, default: "Trustee" },
   systemRole: { type: String, default: "Trust Member" },

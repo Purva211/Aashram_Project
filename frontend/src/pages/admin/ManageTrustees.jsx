@@ -26,6 +26,7 @@ const ManageTrustees = () => {
     name: '', email: '', mobile: '', designation: '', address: '', password: '', confirmPassword: '',
     systemRole: 'Trust Member', permissions: defaultPermissions, status: 'Active'
   });
+  const [audioFile, setAudioFile] = useState(null);
 
   const [otpSent, setOtpSent] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
@@ -94,16 +95,26 @@ const ManageTrustees = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const dataToSubmit = new FormData();
+      Object.keys(formData).forEach(key => {
+        if (key === 'permissions') {
+          dataToSubmit.append(key, JSON.stringify(formData[key]));
+        } else {
+          dataToSubmit.append(key, formData[key]);
+        }
+      });
+      if (audioFile) {
+        dataToSubmit.append('audioTrack', audioFile);
+      }
+
       if (editingId) {
         if (formData.password && formData.password !== formData.confirmPassword) {
            alert("Passwords do not match");
            return;
         }
-<<<<<<< Updated upstream
-        await api.put(`/admins/trustees/${editingId}`, formData);
-=======
-        await api.put(`/admins/trustees/${editingId}`, dataToSubmit);
->>>>>>> Stashed changes
+        await api.put(`/admins/trustees/${editingId}`, dataToSubmit, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
       } else {
         if (!otpVerified) {
           alert("Please verify email first");
@@ -113,12 +124,10 @@ const ManageTrustees = () => {
           alert("Passwords do not match");
           return;
         }
-<<<<<<< Updated upstream
-        await api.post('/admins/trustees', { ...formData, verifiedToken });
-=======
         dataToSubmit.append('verifiedToken', verifiedToken);
-        await api.post('/admins/trustees', dataToSubmit);
->>>>>>> Stashed changes
+        await api.post('/admins/trustees', dataToSubmit, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
       }
       setIsModalOpen(false);
       setEditingId(null);
@@ -146,6 +155,7 @@ const ManageTrustees = () => {
     setVerifiedToken('');
     setShowPassword(false);
     setShowConfirmPassword(false);
+    setAudioFile(null);
     setFormData({
       name: trustee.name,
       email: trustee.email,
@@ -171,6 +181,7 @@ const ManageTrustees = () => {
     setVerifiedToken('');
     setShowPassword(false);
     setShowConfirmPassword(false);
+    setAudioFile(null);
     setFormData({
       name: '', email: '', mobile: '', designation: '', address: '', password: '', confirmPassword: '',
       systemRole: 'Trust Member', permissions: defaultPermissions, status: 'Active'
@@ -186,7 +197,7 @@ const ManageTrustees = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2 text-slate-900"><FiShield className="text-saffron-500" /> Trust Members Management</h1>
+          <h1 className="text-2xl font-bold flex flex-wrap items-center gap-2 text-slate-900"><FiShield className="text-saffron-500" /> Trust Members Management</h1>
           <p className="text-gray-500 text-sm mt-1">Manage hierarchy, roles, and system access permissions.</p>
         </div>
         <div className="flex flex-col sm:flex-row items-center gap-4">
@@ -271,9 +282,14 @@ const ManageTrustees = () => {
                     <div className="text-xs text-gray-400 mt-0.5">{t.mobile}</div>
                   </td>
                   <td className="p-4">
-                    <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${t.status === 'Active' ? 'bg-green-50 text-green-600 border-green-200' : 'bg-red-50 text-red-600 border-red-200'}`}>
+                    <span className={`px-2.5 py-1 rounded-full text-xs font-bold border mb-2 inline-block ${t.status === 'Active' ? 'bg-green-50 text-green-600 border-green-200' : 'bg-red-50 text-red-600 border-red-200'}`}>
                       {t.status || 'Active'}
                     </span>
+                    {t.audioTrack && (
+                      <div className="mt-2">
+                        <audio controls src={`${import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/api$/, '') : 'http://localhost:5000'}${t.audioTrack}`} className="h-8 w-32" />
+                      </div>
+                    )}
                   </td>
                   <td className="p-4 text-right">
                     <div className="flex justify-end gap-2">
@@ -377,6 +393,11 @@ const ManageTrustees = () => {
                   <input required type="text" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-gray-800 focus:outline-none focus:border-saffron-500 focus:bg-white focus:ring-1 focus:ring-saffron-500 transition-all" />
                 </div>
 
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Audio Track (Optional)</label>
+                  <input type="file" accept="audio/*" onChange={e => setAudioFile(e.target.files[0])} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-gray-800 focus:outline-none focus:border-saffron-500 focus:bg-white focus:ring-1 focus:ring-saffron-500 transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-saffron-50 file:text-saffron-700 hover:file:bg-saffron-100" />
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">
@@ -451,7 +472,7 @@ const ManageTrustees = () => {
 
                 <div className="pt-6 flex justify-end gap-3 border-t border-gray-100">
                   <button type="button" onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 rounded-xl text-gray-600 hover:bg-gray-100 font-bold transition-colors">Cancel</button>
-                  <button type="submit" className="bg-blue-900 hover:bg-blue-800 text-white px-8 py-2.5 rounded-xl font-black transition-colors shadow-lg">
+                  <button type="submit" className="bg-blue-900 hover:bg-slate-900 hover:bg-black w-full md:w-auto justify-center text-white px-8 py-2.5 rounded-xl font-black transition-colors shadow-lg">
                     {editingId ? 'Save Changes' : 'Create Trust Member'}
                   </button>
                 </div>

@@ -177,9 +177,10 @@ export const Settings = () => {
                   type="email"
                   name="email"
                   value={formData.email}
+                  disabled
                   onChange={handleInputChange}
                   placeholder="Enter email address"
-                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-cream-dark/40 bg-white/50 text-caramel-deep placeholder-caramel-dark/40 focus:outline-none focus:border-primary transition-colors text-sm font-medium"
+                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-cream-dark/40 bg-gray-50 text-caramel-deep/70 placeholder-caramel-dark/40 focus:outline-none transition-colors text-sm font-medium cursor-not-allowed"
                 />
               </div>
             </div>

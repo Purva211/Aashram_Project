@@ -37,6 +37,10 @@ const Register = () => {
       setError("Invalid email address format");
       return false;
     }
+    if (!/^[a-zA-Z0-9]+$/.test(formData.password)) {
+      setError("Password must contain only alphanumeric characters (letters and numbers)");
+      return false;
+    }
     if (formData.password.length < 6) {
       setError("Password must be at least 6 characters (Weak password)");
       return false;

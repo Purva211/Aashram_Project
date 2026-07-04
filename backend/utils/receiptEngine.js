@@ -5,6 +5,7 @@ const Sequence = require('../models/Sequence');
 const ReceiptArchive = require('../models/ReceiptArchive');
 const cloudinary = require('../config/cloudinary');
 const QRCode = require('qrcode');
+const { generateReceiptPdf: generateOldReceiptPdfBuffer } = require('./generateReceipt');
 
 /**
  * Generates the next sequential number for a given prefix.
@@ -111,7 +112,8 @@ const issueReceipt = async ({
   referenceModel,
   generatedBy,
   generatedByModel,
-  branchId
+  branchId,
+  rawDonation
 }) => {
   
   // Determine Prefix

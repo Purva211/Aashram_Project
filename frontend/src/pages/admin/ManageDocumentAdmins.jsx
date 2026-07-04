@@ -134,20 +134,20 @@ const ManageDocumentAdmins = () => {
 
   return (
     <div className="h-full flex flex-col relative z-10">
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-bold text-slate-900 mb-2 font-serif">Document Admins</h1>
           <p className="text-gray-500">Manage admins, their contact information, and active status.</p>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="relative">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full md:w-auto mt-4 md:mt-0">
+          <div className="relative w-full sm:w-auto">
             <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input 
               type="text" 
               placeholder="Search admins..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-saffron-500 focus:ring-1 focus:ring-saffron-500 w-full sm:w-64 shadow-sm transition-all"
+              className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-saffron-500 focus:ring-1 focus:ring-saffron-500 w-full sm:w-full sm:w-full sm:w-64 shadow-sm transition-all"
             />
           </div>
           <button
@@ -189,7 +189,7 @@ const ManageDocumentAdmins = () => {
                 paginatedData.map((admin) => (
                   <tr key={admin._id} className="hover:bg-gray-50 transition-colors">
                     <td className="p-6">
-                      <div className="flex items-center gap-3">
+                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
                         <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
                           <FaUserShield />
                         </div>

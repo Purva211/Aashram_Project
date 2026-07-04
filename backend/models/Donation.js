@@ -18,7 +18,7 @@ const donationSchema = new mongoose.Schema({
   branchId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Branch",
-    required: true
+    required: false
   },
   email: {
     type: String,
@@ -95,9 +95,18 @@ const donationSchema = new mongoose.Schema({
     type: String,
     required: false
   },
+  donationType: {
+    type: String,
+    enum: ["dengi_pavti", "shakha_pavti", "jama_pavti"],
+    default: "dengi_pavti"
+  },
   date: {
     type: Date,
     default: Date.now
+  },
+  lastReceiptDownloadedAt: {
+    type: Date,
+    required: false
   }
 }, { timestamps: true });
 

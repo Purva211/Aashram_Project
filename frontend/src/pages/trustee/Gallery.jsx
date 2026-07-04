@@ -116,14 +116,14 @@ const ManageGallery = () => {
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-10">
         <div>
-          <h1 className="text-4xl font-black mb-2 text-deepblue-900 flex items-center gap-2">
+          <h1 className="text-4xl font-black mb-2 text-deepblue-900 flex flex-wrap items-center gap-2">
             Gallery Management
-            {!hasManage && <span className="bg-yellow-100 text-yellow-800 text-sm font-bold px-3 py-1 rounded-full shadow-sm ml-2 font-sans inline-block align-middle">View Only Access</span>}
+            {!hasManage && <span className="bg-yellow-100 text-yellow-800 text-sm font-bold px-3 py-1 rounded-full shadow-sm font-sans inline-block align-middle">View Only Access</span>}
           </h1>
           <p className="text-gray-500">Upload and manage images and video links for the public gallery.</p>
         </div>
         {hasManage && (
-          <button onClick={() => openModal()} className="bg-gray-900 hover:bg-black transition-all px-6 py-3 rounded-xl text-white font-black flex items-center gap-2 shadow-lg shadow-gray-900/30 hover:-translate-y-0.5">
+          <button onClick={() => openModal()} className="bg-slate-900 hover:bg-black transition-all px-6 py-3 rounded-xl text-white font-black flex justify-center items-center gap-2 shadow-lg w-full md:w-auto hover:-translate-y-0.5">
             <FaPlus /> Add Media
           </button>
         )}

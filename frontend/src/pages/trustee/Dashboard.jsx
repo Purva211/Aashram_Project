@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FaRupeeSign, FaSpinner, FaBuilding, FaFileAlt, FaUsers, FaCalendarAlt, FaBullhorn, FaUserShield, FaHandHoldingHeart } from 'react-icons/fa';
+import { FiActivity, FiShield, FiClock } from 'react-icons/fi';
 import api from "../../utils/api";
+import { useAuth } from "../../context/AuthContext";
 import AnimatedCounter from '../../components/dashboard/AnimatedCounter';
 
 const StatCard = ({ title, value, icon, colorClass, delay }) => (
@@ -19,15 +21,52 @@ const StatCard = ({ title, value, icon, colorClass, delay }) => (
 );
 
 const TrusteeDashboard = () => {
+  const { user } = useAuth();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activities, setActivities] = useState([]);
+  
+  const [preferences, setPreferences] = useState({
+    showActivities: true, showBranches: true, showDonations: true, showEvents: true
+  });
+
+  const loadPreferences = () => {
+    const saved = localStorage.getItem('adminPreferences');
+    if (saved) {
+      try {
+        setPreferences(prev => ({...prev, ...JSON.parse(saved)}));
+      } catch (e) {}
+    }
+  };
 
   useEffect(() => {
-    api.get('/trustees/stats').then(res => {
-      setStats(res.data.stats);
-      setLoading(false);
-    }).catch(console.error);
+    loadPreferences();
+    window.addEventListener('preferencesUpdated', loadPreferences);
+    return () => window.removeEventListener('preferencesUpdated', loadPreferences);
   }, []);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const statsRes = await api.get('/trustees/stats');
+        setStats(statsRes.data.stats);
+        
+        // Fetch audit logs for the last 3 hours, scoped to current user
+        if (user && user._id) {
+          const threeHoursAgo = new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString();
+          const logsRes = await api.get(`/audit-logs?userId=${user._id}&startDate=${threeHoursAgo}`);
+          if (logsRes.data && logsRes.data.logs) {
+            setActivities(logsRes.data.logs);
+          }
+        }
+      } catch (err) {
+        console.error("Dashboard error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDashboardData();
+  }, [user]);
 
   if (loading) return <div className="h-full flex items-center justify-center py-20"><FaSpinner className="text-5xl text-saffron-500 animate-spin" /></div>;
 
@@ -42,14 +81,54 @@ const TrusteeDashboard = () => {
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard title="Total Devotees" value={<AnimatedCounter value={stats.totalDevotees || 0} />} icon={<FaUsers />} colorClass="bg-blue-50 text-blue-500" delay={0.1} />
-        <StatCard title="Total Donations" value={<AnimatedCounter value={stats.totalDonations || 0} prefix="₹ " />} icon={<FaRupeeSign />} colorClass="bg-green-50 text-green-500" delay={0.2} />
-        <StatCard title="Total Events" value={<AnimatedCounter value={stats.totalEvents || 0} />} icon={<FaCalendarAlt />} colorClass="bg-purple-50 text-purple-500" delay={0.3} />
-        <StatCard title="Total Announcements" value={<AnimatedCounter value={stats.totalAnnouncements || 0} />} icon={<FaBullhorn />} colorClass="bg-yellow-50 text-yellow-500" delay={0.4} />
-        <StatCard title="Total Branches" value={<AnimatedCounter value={stats.totalBranches || 0} />} icon={<FaBuilding />} colorClass="bg-indigo-50 text-indigo-500" delay={0.5} />
+        {preferences.showDonations && <StatCard title="Total Donations" value={<AnimatedCounter value={stats.totalDonations || 0} prefix="₹ " />} icon={<FaRupeeSign />} colorClass="bg-green-50 text-green-500" delay={0.2} />}
+        {preferences.showEvents && <StatCard title="Total Events" value={<AnimatedCounter value={stats.totalEvents || 0} />} icon={<FaCalendarAlt />} colorClass="bg-purple-50 text-purple-500" delay={0.3} />}
+        {preferences.showEvents && <StatCard title="Total Announcements" value={<AnimatedCounter value={stats.totalAnnouncements || 0} />} icon={<FaBullhorn />} colorClass="bg-yellow-50 text-yellow-500" delay={0.4} />}
+        {preferences.showBranches && <StatCard title="Total Branches" value={<AnimatedCounter value={stats.totalBranches || 0} />} icon={<FaBuilding />} colorClass="bg-indigo-50 text-indigo-500" delay={0.5} />}
         <StatCard title="Total Documents" value={<AnimatedCounter value={stats.totalDocuments || 0} />} icon={<FaFileAlt />} colorClass="bg-gray-100 text-gray-500" delay={0.6} />
         <StatCard title="Trust Members" value={<AnimatedCounter value={stats.totalTrustMembers || 0} />} icon={<FaUserShield />} colorClass="bg-red-50 text-red-500" delay={0.7} />
         <StatCard title="Annadan Records" value={<AnimatedCounter value={stats.totalAnnadanRecords || 0} />} icon={<FaHandHoldingHeart />} colorClass="bg-pink-50 text-pink-500" delay={0.8} />
       </div>
+
+      {/* Recent Activity Section */}
+      {preferences.showActivities && activities.length > 0 && (
+        <div className="mt-10">
+          <h2 className="text-lg font-bold text-gray-700 mb-6 flex items-center gap-2 border-b border-gray-100 pb-2 uppercase tracking-wide">
+            <FiActivity className="text-emerald-500" /> My Recent Activity (Last 3 Hours)
+          </h2>
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="divide-y divide-gray-100 max-h-96 overflow-y-auto">
+              {activities.map((log, idx) => (
+                <div key={idx} className="p-4 sm:px-6 hover:bg-gray-50 transition-colors flex flex-col sm:flex-row sm:items-center gap-4">
+                  <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
+                    <FiShield className="text-slate-500" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm text-gray-900 font-medium">
+                      <span className="font-bold">{log.role}</span> performed action: <span className="font-bold text-sky-600">{log.action}</span>
+                    </p>
+                    <p className="text-xs text-gray-500 mt-0.5">IP: {log.ipAddress} {log.details && log.details.method ? `| Method: ${log.details.method}` : ''}</p>
+                  </div>
+                  <div className="text-xs text-gray-400 font-medium shrink-0 flex items-center gap-1.5">
+                    <FiClock /> {new Date(log.timestamp || log.createdAt).toLocaleString()}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {preferences.showActivities && activities.length === 0 && (
+        <div className="mt-10">
+          <h2 className="text-lg font-bold text-gray-700 mb-6 flex items-center gap-2 border-b border-gray-100 pb-2 uppercase tracking-wide">
+            <FiActivity className="text-emerald-500" /> My Recent Activity (Last 3 Hours)
+          </h2>
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center text-gray-500 font-medium">
+            You have no activity in the last 3 hours.
+          </div>
+        </div>
+      )}
     </div>
   );
 };

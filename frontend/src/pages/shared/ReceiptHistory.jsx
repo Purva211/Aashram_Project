@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../utils/api';
-import { Search, Download, Share2, Printer, Eye } from 'lucide-react';
+import { Search, Download, Share2, Printer, Eye, Info, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-const ReceiptHistory = ({ defaultCategory = 'All', hideTitle = false }) => {
+const ReceiptHistory = ({ defaultCategory = 'All', hideTitle = false, hideCategoryFilter = false }) => {
   const [receipts, setReceipts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
@@ -11,6 +11,7 @@ const ReceiptHistory = ({ defaultCategory = 'All', hideTitle = false }) => {
     branchId: 'All',
     search: ''
   });
+  const [selectedInfo, setSelectedInfo] = useState(null);
 
   const categories = ['All', 'Notice', 'Donation', 'Branch Donation', 'Annadan', 'Prasad', 'Payment', 'Expense'];
 
@@ -39,6 +40,61 @@ const ReceiptHistory = ({ defaultCategory = 'All', hideTitle = false }) => {
     fetchReceipts();
   };
 
+  const handleDownload = async (receipt) => {
+    if (!receipt.pdfUrl) return;
+    
+    if (receipt.pdfUrl.startsWith('/api')) {
+      const toastId = toast.loading("Downloading document...");
+      try {
+        const fetchUrl = receipt.pdfUrl.replace('/api', '');
+        const response = await api.get(fetchUrl, { responseType: 'blob' });
+        const blob = new Blob([response.data], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `${receipt.category.replace(/\s+/g, '_')}_${receipt.receiptNumber}.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+        toast.success("Downloaded successfully!", { id: toastId });
+      } catch (error) {
+        console.error("Failed to download PDF:", error);
+        toast.error("Failed to download PDF.", { id: toastId });
+      }
+    } else {
+      // Legacy static Cloudinary/local URL
+      const link = document.createElement('a');
+      link.href = receipt.pdfUrl;
+      link.target = "_blank";
+      link.download = `${receipt.category}_${receipt.receiptNumber}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    }
+  };
+
+  const handleView = async (receipt) => {
+    if (!receipt.pdfUrl) return;
+
+    if (receipt.pdfUrl.startsWith('/api')) {
+      const toastId = toast.loading("Loading document...");
+      try {
+        const fetchUrl = receipt.pdfUrl.replace('/api', '');
+        const response = await api.get(fetchUrl, { responseType: 'blob' });
+        const blob = new Blob([response.data], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        toast.dismiss(toastId);
+      } catch (error) {
+        console.error("Failed to load PDF:", error);
+        toast.error("Failed to load PDF.", { id: toastId });
+      }
+    } else {
+      window.open(receipt.pdfUrl, '_blank');
+    }
+  };
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto">
@@ -60,16 +116,19 @@ const ReceiptHistory = ({ defaultCategory = 'All', hideTitle = false }) => {
             </form>
           </div>
           
-          <div className="min-w-[150px]">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-            <select
-              className="w-full p-2 border rounded-lg bg-gray-50"
-              value={filters.category}
-              onChange={(e) => setFilters({ ...filters, category: e.target.value })}
-            >
-              {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-            </select>
-          </div>
+          
+          {!hideCategoryFilter && (
+            <div className="min-w-[150px]">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+              <select
+                className="w-full p-2 border rounded-lg bg-gray-50"
+                value={filters.category}
+                onChange={(e) => setFilters({ ...filters, category: e.target.value })}
+              >
+                {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+              </select>
+            </div>
+          )}
           
           <button 
             onClick={fetchReceipts}
@@ -121,14 +180,17 @@ const ReceiptHistory = ({ defaultCategory = 'All', hideTitle = false }) => {
                       <td className="p-4 flex justify-end gap-2">
                         {receipt.pdfUrl ? (
                           <>
-                            <a href={receipt.pdfUrl} target="_blank" rel="noopener noreferrer" className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg" title="View PDF">
+                            <button onClick={() => handleView(receipt)} className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg" title="View PDF">
                               <Eye className="w-5 h-5" />
-                            </a>
-                            <a href={receipt.pdfUrl} download className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg" title="Download">
+                            </button>
+                            <button onClick={() => handleDownload(receipt)} className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg" title="Download">
                               <Download className="w-5 h-5" />
-                            </a>
-                            <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg" title="Share via WhatsApp" onClick={() => window.open(`https://api.whatsapp.com/send?text=View your document here: ${receipt.pdfUrl}`, '_blank')}>
+                            </button>
+                            <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg" title="Share via WhatsApp" onClick={() => window.open(`https://api.whatsapp.com/send?text=View your document here: ${receipt.pdfUrl.startsWith('/api') ? '(Requires Login) ' + window.location.origin + receipt.pdfUrl : receipt.pdfUrl}`, '_blank')}>
                               <Share2 className="w-5 h-5" />
+                            </button>
+                            <button className="p-2 text-indigo-500 hover:bg-indigo-50 rounded-lg" title="More Info" onClick={() => setSelectedInfo(receipt)}>
+                              <Info className="w-5 h-5" />
                             </button>
                           </>
                         ) : (
@@ -143,6 +205,62 @@ const ReceiptHistory = ({ defaultCategory = 'All', hideTitle = false }) => {
           </div>
         </div>
       </div>
+
+      {/* Info Modal */}
+      {selectedInfo && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md flex flex-col">
+            <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 rounded-t-2xl">
+              <h2 className="text-lg font-bold text-gray-800">Document Metadata</h2>
+              <button onClick={() => setSelectedInfo(null)} className="text-gray-400 hover:text-gray-800 p-2 transition">
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div className="p-6 space-y-4 text-sm text-gray-700">
+              <div className="flex justify-between border-b pb-2">
+                <span className="font-semibold text-gray-500">Document No:</span>
+                <span className="font-medium">{selectedInfo.receiptNumber}</span>
+              </div>
+              <div className="flex justify-between border-b pb-2">
+                <span className="font-semibold text-gray-500">Category:</span>
+                <span className="font-medium bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs">{selectedInfo.category}</span>
+              </div>
+              <div className="flex justify-between border-b pb-2">
+                <span className="font-semibold text-gray-500">Recipient Name:</span>
+                <span className="font-medium text-right">{selectedInfo.dynamicData?.donorName || selectedInfo.dynamicData?.name || selectedInfo.dynamicData?.subject || 'N/A'}</span>
+              </div>
+              {selectedInfo.dynamicData?.amount && (
+                <div className="flex justify-between border-b pb-2">
+                  <span className="font-semibold text-gray-500">Amount:</span>
+                  <span className="font-medium text-green-600">₹{selectedInfo.dynamicData.amount.toLocaleString()}</span>
+                </div>
+              )}
+              <div className="flex justify-between border-b pb-2">
+                <span className="font-semibold text-gray-500">Submitted Date:</span>
+                <span className="font-medium">{selectedInfo.createdAt ? new Date(selectedInfo.createdAt).toLocaleString() : 'N/A'}</span>
+              </div>
+              <div className="flex justify-between border-b pb-2">
+                <span className="font-semibold text-gray-500">Approved Date:</span>
+                <span className="font-medium">{selectedInfo.approvalDate ? new Date(selectedInfo.approvalDate).toLocaleString() : (selectedInfo.createdAt ? new Date(selectedInfo.createdAt).toLocaleString() : 'N/A')}</span>
+              </div>
+              <div className="flex justify-between border-b pb-2">
+                <span className="font-semibold text-gray-500">Last Downloaded:</span>
+                <span className="font-medium text-indigo-600">{selectedInfo.lastReceiptDownloadedAt ? new Date(selectedInfo.lastReceiptDownloadedAt).toLocaleString() : 'Never'}</span>
+              </div>
+              <div className="flex justify-between pt-2">
+                <span className="font-semibold text-gray-500">Generated By:</span>
+                <span className="font-medium">{selectedInfo.generatedBy?.name || selectedInfo.generatedBy?.fullName || selectedInfo.generatedBy?.displayName || 'System'}</span>
+              </div>
+            </div>
+            <div className="p-4 bg-gray-50 rounded-b-2xl flex justify-end">
+              <button onClick={() => setSelectedInfo(null)} className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg text-sm font-semibold transition">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

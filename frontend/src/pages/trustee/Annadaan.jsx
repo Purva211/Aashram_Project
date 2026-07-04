@@ -87,28 +87,28 @@ const Annadaan = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <div>
-          <h1 className="text-2xl font-black text-deepblue-900 flex items-center gap-2">
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6 w-full">
+        <div className="w-full lg:w-auto">
+          <h1 className="text-2xl font-black text-deepblue-900 flex flex-wrap items-center gap-2">
             <FaHandHoldingHeart className="text-saffron-500" /> Annadan Records
-            {!hasManage && <span className="bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full shadow-sm ml-4 font-sans inline-block align-middle">View Only Access</span>}
+            {!hasManage && <span className="bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full shadow-sm font-sans inline-block align-middle">View Only Access</span>}
           </h1>
           <p className="text-gray-500 mt-1">Manage and track temple food donations.</p>
         </div>
-        <div className="flex flex-col sm:flex-row items-center gap-4">
-          <div className="relative">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
+          <div className="relative w-full sm:w-auto">
              <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-             <input type="text" placeholder="Search by name..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-saffron-500 shadow-sm w-full sm:w-64" />
+             <input type="text" placeholder="Search by name..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-saffron-500 shadow-sm w-full sm:w-48 xl:w-64" />
           </div>
-          <div className="flex items-center gap-3 bg-gray-50 px-4 py-2.5 rounded-xl border border-gray-200">
+          <div className="flex items-center gap-2 bg-gray-50 px-3 py-2.5 rounded-xl border border-gray-200 w-full sm:w-auto">
             <span className="text-sm font-bold text-gray-600">Date:</span>
-            <input type="date" value={filterDate} onChange={(e) => setFilterDate(e.target.value)} className="text-sm outline-none bg-transparent text-gray-800 font-semibold cursor-pointer" />
-            {filterDate && <button onClick={() => setFilterDate("")} className="text-gray-400 hover:text-red-500 text-xs font-bold ml-2 transition-colors"><FaTimes /></button>}
+            <input type="date" value={filterDate} onChange={(e) => setFilterDate(e.target.value)} className="text-sm outline-none bg-transparent text-gray-800 font-semibold cursor-pointer flex-1" />
+            {filterDate && <button onClick={() => setFilterDate("")} className="text-gray-400 hover:text-red-500 text-xs font-bold transition-colors"><FaTimes /></button>}
           </div>
           {hasManage && (
             <button 
               onClick={() => { setFormData({ name: '', phone: '', email: '', annadaanType: '', date: '', time: '', description: '', status: 'pending' }); setEditingId(null); setIsModalOpen(true); }}
-              className="bg-gray-900 hover:bg-black text-white px-6 py-2.5 rounded-xl shadow-lg shadow-gray-900/30 font-black transition-all hover:-translate-y-0.5 flex items-center gap-2 whitespace-nowrap"
+              className="bg-slate-900 hover:bg-black text-white px-5 py-2.5 rounded-xl shadow-lg font-black transition-all flex items-center justify-center gap-2 whitespace-nowrap w-full sm:w-auto"
             >
               <FaPlus /> Add Record
             </button>

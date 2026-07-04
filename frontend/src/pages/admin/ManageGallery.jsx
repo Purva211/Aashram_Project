@@ -291,7 +291,7 @@ const ManageGallery = () => {
 
               <div className="p-6 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
                 <button type="button" onClick={closeModal} className="px-6 py-2.5 bg-white border border-gray-300 rounded-xl font-bold text-gray-700 hover:bg-gray-50 transition-colors">Cancel</button>
-                <button type="submit" form="gallery-form" disabled={submitting} className="px-8 py-2.5 bg-blue-900 hover:bg-blue-800 text-white rounded-xl font-bold shadow-md transition-colors flex items-center gap-2">
+                <button type="submit" form="gallery-form" disabled={submitting} className="px-8 py-2.5 bg-blue-900 hover:bg-slate-900 hover:bg-black w-full md:w-auto justify-center text-white rounded-xl font-bold shadow-md transition-colors flex items-center gap-2">
                   {submitting ? <FaSpinner className="animate-spin" /> : (editId ? "Update Media" : "Save Media")}
                 </button>
               </div>

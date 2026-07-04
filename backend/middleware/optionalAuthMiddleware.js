@@ -4,6 +4,7 @@ const Trustee = require("../models/Trustee");
 const Devotee = require("../models/Devotee");
 const BranchManager = require("../models/BranchManager");
 const Accountant = require("../models/Accountant");
+const DocumentAdmin = require("../models/DocumentAdmin");
 
 module.exports = async (req, res, next) => {
   let token;
@@ -35,6 +36,10 @@ module.exports = async (req, res, next) => {
         break;
       case "Accountant":
         user = await Accountant.findById(decoded.id);
+        break;
+      case "DocumentHandler":
+      case "document_admin":
+        user = await DocumentAdmin.findById(decoded.id);
         break;
     }
 
