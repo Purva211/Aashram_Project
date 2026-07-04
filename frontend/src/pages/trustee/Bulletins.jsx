@@ -112,24 +112,26 @@ const Bulletins = () => {
 
   return (
     <div className="p-6 md:p-10 w-full">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-caramel-deep font-serif flex items-center gap-2">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+        <h1 className="text-3xl font-bold text-caramel-deep font-serif flex flex-wrap items-center gap-2">
           Manage Sansthan Updates
-          {!hasManage && <span className="bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full shadow-sm ml-4 font-sans inline-block align-middle">View Only Access</span>}
+          {!hasManage && <span className="bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full shadow-sm font-sans inline-block align-middle">View Only Access</span>}
         </h1>
         {hasManage && (
-          <button 
-            onClick={() => {
-              setShowAddForm(!showAddForm);
-              if (!showAddForm) {
-                setEditingId(null);
-                setFormData({ headline: '', messages: [''], isActive: true });
-              }
-            }}
-            className="flex items-center gap-2 bg-gray-900 hover:bg-black text-white px-6 py-2.5 rounded-xl shadow-md transition-colors font-black"
-          >
-            {showAddForm ? <><FaTimes /> Cancel</> : <><FaPlus /> Add Update</>}
-          </button>
+          <div className="w-full md:w-auto">
+            <button 
+              onClick={() => {
+                setShowAddForm(!showAddForm);
+                if (!showAddForm) {
+                  setEditingId(null);
+                  setFormData({ headline: '', messages: [''], isActive: true });
+                }
+              }}
+              className="flex justify-center items-center gap-2 bg-slate-900 hover:bg-black text-white px-6 py-2.5 rounded-xl shadow-md transition-colors font-black w-full md:w-auto"
+            >
+              {showAddForm ? <><FaTimes /> Cancel</> : <><FaPlus /> Add Update</>}
+            </button>
+          </div>
         )}
       </div>
 

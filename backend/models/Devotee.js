@@ -9,6 +9,7 @@ const devoteeSchema = new mongoose.Schema({
   isVerified: { type: Boolean, default: false },
   role: { type: String, default: "Devotee" },
   address: { type: String },
+  profilePhoto: { type: String },
   registrationDate: { type: Date, default: Date.now }
 }, { timestamps: true });
 

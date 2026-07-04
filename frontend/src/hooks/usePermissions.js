@@ -6,7 +6,11 @@ export const usePermissions = (moduleName) => {
   if (!user) return { hasView: false, hasManage: false, isAdmin: false };
 
   if (user.role === 'Admin') {
-    return { hasView: true, hasManage: true, isAdmin: true };
+    return { 
+      hasView: true, 
+      hasManage: moduleName === 'News' ? false : true, 
+      isAdmin: true 
+    };
   }
 
   if (user.role === 'Trustee') {

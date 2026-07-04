@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { NavLink, useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
-import { FaHome, FaDonate, FaCalendarAlt, FaUsers, FaSignOutAlt, FaBell, FaOm, FaClipboardList, FaBullhorn, FaMapMarkerAlt, FaUserShield, FaImages, FaFileAlt, FaHistory, FaSitemap, FaCalculator, FaReceipt, FaBars, FaTimes, FaTrash } from 'react-icons/fa';
+import { FaHome, FaDonate, FaCalendarAlt, FaUsers, FaSignOutAlt, FaBell, FaOm, FaClipboardList, FaBullhorn, FaMapMarkerAlt, FaUserShield, FaImages, FaFileAlt, FaHistory, FaSitemap, FaCalculator, FaReceipt, FaBars, FaTimes, FaTrash, FaMusic } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Layout = ({ children, user }) => {
@@ -117,11 +117,9 @@ const Layout = ({ children, user }) => {
       { name: 'Lineage', path: '/trustee/lineage', icon: <FaSitemap /> },
       { name: 'Monastery History', path: '/trustee/math-history', icon: <FaHistory /> },
       { name: 'Sansthan Updates', path: '/trustee/bulletins', icon: <FaBullhorn /> },
-<<<<<<< Updated upstream
-=======
       { name: 'Receipts', path: '/trustee/receipts', icon: <FaReceipt /> },
       { name: 'Audio Tracks', path: '/trustee/audio', icon: <FaMusic /> },
->>>>>>> Stashed changes
+      { name: 'News', path: '/trustee/news', icon: <FaBullhorn /> },
     ];
     
     // Safely parse permissions if they were saved as a JSON string in DB
@@ -146,6 +144,7 @@ const Layout = ({ children, user }) => {
       { name: 'Donations', path: '/branch/donations', icon: <FaDonate /> },
       { name: 'Events', path: '/branch/events', icon: <FaCalendarAlt /> },
       { name: 'Receipts', path: '/branch/receipts', icon: <FaReceipt /> },
+      { name: 'News', path: '/branch/news', icon: <FaBullhorn /> },
     ];
   } else if (user?.role === 'Accountant') {
     navItems = [
@@ -182,6 +181,7 @@ const Layout = ({ children, user }) => {
       { name: 'Issue Notice', path: '/admin/notice-generator', icon: <FaFileAlt /> },
       { name: 'Sansthan Updates', path: '/trustee/bulletins', icon: <FaBullhorn /> },
       { name: 'Trustees', path: '/admin/trustees', icon: <FaUserShield /> },
+      { name: 'News', path: '/admin/news', icon: <FaBullhorn /> },
     ];
   }
 
@@ -190,16 +190,12 @@ const Layout = ({ children, user }) => {
       
       {/* Mobile Sidebar Overlay */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 bg-black/60 z-20 md:hidden" onClick={() => setIsMobileMenuOpen(false)}></div>
+        <div className="fixed inset-0 bg-black/60 z-30 md:hidden" onClick={() => setIsMobileMenuOpen(false)}></div>
       )}
 
       {/* Sidebar */}
       <aside 
-<<<<<<< Updated upstream
-        className={`fixed md:relative top-0 left-0 h-full bg-[#05051F] border-r border-[#0A0A2A] flex-col items-center py-8 z-30 text-white shadow-2xl transition-all duration-300 ${isMobileMenuOpen ? 'translate-x-0 flex' : '-translate-x-full md:translate-x-0 hidden md:flex'} ${isCollapsed ? 'w-20' : 'w-64'}`}
-=======
         className={`fixed md:relative top-0 left-0 h-full bg-[#05051F] border-r border-[#0A0A2A] flex-col items-center py-4 lg:py-8 z-40 text-white shadow-2xl transition-transform duration-300 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} flex ${isCollapsed ? 'md:w-20 w-64' : 'w-64'} group`}
->>>>>>> Stashed changes
       >
         
         {/* Mobile Close Button */}
@@ -302,33 +298,33 @@ const Layout = ({ children, user }) => {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-[#f8fafc]">
          
          {/* Top Navbar */}
-         <header className="h-20 bg-white/90 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-4 md:px-8 z-10 sticky top-0">
-            <div className="flex items-center gap-3">
-              <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="md:hidden text-gray-600 hover:text-[#FF7A2F] text-2xl p-2 rounded-lg hover:bg-gray-100 transition-colors">
+         <header className="h-20 bg-white/90 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-3 md:px-8 z-10 sticky top-0 gap-2">
+            <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+              <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="md:hidden text-gray-600 hover:text-[#FF7A2F] text-xl sm:text-2xl p-1.5 sm:p-2 rounded-lg hover:bg-gray-100 transition-colors shrink-0">
                 <FaBars />
               </button>
-              <button onClick={() => setIsCollapsed(!isCollapsed)} className="hidden md:block text-gray-600 hover:text-[#FF7A2F] text-2xl p-2 rounded-lg hover:bg-gray-100 transition-colors">
+              <button onClick={() => setIsCollapsed(!isCollapsed)} className="hidden md:block text-gray-600 hover:text-[#FF7A2F] text-2xl p-2 rounded-lg hover:bg-gray-100 transition-colors shrink-0">
                 <FaBars />
               </button>
-              <h2 className="text-xl md:text-2xl font-bold text-gray-900 truncate max-w-[200px] sm:max-w-xs md:max-w-md lg:max-w-full">
+              <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 truncate">
                 {navItems.find(i => i.path === location.pathname)?.name || "Dashboard"}
               </h2>
             </div>
 
-            <div className="flex items-center gap-6 ml-auto">
+            <div className="flex items-center gap-2 sm:gap-6 shrink-0">
               <motion.button 
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setShowNotifications(true)}
-                className="relative p-2 text-gray-400 hover:text-[#FF7A2F] hover:bg-[#FF7A2F]/10 rounded-full transition-all"
+                className="relative p-1.5 sm:p-2 text-gray-400 hover:text-[#FF7A2F] hover:bg-[#FF7A2F]/10 rounded-full transition-all shrink-0"
               >
-                <FaBell className="text-xl" />
+                <FaBell className="text-lg sm:text-xl" />
                 {(pendingCounts.total > 0 || unreadAnnouncementsCount > 0) && (
-                  <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white animate-pulse"></span>
+                  <span className="absolute top-1 sm:top-1.5 right-1 sm:right-1.5 w-2 sm:w-2.5 h-2 sm:h-2.5 bg-red-500 rounded-full border-2 border-white animate-pulse"></span>
                 )}
               </motion.button>
               
-              <div className="flex items-center gap-3 pl-6 border-l border-gray-100">
+              <div className="flex items-center gap-2 sm:gap-3 pl-2 sm:pl-6 border-l border-gray-100 shrink-0">
                 <div className="text-right hidden sm:block">
                   <p className="text-sm font-bold text-gray-900">{user?.name || user?.displayName || 'User'}</p>
                   <p className="text-xs text-gray-400 font-semibold tracking-wider">{user?.email || 'admin@temple.com'}</p>
@@ -338,7 +334,7 @@ const Layout = ({ children, user }) => {
                     const profilePath = navItems.find(i => i.name === 'Profile')?.path;
                     if (profilePath) navigate(profilePath);
                   }}
-                  className="w-10 h-10 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center font-black text-lg border border-gray-200 cursor-pointer select-none overflow-hidden hover:ring-2 hover:ring-[#FF7A2F] transition-all">
+                  className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center font-black text-base sm:text-lg border border-gray-200 cursor-pointer select-none overflow-hidden hover:ring-2 hover:ring-[#FF7A2F] transition-all shrink-0">
                   {user?.profilePhoto ? (
                     <img src={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${user.profilePhoto}`} alt="Profile" className="w-full h-full object-cover" />
                   ) : (
@@ -346,8 +342,6 @@ const Layout = ({ children, user }) => {
                   )}
                 </div>
               </div>
-
-
             </div>
          </header>
 

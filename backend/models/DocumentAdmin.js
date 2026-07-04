@@ -11,6 +11,14 @@ const documentAdminSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  name: {
+    type: String,
+    default: ""
+  },
+  address: {
+    type: String,
+    default: ""
+  },
   role: {
     type: String,
     default: "document_admin"

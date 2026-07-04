@@ -1,4 +1,5 @@
 const ReceiptArchive = require("../models/ReceiptArchive");
+const Donation = require("../models/Donation");
 const { issueReceipt } = require("../utils/receiptEngine");
 
 // Create an ad-hoc Notice
@@ -48,14 +49,10 @@ exports.getReceipts = async (req, res) => {
       // Can only see financial receipts
       query.category = { $in: ['Payment', 'Expense', 'Donation'] };
     } else if (req.user.role === "Trustee" || req.user.role === "Admin") {
-      // Can see most things, Trustee maybe restricted from Expense/Payment
-      if (req.user.role === "Trustee") {
-        query.category = { $nin: ['Expense', 'Payment'] };
-      }
+      // Trustee and Admin can see everything natively (or filter as they choose)
     } else if (req.user.role === "Devotee") {
-       // Only their own receipts - assuming we can link via `referenceId` or `dynamicData.donorName`
-       // This needs careful implementation. For now, empty list for devotees unless specified
-       query.generatedBy = req.user._id; // simplistic
+       // Only their own receipts
+       query.generatedBy = req.user._id; 
     }
 
     if (category && category !== "All") {
@@ -70,12 +67,85 @@ exports.getReceipts = async (req, res) => {
        query.receiptNumber = { $regex: search, $options: "i" };
     }
 
-    const receipts = await ReceiptArchive.find(query)
-      .populate('generatedBy', 'name fullName displayName')
-      .populate('branchId', 'name')
-      .sort({ createdAt: -1 });
+    // Prevent fetching duplicates from ReceiptArchive since we fetch Donations natively
+    let receipts = [];
+    if (query.category !== "Donation") {
+      let archiveQuery = { ...query };
+      
+      // Deep clone category object if it exists to avoid mutating the original query object
+      if (archiveQuery.category && typeof archiveQuery.category === 'object') {
+        archiveQuery.category = { ...archiveQuery.category };
+      }
+      
+      if (!archiveQuery.category) {
+        archiveQuery.category = { $ne: 'Donation' };
+      } else if (archiveQuery.category.$in) {
+        archiveQuery.category.$in = archiveQuery.category.$in.filter(c => c !== 'Donation');
+      } else if (archiveQuery.category.$nin) {
+        archiveQuery.category.$nin = [...archiveQuery.category.$nin, 'Donation'];
+      }
+      
+      receipts = await ReceiptArchive.find(archiveQuery)
+        .populate('generatedBy', 'name fullName displayName')
+        .populate('branchId', 'name')
+        .sort({ createdAt: -1 })
+        .lean();
+    }
 
-    res.status(200).json({ success: true, data: receipts });
+    let mergedReceipts = [...receipts];
+
+    // Fetch approved donations if Category filter allows it
+    const effectiveCategory = query.category || category;
+    if (!effectiveCategory || effectiveCategory === "All" || effectiveCategory === "Donation" || (effectiveCategory.$in && effectiveCategory.$in.includes("Donation"))) {
+      const donationQuery = { status: "APPROVED", receiptNumber: { $exists: true } };
+      
+      if (req.user.role === "BranchManager") {
+        donationQuery.branchId = req.user.branch;
+      } else if (branchId && branchId !== "All") {
+        donationQuery.branchId = branchId;
+      }
+
+      if (search) {
+        donationQuery.$or = [
+          { receiptNumber: { $regex: search, $options: "i" } },
+          { donorName: { $regex: search, $options: "i" } }
+        ];
+      }
+
+      const donations = await Donation.find(donationQuery)
+        .populate('approvedBy', 'name fullName displayName')
+        .populate('branchId', 'name')
+        .sort({ approvalDate: -1 })
+        .lean();
+
+      const mappedDonations = donations.map(d => ({
+        _id: d._id,
+        receiptNumber: d.receiptNumber,
+        category: "Donation",
+        branchId: d.branchId,
+        generatedBy: d.approvedBy,
+        createdAt: d.createdAt,
+        approvalDate: d.approvalDate,
+        lastReceiptDownloadedAt: d.lastReceiptDownloadedAt,
+        pdfUrl: `/api/donations/${d._id}/receipt`,
+        dynamicData: {
+          donorName: d.donorName,
+          amount: d.amount,
+          donationReference: d.donationReference
+        }
+      }));
+
+      mergedReceipts = [...mergedReceipts, ...mappedDonations];
+      
+      // Sort combined array by most recent date (createdAt or approvalDate)
+      mergedReceipts.sort((a, b) => {
+        const dateA = new Date(a.approvalDate || a.createdAt);
+        const dateB = new Date(b.approvalDate || b.createdAt);
+        return dateB - dateA;
+      });
+    }
+
+    res.status(200).json({ success: true, data: mergedReceipts });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

@@ -33,9 +33,21 @@ const Profile = () => {
   const [preferences, setPreferences] = useState({
     notifyEmail: true, notifySms: false, notifyDonation: true, notifyEvent: true, notifyAnnadan: false,
     language: 'English', theme: 'Light',
-    showActivities: true, showBranches: true, showDonations: true, showEvents: true,
-    dateFormat: 'DD/MM/YYYY', timezone: 'Asia/Kolkata'
+    showActivities: true, showBranches: true, showDonations: true, showEvents: true
   });
+
+  useEffect(() => {
+    // Load preferences from global adminPreferences for consistency
+    const savedPrefs = localStorage.getItem('adminPreferences');
+    if (savedPrefs) {
+      try {
+        const parsed = JSON.parse(savedPrefs);
+        setPreferences(prev => ({ ...prev, ...parsed }));
+      } catch (e) {
+        console.error("Failed to parse preferences", e);
+      }
+    }
+  }, []);
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
@@ -82,7 +94,24 @@ const Profile = () => {
   const handlePasswordChange = (e) => setPasswords({ ...passwords, [e.target.name]: e.target.value });
   
   const handleToggleSecurity = (key) => setSecuritySettings(prev => ({ ...prev, [key]: !prev[key] }));
-  const handleTogglePref = (key) => setPreferences(prev => ({ ...prev, [key]: !prev[key] }));
+  
+  const handleTogglePref = (key) => {
+    setPreferences(prev => {
+      const updated = { ...prev, [key]: !prev[key] };
+      localStorage.setItem('adminPreferences', JSON.stringify(updated));
+      window.dispatchEvent(new Event('preferencesUpdated'));
+      return updated;
+    });
+  };
+
+  const handleThemeChange = (newTheme) => {
+    setPreferences(prev => {
+      const updated = { ...prev, theme: newTheme };
+      localStorage.setItem('adminPreferences', JSON.stringify(updated));
+      return updated;
+    });
+    window.dispatchEvent(new Event('preferencesUpdated'));
+  };
 
   const handleSavePersonalInfo = async (e) => {
     e.preventDefault();
@@ -116,6 +145,10 @@ const Profile = () => {
     e.preventDefault();
     if(passwords.new !== passwords.confirm) {
       setMessage({ type: 'error', text: 'New passwords do not match.' });
+      return;
+    }
+    if (!/^[a-zA-Z0-9]+$/.test(passwords.new)) {
+      setMessage({ type: 'error', text: 'Password must contain only alphanumeric characters.' });
       return;
     }
     setLoading(true);
@@ -400,34 +433,7 @@ const Profile = () => {
               {/* Grid for Preferences to make it look compact and dashboard-like */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 
-                {/* Section 1: Notifications */}
-                <section className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100 space-y-6">
-                  <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2"><Bell className="w-5 h-5 text-sky-500"/> Notifications</h3>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-700">Email Notifications</span>
-                      <Toggle enabled={preferences.notifyEmail} onChange={() => handleTogglePref('notifyEmail')} />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-700">SMS Notifications</span>
-                      <Toggle enabled={preferences.notifySms} onChange={() => handleTogglePref('notifySms')} />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-700">Donation Alerts</span>
-                      <Toggle enabled={preferences.notifyDonation} onChange={() => handleTogglePref('notifyDonation')} />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-700">Event Reminders</span>
-                      <Toggle enabled={preferences.notifyEvent} onChange={() => handleTogglePref('notifyEvent')} />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-700">Annadan Updates</span>
-                      <Toggle enabled={preferences.notifyAnnadan} onChange={() => handleTogglePref('notifyAnnadan')} />
-                    </div>
-                  </div>
-                </section>
-
-                {/* Section 4: Dashboard Preferences */}
+                {/* Section 1: Dashboard Preferences */}
                 <section className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100 space-y-6">
                   <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2"><Activity className="w-5 h-5 text-sky-500"/> Dashboard Items</h3>
                   <div className="space-y-4">
@@ -474,55 +480,17 @@ const Profile = () => {
                       <label className="text-sm font-medium text-gray-700">Interface Theme</label>
                       <div className="flex gap-3">
                         <button 
-                          onClick={() => setPreferences({...preferences, theme: 'Light'})}
+                          onClick={() => handleThemeChange('Light')}
                           className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg border font-medium transition-all ${preferences.theme === 'Light' ? 'bg-sky-50 border-sky-500 text-sky-700' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
                         >
                           <Sun className="w-4 h-4" /> Light
                         </button>
                         <button 
-                          onClick={() => setPreferences({...preferences, theme: 'Dark'})}
+                          onClick={() => handleThemeChange('Dark')}
                           className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg border font-medium transition-all ${preferences.theme === 'Dark' ? 'bg-sky-50 border-sky-500 text-sky-700' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
                         >
                           <Moon className="w-4 h-4" /> Dark
                         </button>
-                      </div>
-                    </div>
-                  </div>
-                </section>
-
-                {/* Section 5: Date & Time Settings */}
-                <section className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100 space-y-6">
-                  <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2"><Clock className="w-5 h-5 text-sky-500"/> Date & Time</h3>
-                  <div className="space-y-5">
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">Date Format</label>
-                      <div className="relative">
-                        <select 
-                          value={preferences.dateFormat} 
-                          onChange={(e) => setPreferences({...preferences, dateFormat: e.target.value})}
-                          className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none appearance-none transition-all"
-                        >
-                          <option value="DD/MM/YYYY">DD/MM/YYYY (31/12/2023)</option>
-                          <option value="MM/DD/YYYY">MM/DD/YYYY (12/31/2023)</option>
-                          <option value="DD-MMM-YYYY">DD-MMM-YYYY (31-Dec-2023)</option>
-                        </select>
-                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">Timezone</label>
-                      <div className="relative">
-                        <select 
-                          value={preferences.timezone} 
-                          onChange={(e) => setPreferences({...preferences, timezone: e.target.value})}
-                          className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none appearance-none transition-all"
-                        >
-                          <option value="Asia/Kolkata">Asia/Kolkata (IST)</option>
-                          <option value="UTC">UTC (Universal Coordinated Time)</option>
-                          <option value="America/New_York">America/New_York (EST)</option>
-                        </select>
-                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                       </div>
                     </div>
                   </div>

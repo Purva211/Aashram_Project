@@ -109,18 +109,18 @@ const ManageBranches = () => {
           <p className="text-gray-500">Manage all spiritual centers and ashrams.</p>
         </div>
         
-        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
           <input 
             type="text" 
             placeholder="Search branches..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-saffron-500 shadow-sm"
+            className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-saffron-500 shadow-sm w-full sm:w-auto"
           />
           <select 
             value={filterLocation}
             onChange={(e) => setFilterLocation(e.target.value)}
-            className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-saffron-500 shadow-sm cursor-pointer"
+            className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-saffron-500 shadow-sm cursor-pointer w-full sm:w-auto"
           >
             <option value="">All Locations</option>
             {uniqueLocations.map(loc => <option key={loc} value={loc}>{loc}</option>)}
@@ -128,7 +128,7 @@ const ManageBranches = () => {
           {hasManage && (
             <button
               onClick={() => handleOpenModal()}
-              className="flex justify-center items-center gap-2 bg-gray-900 hover:bg-black text-white px-6 py-2.5 rounded-xl shadow-lg shadow-gray-900/30 transition-all font-black hover:-translate-y-0.5"
+              className="flex justify-center items-center gap-2 bg-slate-900 hover:bg-black text-white px-6 py-2.5 rounded-xl shadow-lg transition-all font-black hover:-translate-y-0.5 whitespace-nowrap w-full sm:w-auto"
             >
               <FaPlus /> Add Branch
             </button>

@@ -19,6 +19,7 @@ import TrusteeBoard from "./pages/user/TrusteeBoard";
 
 import MathHistory from "./pages/user/MathHistory";
 import Lineage from "./pages/user/Lineage";
+import TrusteeAudioTracks from './pages/trustee/AudioTracks';
 import ContactUs from "./pages/user/ContactUs";
 import VerifyReceipt from "./pages/public/VerifyReceipt";
 
@@ -87,6 +88,9 @@ import AccountantAnnouncements from "./pages/accountant/Announcements";
 // CMS Pages for Monastery History and Lineage
 import ManageMathHistory from "./pages/admin/ManageMathHistory";
 import ManageLineage from "./pages/admin/ManageLineage";
+import ManageNews from "./pages/admin/ManageNews";
+import TrusteeManageNews from "./pages/trustee/ManageNews";
+import BranchManageNews from "./pages/branch/ManageNews";
 
 // Shared Pages
 import ReceiptHistory from "./pages/shared/ReceiptHistory";
@@ -205,6 +209,7 @@ function AppRoutes() {
           <Route path="/admin/lineage" element={<RoleProtectedRoute allowedRoles={['Admin']}><ManageLineage /></RoleProtectedRoute>} />
           <Route path="/admin/receipts" element={<RoleProtectedRoute allowedRoles={['Admin']}><ReceiptHistory /></RoleProtectedRoute>} />
           <Route path="/admin/notice-generator" element={<RoleProtectedRoute allowedRoles={['Admin']}><NoticeGenerator /></RoleProtectedRoute>} />
+          <Route path="/admin/news" element={<RoleProtectedRoute allowedRoles={['Admin']}><ManageNews /></RoleProtectedRoute>} />
 
           {/* Trustee Protected Routes */}
           <Route path="/trustee/dashboard" element={<RoleProtectedRoute allowedRoles={['Trustee']}><TrusteeDashboard /></RoleProtectedRoute>} />
@@ -221,13 +226,10 @@ function AppRoutes() {
           <Route path="/trustee/math-history" element={<RoleProtectedRoute allowedRoles={['Trustee']}><ManageMathHistory /></RoleProtectedRoute>} />
           <Route path="/trustee/lineage" element={<RoleProtectedRoute allowedRoles={['Trustee']}><ManageLineage /></RoleProtectedRoute>} />
           <Route path="/trustee/accountants" element={<RoleProtectedRoute allowedRoles={['Trustee']}><TrusteeAccountants /></RoleProtectedRoute>} />
-<<<<<<< Updated upstream
-=======
           <Route path="/trustee/audio" element={<RoleProtectedRoute allowedRoles={['Trustee']}><TrusteeAudioTracks /></RoleProtectedRoute>} />
-          <Route path="/trustee/receipts" element={<RoleProtectedRoute allowedRoles={['Trustee']}><ReceiptHistory /></RoleProtectedRoute>} />
+          <Route path="/trustee/receipts" element={<RoleProtectedRoute allowedRoles={['Trustee']}><ReceiptHistory defaultCategory="Donation" hideCategoryFilter={true} /></RoleProtectedRoute>} />
           <Route path="/trustee/notice-generator" element={<RoleProtectedRoute allowedRoles={['Trustee']}><NoticeGenerator /></RoleProtectedRoute>} />
-
->>>>>>> Stashed changes
+          <Route path="/trustee/news" element={<RoleProtectedRoute allowedRoles={['Trustee']}><TrusteeManageNews /></RoleProtectedRoute>} />
 
           {/* Branch Manager Protected Routes */}
           <Route path="/branch/dashboard" element={<RoleProtectedRoute allowedRoles={['BranchManager']}><BranchDashboard /></RoleProtectedRoute>} />
@@ -239,6 +241,7 @@ function AppRoutes() {
           <Route path="/branch/branches" element={<RoleProtectedRoute allowedRoles={['BranchManager']}><BranchBranches /></RoleProtectedRoute>} />
           <Route path="/branch/documents" element={<RoleProtectedRoute allowedRoles={['BranchManager']}><BranchDocuments /></RoleProtectedRoute>} />
           <Route path="/branch/receipts" element={<RoleProtectedRoute allowedRoles={['BranchManager']}><ReceiptHistory /></RoleProtectedRoute>} />
+          <Route path="/branch/news" element={<RoleProtectedRoute allowedRoles={['BranchManager']}><BranchManageNews /></RoleProtectedRoute>} />
 
           {/* Devotee Protected Routes */}
           <Route path="/devotee/dashboard" element={<DevoteeLayout allowedRoles={['Devotee']}><DevoteeDashboardHome /></DevoteeLayout>} />
