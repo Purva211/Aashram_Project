@@ -245,10 +245,10 @@ const UserEvents = () => {
           </div>
 
           {/* Modern Realistic Tab Bar */}
-          <div className="flex p-1.5 bg-white/70 backdrop-blur-xl rounded-full border border-stone-200/80 mb-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-x-auto max-w-fit mx-auto">
+          <div className="flex flex-col sm:flex-row p-1.5 bg-white/70 backdrop-blur-xl sm:rounded-full rounded-2xl border border-stone-200/80 mb-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] w-full sm:w-auto sm:max-w-fit mx-auto gap-2 sm:gap-0">
             <button 
               onClick={() => setActiveTab('live')}
-              className={`px-8 py-3 rounded-full font-bold transition-all duration-300 text-sm tracking-wide whitespace-nowrap flex items-center gap-2 relative overflow-hidden
+              className={`px-8 py-3 rounded-full font-bold transition-all duration-300 text-sm tracking-wide flex items-center justify-center gap-2 relative overflow-hidden
                 ${activeTab === 'live' ? 'bg-red-50 text-red-700 shadow-sm border border-red-100/50' : 'text-stone-500 hover:text-red-600 hover:bg-stone-50/80'}
                 ${isLive ? 'shadow-[0_0_20px_rgba(239,68,68,0.4)] border border-red-300 ring-1 ring-red-400/50 bg-red-50/30' : ''}
               `}
@@ -268,14 +268,14 @@ const UserEvents = () => {
             </button>
             <button 
               onClick={() => setActiveTab('upcoming')}
-              className={`px-8 py-3 rounded-full font-bold transition-all duration-300 text-sm tracking-wide whitespace-nowrap 
+              className={`px-8 py-3 rounded-full font-bold transition-all duration-300 text-sm tracking-wide text-center
                 ${activeTab === 'upcoming' ? 'bg-amber-50/80 text-amber-700 shadow-sm border border-amber-100/50' : 'text-stone-500 hover:text-stone-800 hover:bg-stone-50/80'}`}
             >
               Upcoming Events
             </button>
             <button 
               onClick={() => setActiveTab('past')}
-              className={`px-8 py-3 rounded-full font-bold transition-all duration-300 text-sm tracking-wide whitespace-nowrap 
+              className={`px-8 py-3 rounded-full font-bold transition-all duration-300 text-sm tracking-wide text-center
                 ${activeTab === 'past' ? 'bg-amber-50/80 text-amber-700 shadow-sm border border-amber-100/50' : 'text-stone-500 hover:text-stone-800 hover:bg-stone-50/80'}`}
             >
               Historical Archives

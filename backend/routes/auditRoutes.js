@@ -6,7 +6,7 @@ const checkRole = require("../middleware/roleMiddleware");
 
 router.use(authMiddleware);
 
-// Audit logs are visible to Admin and Trustee
-router.get("/", checkRole(["Admin", "Trustee"]), getAuditLogs);
+// Audit logs are visible to Admin, Trustee, and Document Handler
+router.get("/", checkRole(["Admin", "Trustee", "DocumentHandler", "document_admin"]), getAuditLogs);
 
 module.exports = router;

@@ -171,7 +171,7 @@ const About = () => {
                 <p className="text-stone-600 text-lg leading-relaxed font-medium mb-6">
                   Established to anchor the Veerashaiva Lingayat Dharma, the Kole Throne has grown from ancient roots into a powerful beacon of spiritual awakening. Over the centuries, it has miraculously expanded its influence, championed monumental social reform, and tirelessly served the poor and needy without discrimination.
                 </p>
-                <Link to="/history" className="inline-flex items-center gap-2 text-mahakal-saffron font-bold text-xs uppercase tracking-widest hover:text-amber-600 transition-colors">
+                <Link to="/math-history" className="inline-flex items-center gap-2 text-mahakal-saffron font-bold text-xs uppercase tracking-widest hover:text-amber-600 transition-colors">
                   Read Full History <ArrowRight size={14} />
                 </Link>
               </div>
@@ -185,7 +185,7 @@ const About = () => {
                 <p className="text-stone-600 text-lg leading-relaxed font-medium mb-6">
                   Rooted in profound devotion to Lord Shiva and the sacred Ishtalinga, our philosophy transcends worldly illusions. It embraces universal equality, spiritual awakening, and mandates that *Kayakave Kailasa* (Work is Worship), making Seva (service) the ultimate form of devotion.
                 </p>
-                <Link to="/dharma" className="inline-flex items-center gap-2 text-mahakal-saffron font-bold text-xs uppercase tracking-widest hover:text-amber-600 transition-colors">
+                <Link to="/about/veerashaiva-philosophy" className="inline-flex items-center gap-2 text-mahakal-saffron font-bold text-xs uppercase tracking-widest hover:text-amber-600 transition-colors">
                   Explore Philosophy <ArrowRight size={14} />
                 </Link>
               </div>

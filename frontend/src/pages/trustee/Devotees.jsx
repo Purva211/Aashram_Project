@@ -141,7 +141,7 @@ const Devotees = () => {
           <div className="absolute -right-6 -top-6 w-32 h-32 bg-saffron-50 rounded-full blur-2xl"></div>
           <div className="relative z-10">
             <p className="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-2">New This Week</p>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
               <h3 className="text-4xl font-bold text-deepblue-900">{newThisWeek}</h3>
               <span className={`flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full ${percentageChange >= 0 ? 'text-emerald-500 bg-emerald-50' : 'text-rose-500 bg-rose-50'}`}>
                 {percentageChange >= 0 ? <FaArrowUp /> : null} {Math.abs(percentageChange)}%

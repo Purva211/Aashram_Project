@@ -362,8 +362,8 @@ const Announcements = () => {
         {activeTab === 'list' && (
           <div className="flex bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
             <button onClick={() => setOwnershipFilter('all')} className={`px-4 py-2 text-xs font-bold transition-colors ${ownershipFilter === 'all' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50'}`}>All</button>
-            <button onClick={() => setOwnershipFilter('mine')} className={`px-4 py-2 text-xs font-bold border-l border-gray-200 transition-colors ${ownershipFilter === 'mine' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50'}`}>My Broadcasts</button>
-            <button onClick={() => setOwnershipFilter('others')} className={`px-4 py-2 text-xs font-bold border-l border-gray-200 transition-colors ${ownershipFilter === 'others' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50'}`}>Others</button>
+            <button onClick={() => setOwnershipFilter('mine')} className={`px-4 py-2 text-xs font-bold border-l border-gray-200 transition-colors ${ownershipFilter === 'mine' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50'}`}>Sent by Me</button>
+            <button onClick={() => setOwnershipFilter('others')} className={`px-4 py-2 text-xs font-bold border-l border-gray-200 transition-colors ${ownershipFilter === 'others' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50'}`}>Received by Me</button>
           </div>
         )}
       </div>
@@ -511,13 +511,13 @@ const Announcements = () => {
             </div>
             <h3 className="text-2xl font-black text-slate-900 mb-2">Delivery Analytics</h3>
             <p className="text-slate-500 font-medium max-w-md mx-auto">Track Dashboard Read Status, Email settings across your enterprise notifications.</p>
-            <div className="flex flex-col md:flex-row justify-center items-center gap-6 mt-10">
-              <div className="w-full md:w-64 p-6 bg-slate-50 rounded-xl border border-slate-100">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-10">
+              <div className="p-6 bg-slate-50 rounded-xl border border-slate-100">
                 <p className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1">Total Sent</p>
                 <p className="text-4xl font-black text-slate-900">{announcements.length}</p>
               </div>
               
-              <div className="w-full md:w-64 p-6 bg-blue-50 rounded-xl border border-blue-100">
+              <div className="p-6 bg-blue-50 rounded-xl border border-blue-100">
                 <p className="text-sm font-bold text-blue-600 uppercase tracking-widest mb-1">Email Enabled</p>
                 <p className="text-4xl font-black text-blue-700">{announcements.filter(a => a.emailIntegration).length}</p>
               </div>

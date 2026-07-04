@@ -13,6 +13,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@deepgram/sdk": "^3.3.0",
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.9.0",
     "cors": "^2.8.6",
@@ -25,14 +26,10 @@
     "node-cron": "^4.2.1",
     "nodemailer": "^8.0.5",
     "pdfkit": "^0.19.0",
-<<<<<<< Updated upstream
-    "socket.io": "^4.8.3"
-=======
     "puppeteer": "^25.2.1",
     "qrcode": "^1.5.4",
     "socket.io": "^4.8.3",
     "youtube-dl-exec": "^3.1.7"
->>>>>>> Stashed changes
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

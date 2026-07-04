@@ -31,6 +31,9 @@ router.get("/stats", donationController.getDashboardStats);
 // Get all donations
 router.get("/", donationController.getAllDonations);
 
+// Get receipt PDF
+router.get("/:id/receipt", donationController.downloadReceipt);
+
 // Approve donation
 router.post("/:id/approve", donationController.approveDonation);
 

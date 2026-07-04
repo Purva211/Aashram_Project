@@ -53,7 +53,7 @@ const Documents = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2 text-slate-900"><FiFileText className="text-gray-400" /> Read-Only Documents</h1>
+          <h1 className="text-2xl font-bold flex flex-wrap items-center gap-2 text-slate-900"><FiFileText className="text-gray-400" /> Read-Only Documents</h1>
           <p className="text-gray-500 text-sm mt-1">View and download branch documents. Uploading is restricted to Document Admins.</p>
         </div>
         <button onClick={() => setShowFilters(!showFilters)} className={`flex items-center gap-2 px-4 py-2 bg-white border ${showFilters ? 'border-saffron-500 text-saffron-600' : 'border-gray-200 text-gray-700'} hover:bg-gray-50 rounded-xl text-sm font-bold shadow-sm transition-colors`}>

@@ -158,15 +158,6 @@
       font-weight: 700;
     }
 
-    .qr-container {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 60px;
-      height: 60px;
-      mix-blend-mode: multiply;
-    }
   </style>
 </head>
 <body>
@@ -202,7 +193,7 @@
 
       <div class="flex-row">
         <span class="field-label">राहणार</span>
-        <span class="field-value">{{address}} {{phone}}</span>
+        <span class="field-value">{{address}}</span>
         <span class="field-label" style="font-size: 11pt;">आपणाकडून आज रोजी दिशाविधी कार्यक्रमाकरीता देणगी</span>
       </div>
 
@@ -216,10 +207,6 @@
         <div class="amount-box">
           <div class="amount-symbol">₹</div>
           <div class="amount-value">{{amount}}</div>
-        </div>
-        
-        <div class="qr-container">
-          {{qrCode}}
         </div>
 
         <div class="footer-text">धन्यवाद !</div>

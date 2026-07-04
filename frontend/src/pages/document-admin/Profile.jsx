@@ -1,349 +1,460 @@
-import { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { motion } from 'framer-motion';
-import { FiUser, FiMail, FiPhone, FiLock, FiShield, FiSave, FiBell, FiGlobe, FiClock } from 'react-icons/fi';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { FiUser, FiMail, FiPhone, FiMapPin, FiShield, FiSave, FiEdit2, FiCamera, FiLock, FiBell, FiEye, FiEyeOff } from 'react-icons/fi';
+import { Globe, Sun, Moon, Clock, Activity, ChevronDown } from 'lucide-react';
 import api from '../../utils/api';
 
 const DocumentAdminProfile = () => {
   const { user, login } = useAuth();
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
+  const [activeTab, setActiveTab] = useState('personal');
+  const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [successMsg, setSuccessMsg] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
+  const fileInputRef = useRef(null);
+
+  const [profileImage, setProfileImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
   
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
   const [formData, setFormData] = useState({
-    contactNo: user?.contactNo || '',
+    name: '',
+    email: '',
+    contactNo: '',
+    address: ''
+  });
+
+  const [securityData, setSecurityData] = useState({
     currentPassword: '',
     newPassword: '',
     confirmPassword: ''
   });
-  
+  const [showPassword, setShowPassword] = useState(false);
+
   const [preferences, setPreferences] = useState({
-    notifyEmail: true, notifySms: false, notifyDonation: true, notifyEvent: true, notifyAnnadan: false,
     language: 'English', theme: 'Light',
-    showActivities: true, showBranches: true, showDonations: true, showEvents: true,
-    dateFormat: 'DD/MM/YYYY', timezone: 'Asia/Kolkata'
+    showActivities: true, showBranches: true, showDonations: true, showEvents: true
   });
   
-  const handleTogglePref = (key) => setPreferences(prev => ({ ...prev, [key]: !prev[key] }));
+  useEffect(() => {
+    const savedPrefs = localStorage.getItem('adminPreferences');
+    if (savedPrefs) {
+      try {
+        setPreferences(prev => ({ ...prev, ...JSON.parse(savedPrefs) }));
+      } catch (e) {
+        console.error("Failed to parse preferences", e);
+      }
+    }
+  }, []);
+
+  const handleTogglePref = (key) => {
+    setPreferences(prev => {
+      const updated = { ...prev, [key]: !prev[key] };
+      localStorage.setItem('adminPreferences', JSON.stringify(updated));
+      window.dispatchEvent(new Event('preferencesUpdated'));
+      return updated;
+    });
+  };
+
+  const handleThemeChange = (newTheme) => {
+    setPreferences(prev => {
+      const updated = { ...prev, theme: newTheme };
+      localStorage.setItem('adminPreferences', JSON.stringify(updated));
+      return updated;
+    });
+    window.dispatchEvent(new Event('preferencesUpdated'));
+  };
   
   const Toggle = ({ enabled, onChange }) => (
     <div 
       onClick={onChange}
-      className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-300 ${enabled ? 'bg-indigo-500' : 'bg-slate-300'}`}
+      className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-300 ${enabled ? 'bg-sky-500' : 'bg-gray-300'}`}
     >
       <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${enabled ? 'translate-x-6' : ''}`} />
     </div>
   );
 
-  const [profileImageFile, setProfileImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-  
-  const [loading, setLoading] = useState(false);
-  const [passwordLoading, setPasswordLoading] = useState(false);
-  const [message, setMessage] = useState({ type: '', text: '' });
-  const [passwordMessage, setPasswordMessage] = useState({ type: '', text: '' });
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.name || '',
+        email: user.email || '',
+        contactNo: user.contactNo || '',
+        address: user.address || ''
+      });
+      if (user.profilePhoto) {
+        setImagePreview(`${API_URL}${user.profilePhoto}`);
+      }
+    }
+  }, [user]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setProfileImageFile(file);
+      setProfileImage(file);
       setImagePreview(URL.createObjectURL(file));
+      setIsEditing(true); // Auto enable edit mode if they change photo
     }
   };
 
-  const handleProfileUpdate = async (e) => {
+  const handleUpdateProfile = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage({ type: '', text: '' });
-
+    setSuccessMsg('');
+    setErrorMsg('');
     try {
-      const dataToUpdate = new FormData();
-      dataToUpdate.append('contactNo', formData.contactNo);
-      if (profileImageFile) {
-        dataToUpdate.append('profileImage', profileImageFile);
+      const data = new FormData();
+      data.append('name', formData.name);
+      data.append('contactNo', formData.contactNo);
+      data.append('address', formData.address);
+      if (profileImage) {
+        data.append('profileImage', profileImage);
       }
 
-      const res = await api.put('/document-admin/profile', dataToUpdate, {
+      const res = await api.put('/document-admin/profile', data, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       if (res.data.success) {
         login(sessionStorage.getItem('token') || localStorage.getItem('token'), res.data.data);
+        setSuccessMsg('Profile information updated successfully!');
+        setIsEditing(false);
+      } else {
+        setErrorMsg(res.data.message || 'Failed to update profile.');
       }
-      setMessage({ type: 'success', text: res.data.message });
     } catch (err) {
-      setMessage({ type: 'error', text: err.response?.data?.message || 'Failed to update profile' });
+      console.error(err);
+      setErrorMsg(err.response?.data?.message || 'Failed to update profile.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handlePasswordUpdate = async (e) => {
+  const handleUpdateSecurity = async (e) => {
     e.preventDefault();
-    
-    if (formData.newPassword !== formData.confirmPassword) {
-      setPasswordMessage({ type: 'error', text: 'New passwords do not match' });
-      return;
+    if (securityData.newPassword !== securityData.confirmPassword) {
+      return setErrorMsg("Passwords do not match");
     }
-
-    setPasswordLoading(true);
-    setPasswordMessage({ type: '', text: '' });
-
+    if (!/^[a-zA-Z0-9]+$/.test(securityData.newPassword)) {
+      return setErrorMsg("Password must contain only alphanumeric characters");
+    }
+    setLoading(true);
+    setSuccessMsg('');
+    setErrorMsg('');
     try {
       const res = await api.put('/document-admin/password', {
-        currentPassword: formData.currentPassword,
-        newPassword: formData.newPassword
+        currentPassword: securityData.currentPassword,
+        newPassword: securityData.newPassword
       });
-      setPasswordMessage({ type: 'success', text: res.data.message });
-      setFormData(prev => ({ ...prev, currentPassword: '', newPassword: '', confirmPassword: '' }));
+      if (res.data.success) {
+        setSuccessMsg('Security settings updated successfully!');
+        setSecurityData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      } else {
+        setErrorMsg(res.data.message || 'Failed to update security settings.');
+      }
     } catch (err) {
-      setPasswordMessage({ type: 'error', text: err.response?.data?.message || 'Failed to update password' });
+      console.error(err);
+      setErrorMsg(err.response?.data?.message || 'Failed to update security settings.');
     } finally {
-      setPasswordLoading(false);
+      setLoading(false);
     }
   };
 
-  if (!user) return null;
+  const handleUpdatePreferences = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setSuccessMsg('');
+    setErrorMsg('');
+    try {
+      localStorage.setItem('adminPreferences', JSON.stringify(preferences));
+      
+      let lngCode = 'en';
+      if (preferences.language === 'Hindi') lngCode = 'hi';
+      if (preferences.language === 'Marathi') lngCode = 'mr';
+      
+      i18n.changeLanguage(lngCode);
+      document.cookie = `googtrans=/en/${lngCode}; path=/;`;
+      document.cookie = `googtrans=/en/${lngCode}; path=/; domain=${window.location.hostname};`;
+      
+      window.dispatchEvent(new Event('preferencesUpdated'));
+
+      await new Promise(res => setTimeout(res, 400)); 
+      setSuccessMsg('Preferences saved successfully!');
+    } catch (err) {
+      console.error(err);
+      setErrorMsg('Failed to save preferences.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getInitials = () => {
+    return user?.name ? user.name.charAt(0).toUpperCase() : (user?.email ? user.email.charAt(0).toUpperCase() : 'D');
+  };
+
+  const displayName = user?.name || (user?.email ? user.email.split('@')[0] : 'Document Handler');
 
   return (
-    <div className="p-6 md:p-8 max-w-4xl mx-auto w-full">
-      <div className="mb-8">
-        <h1 className="text-3xl font-black text-slate-800 tracking-tight">My Profile</h1>
-        <p className="text-slate-500 mt-1">Manage your document handler account settings</p>
+    <div className="max-w-5xl mx-auto space-y-8 text-gray-800 pb-12">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold flex items-center gap-2 text-slate-900">
+            <FiUser className="text-sky-500" /> Document Handler Profile
+          </h1>
+          <p className="text-gray-500 text-sm mt-1">Manage your document administrator identity and dashboard preferences.</p>
+        </div>
+        {activeTab === 'personal' && !isEditing && (
+          <button 
+            onClick={() => setIsEditing(true)} 
+            className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 rounded-xl font-bold shadow-md transition-colors"
+          >
+            <FiEdit2 /> Edit Profile
+          </button>
+        )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Profile Info Card */}
-        <div className="lg:col-span-1">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex flex-col items-center text-center"
-          >
-            <div className="w-24 h-24 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center text-4xl mb-4 shadow-inner relative overflow-hidden group">
-              {(imagePreview || user?.profilePhoto) ? (
-                <img src={imagePreview || `${API_URL}${user.profilePhoto}`} alt="Profile" className="w-full h-full object-cover" />
-              ) : (
-                <FiUser />
-              )}
-              <label className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                <span className="text-white text-xs font-bold uppercase tracking-wider">Change</span>
-                <input type="file" onChange={handleImageChange} accept="image/*" className="hidden" />
-              </label>
-            </div>
-            <h2 className="text-xl font-bold text-slate-800">{user.email.split('@')[0]}</h2>
-            <div className="flex items-center gap-1 text-sm font-medium text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full mt-2 mb-4">
-              <FiShield className="text-indigo-500" /> Document Handler
-            </div>
-            
-            <div className="w-full space-y-3 mt-4 text-left">
-              <div className="flex items-center gap-3 text-slate-600 bg-slate-50 p-3 rounded-xl">
-                <FiMail className="text-slate-400" />
-                <span className="text-sm truncate" title={user.email}>{user.email}</span>
+      <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden flex flex-col md:flex-row min-h-[600px]">
+        
+        {/* Sidebar Tabs */}
+        <div className="w-full md:w-64 bg-gray-50 border-r border-gray-100 p-6 shrink-0">
+          <div className="flex flex-col items-center mb-8">
+            <div className="relative group">
+              <div className="w-24 h-24 rounded-full border-4 border-white bg-slate-800 flex items-center justify-center shadow-md overflow-hidden relative">
+                {imagePreview ? (
+                  <img src={imagePreview} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-4xl text-white font-bold">{getInitials()}</span>
+                )}
+                
+                {/* Overlay for image upload */}
+                <div 
+                  onClick={() => fileInputRef.current?.click()}
+                  className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                >
+                  <FiCamera className="text-white text-xl mb-1" />
+                  <span className="text-white text-[10px] font-bold uppercase tracking-wider">Change</span>
+                </div>
               </div>
-              <div className="flex items-center gap-3 text-slate-600 bg-slate-50 p-3 rounded-xl">
-                <FiPhone className="text-slate-400" />
-                <span className="text-sm">{user.contactNo || 'No contact provided'}</span>
-              </div>
+              <input type="file" ref={fileInputRef} onChange={handleImageChange} accept="image/*" className="hidden" />
             </div>
-            
-            <p className="text-xs text-slate-400 mt-6 bg-slate-50 p-3 rounded-xl italic">
-              Email address is managed by the Trustee and cannot be changed here.
-            </p>
-          </motion.div>
+            <h3 className="mt-4 font-bold text-slate-900 text-center">{displayName}</h3>
+            <span className="px-3 py-1 bg-sky-100 text-sky-700 rounded-full text-xs font-bold uppercase tracking-wider mt-2 flex items-center gap-1">
+              <FiShield /> Document Handler
+            </span>
+          </div>
+
+          <nav className="space-y-2">
+            <button 
+              onClick={() => {setActiveTab('personal'); setSuccessMsg(''); setErrorMsg('');}}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-colors ${activeTab === 'personal' ? 'bg-sky-50 text-sky-600' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'}`}
+            >
+              <FiUser className="text-lg" /> Personal Info
+            </button>
+            <button 
+              onClick={() => {setActiveTab('security'); setSuccessMsg(''); setErrorMsg(''); setIsEditing(false);}}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-colors ${activeTab === 'security' ? 'bg-sky-50 text-sky-600' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'}`}
+            >
+              <FiLock className="text-lg" /> Security
+            </button>
+            <button 
+              onClick={() => {setActiveTab('preferences'); setSuccessMsg(''); setErrorMsg(''); setIsEditing(false);}}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-colors ${activeTab === 'preferences' ? 'bg-sky-50 text-sky-600' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'}`}
+            >
+              <FiBell className="text-lg" /> Preferences
+            </button>
+          </nav>
         </div>
 
-        {/* Update Forms */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Contact Details Form */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100"
-          >
-            <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-              <FiUser className="text-indigo-500" /> Profile Details
-            </h3>
-            
-            {message.text && (
-              <div className={`p-3 rounded-xl mb-4 text-sm font-medium ${message.type === 'success' ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>
-                {message.text}
-              </div>
+        {/* Content Area */}
+        <div className="flex-1 p-6 md:p-10 relative">
+          
+          <AnimatePresence mode="wait">
+            {successMsg && (
+              <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="absolute top-6 left-10 right-10 p-4 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-100 font-bold text-sm z-10 shadow-sm">
+                {successMsg}
+              </motion.div>
+            )}
+            {errorMsg && (
+              <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="absolute top-6 left-10 right-10 p-4 bg-red-50 text-red-700 rounded-xl border border-red-100 font-bold text-sm z-10 shadow-sm">
+                {errorMsg}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <div className={(successMsg || errorMsg) ? "mt-16" : ""}>
+            {/* Personal Info Tab */}
+            {activeTab === 'personal' && (
+              <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3 }}>
+                <h2 className="text-xl font-bold text-slate-900 mb-6 border-b border-gray-100 pb-4">Personal Information</h2>
+                <form onSubmit={handleUpdateProfile} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2">Full Name</label>
+                      <div className="relative">
+                        <FiUser className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <input type="text" disabled={!isEditing} value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3 text-gray-800 focus:outline-none focus:border-sky-500 focus:bg-white focus:ring-1 focus:ring-sky-500 transition-all disabled:opacity-70 disabled:bg-gray-100 font-medium" required />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2">Email Address</label>
+                      <div className="relative">
+                        <FiMail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <input type="email" disabled={true} value={formData.email} className="w-full bg-gray-100 border border-gray-200 rounded-xl pl-11 pr-4 py-3 text-gray-800 opacity-70 cursor-not-allowed font-medium" title="Email address cannot be changed" />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2">Mobile Number</label>
+                      <div className="relative">
+                        <FiPhone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <input type="tel" disabled={!isEditing} value={formData.contactNo} onChange={e => setFormData({...formData, contactNo: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3 text-gray-800 focus:outline-none focus:border-sky-500 focus:bg-white focus:ring-1 focus:ring-sky-500 transition-all disabled:opacity-70 disabled:bg-gray-100 font-medium" required />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2">Location / Address</label>
+                      <div className="relative">
+                        <FiMapPin className="absolute left-4 top-3 text-gray-400" />
+                        <textarea disabled={!isEditing} value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3 text-gray-800 focus:outline-none focus:border-sky-500 focus:bg-white focus:ring-1 focus:ring-sky-500 transition-all disabled:opacity-70 disabled:bg-gray-100 font-medium resize-none h-24" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {isEditing && (
+                    <div className="pt-6 border-t border-gray-100 flex justify-end gap-3">
+                      <button type="button" onClick={() => { setIsEditing(false); setSuccessMsg(''); setErrorMsg(''); setImagePreview(user?.profilePhoto ? `${API_URL}${user.profilePhoto}` : null); setProfileImage(null); setFormData({ name: user.name || '', email: user.email || '', contactNo: user.contactNo || '', address: user.address || '' }); }} className="px-5 py-2.5 rounded-xl font-bold text-gray-600 hover:bg-gray-100 transition-colors">
+                        Cancel
+                      </button>
+                      <button type="submit" disabled={loading} className="px-6 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl font-bold shadow-lg transition-colors flex items-center gap-2 disabled:opacity-50">
+                        {loading ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <><FiSave /> Save Changes</>}
+                      </button>
+                    </div>
+                  )}
+                </form>
+              </motion.div>
             )}
 
-            <form onSubmit={handleProfileUpdate} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
-                <input 
-                  type="email" 
-                  value={user.email} 
-                  disabled
-                  className="w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-xl text-slate-500 cursor-not-allowed"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Contact Number</label>
-                <input 
-                  type="text" 
-                  name="contactNo"
-                  value={formData.contactNo}
-                  onChange={handleChange}
-                  placeholder="Enter contact number"
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/50 outline-none transition-all"
-                />
-              </div>
-              
-              <div className="flex justify-end pt-2">
-                <button 
-                  type="submit" 
-                  disabled={loading}
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl font-medium flex items-center gap-2 transition-colors disabled:opacity-70 shadow-lg shadow-indigo-200"
-                >
-                  {loading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <FiSave />}
-                  Update Profile
-                </button>
-              </div>
-            </form>
-          </motion.div>
+            {/* Security Tab */}
+            {activeTab === 'security' && (
+              <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3 }}>
+                <h2 className="text-xl font-bold text-slate-900 mb-6 border-b border-gray-100 pb-4">Security Settings</h2>
+                <form onSubmit={handleUpdateSecurity} className="max-w-md space-y-5">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Current Password</label>
+                    <div className="relative">
+                      <input type={showPassword ? "text" : "password"} required value={securityData.currentPassword} onChange={e => setSecurityData({...securityData, currentPassword: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:border-sky-500 focus:bg-white focus:ring-1 focus:ring-sky-500 transition-all" />
+                      <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                        {showPassword ? <FiEyeOff /> : <FiEye />}
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">New Password</label>
+                    <input type={showPassword ? "text" : "password"} required minLength={6} value={securityData.newPassword} onChange={e => setSecurityData({...securityData, newPassword: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:border-sky-500 focus:bg-white focus:ring-1 focus:ring-sky-500 transition-all" />
+                  </div>
 
-          {/* Password Form */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100"
-          >
-            <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-              <FiLock className="text-indigo-500" /> Change Password
-            </h3>
-            
-            {passwordMessage.text && (
-              <div className={`p-3 rounded-xl mb-4 text-sm font-medium ${passwordMessage.type === 'success' ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>
-                {passwordMessage.text}
-              </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Confirm New Password</label>
+                    <input type={showPassword ? "text" : "password"} required minLength={6} value={securityData.confirmPassword} onChange={e => setSecurityData({...securityData, confirmPassword: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:border-sky-500 focus:bg-white focus:ring-1 focus:ring-sky-500 transition-all" />
+                  </div>
+
+                  <div className="pt-4">
+                    <button type="submit" disabled={loading} className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold shadow-md transition-colors flex justify-center items-center gap-2 disabled:opacity-50">
+                      {loading ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : 'Update Password'}
+                    </button>
+                  </div>
+                </form>
+              </motion.div>
             )}
 
-            <form onSubmit={handlePasswordUpdate} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Current Password</label>
-                <input 
-                  type="password" 
-                  name="currentPassword"
-                  value={formData.currentPassword}
-                  onChange={handleChange}
-                  required
-                  placeholder="Enter current password"
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/50 outline-none transition-all"
-                />
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">New Password</label>
-                  <input 
-                    type="password" 
-                    name="newPassword"
-                    value={formData.newPassword}
-                    onChange={handleChange}
-                    required
-                    placeholder="Enter new password"
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/50 outline-none transition-all"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Confirm New Password</label>
-                  <input 
-                    type="password" 
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    required
-                    placeholder="Confirm new password"
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/50 outline-none transition-all"
-                  />
-                </div>
-              </div>
-              
-              <div className="flex justify-end pt-2">
-                <button 
-                  type="submit" 
-                  disabled={passwordLoading}
-                  className="bg-slate-800 hover:bg-slate-900 text-white px-6 py-2.5 rounded-xl font-medium flex items-center gap-2 transition-colors disabled:opacity-70 shadow-lg shadow-slate-200"
-                >
-                  {passwordLoading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <FiLock />}
-                  Update Password
-                </button>
-              </div>
-            </form>
-          </motion.div>
-          {/* Preferences Section */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 mt-6"
-          >
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                <FiBell className="text-indigo-500" /> Preferences
-              </h3>
-              <button 
-                onClick={() => {
-                  let lngCode = 'en';
-                  if (preferences.language === 'Hindi') lngCode = 'hi';
-                  if (preferences.language === 'Marathi') lngCode = 'mr';
-                  
-                  i18n.changeLanguage(lngCode);
-                  document.cookie = `googtrans=/en/${lngCode}; path=/;`;
-                  document.cookie = `googtrans=/en/${lngCode}; path=/; domain=${window.location.hostname};`;
-                  
-                  setMessage({ type: 'success', text: 'Preferences saved successfully.' });
-                  setTimeout(() => {
-                    setMessage({ type: '', text: '' });
-                    window.location.reload();
-                  }, 1000);
-                }}
-                className="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-4 py-2 rounded-xl font-medium flex items-center gap-2 transition-colors"
-              >
-                <FiSave /> Save Prefs
-              </button>
-            </div>
-            
-            <div className="space-y-6">
-              <div>
-                <h4 className="font-semibold text-slate-800 mb-3">Language & Theme</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Preferences Tab */}
+            {activeTab === 'preferences' && (
+              <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3 }} className="space-y-10">
+                <div className="flex items-center justify-between">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Display Language</label>
-                    <select 
-                      value={preferences.language} 
-                      onChange={(e) => setPreferences({...preferences, language: e.target.value})}
-                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/50 outline-none"
-                    >
-                      <option value="English">English</option>
-                      <option value="Hindi">Hindi (हिंदी)</option>
-                      <option value="Marathi">Marathi (मराठी)</option>
-                    </select>
+                    <h2 className="text-xl font-bold text-slate-900">System Preferences</h2>
+                    <p className="text-gray-500 mt-1">Customize your document handler dashboard experience.</p>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Theme</label>
-                    <select 
-                      value={preferences.theme} 
-                      onChange={(e) => setPreferences({...preferences, theme: e.target.value})}
-                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/50 outline-none"
-                    >
-                      <option value="Light">Light</option>
-                      <option value="Dark">Dark</option>
-                    </select>
-                  </div>
+                  <button 
+                    onClick={handleUpdatePreferences}
+                    className="bg-white border border-sky-500 text-sky-600 hover:bg-sky-50 px-6 py-2.5 rounded-xl font-medium shadow-sm transition-colors flex items-center gap-2">
+                    <FiSave className="w-4 h-4"/> Save Preferences
+                  </button>
                 </div>
-              </div>
-            </div>
-          </motion.div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* Section 1: Dashboard Items */}
+                  <section className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100 space-y-6">
+                    <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2"><Activity className="w-5 h-5 text-sky-500"/> Dashboard Items</h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-700">Show Recent Activities</span>
+                        <Toggle enabled={preferences.showActivities} onChange={() => handleTogglePref('showActivities')} />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-700">Show Branch Statistics</span>
+                        <Toggle enabled={preferences.showBranches} onChange={() => handleTogglePref('showBranches')} />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-700">Show Donation Analytics</span>
+                        <Toggle enabled={preferences.showDonations} onChange={() => handleTogglePref('showDonations')} />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-700">Show Upcoming Events</span>
+                        <Toggle enabled={preferences.showEvents} onChange={() => handleTogglePref('showEvents')} />
+                      </div>
+                    </div>
+                  </section>
+
+                  {/* Section 2: Localization */}
+                  <section className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100 space-y-6">
+                    <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2"><Globe className="w-5 h-5 text-sky-500"/> Localization</h3>
+                    <div className="space-y-5">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700">Display Language</label>
+                        <div className="relative">
+                          <select 
+                            value={preferences.language} 
+                            onChange={(e) => setPreferences({...preferences, language: e.target.value})}
+                            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none appearance-none transition-all"
+                          >
+                            <option value="English">English</option>
+                            <option value="Hindi">Hindi (हिंदी)</option>
+                            <option value="Marathi">Marathi (मराठी)</option>
+                          </select>
+                          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700">Interface Theme</label>
+                        <div className="flex gap-3">
+                          <button 
+                            onClick={() => handleThemeChange('Light')}
+                            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg border font-medium transition-all ${preferences.theme === 'Light' ? 'bg-sky-50 border-sky-500 text-sky-700' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+                          >
+                            <Sun className="w-4 h-4" /> Light
+                          </button>
+                          <button 
+                            onClick={() => handleThemeChange('Dark')}
+                            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg border font-medium transition-all ${preferences.theme === 'Dark' ? 'bg-sky-50 border-sky-500 text-sky-700' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+                          >
+                            <Moon className="w-4 h-4" /> Dark
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                </div>
+              </motion.div>
+            )}
+
+          </div>
         </div>
       </div>
     </div>
