@@ -1,6 +1,7 @@
 const Annadaan = require('../models/Annadaan');
 const sendEmail = require('../utils/sendEmail');
 const { generateReceiptPdf } = require('../utils/generateReceipt');
+const { englishToMarathi } = require('../utils/transliterate');
 
 // @desc    Create new Annadaan request
 // @route   POST /api/annadaan
@@ -115,10 +116,13 @@ const updateAnnadaan = async (req, res) => {
     
     if (wasPending && annadaan.status === 'approved') {
       try {
+        const transliteratedName = await englishToMarathi(annadaan.name);
+        const transliteratedPurpose = await englishToMarathi(`Annadaan - ${annadaan.annadaanType}`);
+
         const pdfBuffer = await generateReceiptPdf({
-          donorName: annadaan.name,
+          donorName: transliteratedName,
           amount: "Annadaan Seva",
-          purpose: `Annadaan - ${annadaan.annadaanType}`,
+          purpose: transliteratedPurpose,
           transactionId: `ANN-${annadaan._id.toString().substring(0, 8).toUpperCase()}`,
           paymentMethod: "N/A",
           date: annadaan.date,

@@ -18,6 +18,7 @@ import Services from "./pages/user/Services";
 import TrusteeBoard from "./pages/user/TrusteeBoard";
 
 import MathHistory from "./pages/user/MathHistory";
+import Philosophy from "./pages/user/Philosophy";
 import Lineage from "./pages/user/Lineage";
 import TrusteeAudioTracks from './pages/trustee/AudioTracks';
 import ContactUs from "./pages/user/ContactUs";
@@ -182,6 +183,7 @@ function AppRoutes() {
           <Route path="/trustee-board" element={<TrusteeBoard />} />
 
           <Route path="/math-history" element={<MathHistory />} />
+          <Route path="/about/veerashaiva-philosophy" element={<Philosophy />} />
           <Route path="/lineage" element={<Lineage />} />
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/verify-receipt/:receiptNumber?" element={<VerifyReceipt />} />

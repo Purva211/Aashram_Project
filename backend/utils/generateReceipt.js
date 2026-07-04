@@ -114,6 +114,117 @@ function convertNumberToEnglishWords(amount) {
   return words.trim() + " Rupees Only";
 }
 
+// Helper to convert number to Marathi words
+function convertNumberToMarathiWords(amount) {
+  if (amount === 0) return "शून्य";
+  
+  const marathiNums = [
+    "", "एक", "दोन", "तीन", "चार", "पाच", "सहा", "सात", "आठ", "नऊ", "दहा",
+    "अकरा", "बारा", "तेरा", "चौदा", "पंधरा", "सोळा", "सतरा", "अठरा", "एकोणीस", "वीस",
+    "एकवीस", "बावीस", "तेवीस", "चोवीस", "पंचवीस", "सव्वीस", "सत्तावीस", "अठ्ठावीस", "एकोणतीस", "तीस",
+    "एकतीस", "बत्तीस", "तेहतीस", "चौतीस", "पस्तीस", "छत्तीस", "सडतीस", "अडतीस", "एकोणचाळीस", "चाळीस",
+    "एकचाळीस", "बेचाळीस", "तेचाळीस", "चोवेचाळीस", "पंचेचाळीस", "सचेचाळीस", "सत्तेचाळीस", "अठ्ठेचाळीस", "एकोणपन्नास", "पन्नास",
+    "एकपन्न", "बावन", "त्रिपन्न", "चौपन", "पंचावन", "सप्पन", "सत्तावन", "अठ्ठावन", "एकोणसाठ", "साठ",
+    "एकसष्ठ", "बासष्ठ", "त्रेसष्ठ", "चौसष्ठ", "पायसष्ठ", "सहासष्ठ", "सदुसष्ठ", "अडुसष्ठ", "एकोणसत्तर", "सत्तर",
+    "एकहत्तर", "बाहत्तर", "त्र्याहत्तर", "चौऱ्याहत्तर", "पंच्याहत्तर", "शहात्तर", "सत्त्याहत्तर", "अठ्ठ्याहत्तर", "एकोणऐंशी", "ऐंशी",
+    "एक्याऐंशी", "ब्याऐंशी", "त्र्याऐंशी", "चौऱ्याऐंशी", "पंच्याऐंशी", "शहाऐंशी", "सत्त्याऐंशी", "अठ्ठ्याऐंशी", "एकोणनव्वद", "नव्वद",
+    "एक्याण्णव", "ब्याण्णव", "त्र्याण्णव", "चौऱ्याण्णव", "पंच्याण्णव", "शहाण्णव", "सत्त्याण्णव", "अठ्ठ्याण्णव", "नव्याण्णव"
+  ];
+
+  let words = "";
+
+  let temp = Math.floor(amount);
+  const crores = Math.floor(temp / 10000000);
+  temp %= 10000000;
+
+  const lakhs = Math.floor(temp / 100000);
+  temp %= 100000;
+
+  const thousands = Math.floor(temp / 1000);
+  temp %= 1000;
+
+  const hundreds = Math.floor(temp / 100);
+  temp %= 100;
+
+  const remaining = temp;
+
+  if (crores > 0) {
+    words += (crores < 100 ? marathiNums[crores] : convertNumberToMarathiWords(crores)) + " कोटी ";
+  }
+
+  if (lakhs > 0) {
+    words += marathiNums[lakhs] + " लाख ";
+  }
+
+  if (thousands > 0) {
+    words += marathiNums[thousands] + " हजार ";
+  }
+
+  if (hundreds > 0) {
+    words += marathiNums[hundreds] + "शे ";
+  }
+
+  if (remaining > 0) {
+    words += marathiNums[remaining] + " ";
+  }
+
+  return words.trim() + " रुपये फक्त";
+}
+
+// Helper to convert number to English words
+function convertNumberToEnglishWords(amount) {
+  if (amount === 0) return "Zero";
+  
+  const units = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
+                 "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+  const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+
+  function helper(num) {
+    if (num < 20) return units[num];
+    const digit = num % 10;
+    return tens[Math.floor(num / 10)] + (digit !== 0 ? " " + units[digit] : "");
+  }
+
+  let words = "";
+  let temp = Math.floor(amount);
+
+  const crores = Math.floor(temp / 10000000);
+  temp %= 10000000;
+
+  const lakhs = Math.floor(temp / 100000);
+  temp %= 100000;
+
+  const thousands = Math.floor(temp / 1000);
+  temp %= 1000;
+
+  const hundreds = Math.floor(temp / 100);
+  temp %= 100;
+
+  const remaining = temp;
+
+  if (crores > 0) {
+    words += (crores < 20 ? units[crores] : helper(crores)) + " Crore ";
+  }
+
+  if (lakhs > 0) {
+    words += helper(lakhs) + " Lakh ";
+  }
+
+  if (thousands > 0) {
+    words += helper(thousands) + " Thousand ";
+  }
+
+  if (hundreds > 0) {
+    words += units[hundreds] + " Hundred ";
+  }
+
+  if (remaining > 0) {
+    words += helper(remaining) + " ";
+  }
+
+  return words.trim() + " Rupees Only";
+}
+
 /**
  * Generates a beautiful bilingual Marathi/English PDF receipt for a donation or annadaan.
  * Places Devotee Copy at top and Office Copy at bottom on a single A4 sheet.
@@ -124,6 +235,7 @@ function convertNumberToEnglishWords(amount) {
 exports.generateReceiptPdf = (rawDonation) => {
   return new Promise(async (resolve, reject) => {
     try {
+<<<<<<< HEAD
       // Clone the object to prevent saving Marathi translated values to the database
       const donation = typeof rawDonation.toObject === 'function' ? rawDonation.toObject() : { ...rawDonation };
 
@@ -139,6 +251,9 @@ exports.generateReceiptPdf = (rawDonation) => {
 
       const isJamaPavti = donation.donationType === "jama_pavti";
       const doc = new PDFDocument({ margin: 20, size: isJamaPavti ? [595.28, 440] : "A4" });
+=======
+      const doc = new PDFDocument({ margin: 20, size: "A4" });
+>>>>>>> sonali
       const buffers = [];
 
       doc.on("data", (chunk) => buffers.push(chunk));
@@ -181,8 +296,12 @@ exports.generateReceiptPdf = (rawDonation) => {
       const swamijiPath = path.join(__dirname, '../../frontend/src/assets/kolekar1.jpeg');
 
       // Format Date & Receipt No
+<<<<<<< HEAD
       const receiptDate = donation.approvalDate || donation.date || Date.now();
       const dateStr = new Date(receiptDate).toLocaleDateString("en-IN", {
+=======
+      const dateStr = new Date(donation.date || Date.now()).toLocaleDateString("en-IN", {
+>>>>>>> sonali
         day: "2-digit", month: "2-digit", year: "numeric"
       });
       const receiptNo = donation.receiptNumber || donation.donationReference || `REC-${Date.now().toString().slice(-6)}`;
@@ -234,10 +353,15 @@ exports.generateReceiptPdf = (rawDonation) => {
           doc.text("जमा पावती", boxX, yOffset + 89, { width: boxWidth, align: 'center' });
           
           // Copy Title below
+<<<<<<< HEAD
           if (copyTitle) {
             setBoldFont(7.5);
             doc.fillColor(pinkRed).text(`(${copyTitle})`, boxX, yOffset + 110, { width: boxWidth, align: 'center' });
           }
+=======
+          setBoldFont(7.5);
+          doc.fillColor(pinkRed).text(`(${copyTitle})`, boxX, yOffset + 110, { width: boxWidth, align: 'center' });
+>>>>>>> sonali
 
           // Metadata row
           setBoldFont(10);
@@ -308,7 +432,14 @@ exports.generateReceiptPdf = (rawDonation) => {
           setRegularFont(9);
           doc.fillColor('black').text(`(${donation.donorName || donation.name || ''})`, centerTextX, bottomY + 25, { width: 140, align: 'center' });
 
+<<<<<<< HEAD
           // Center-Right: removed "मिळाले." as per request
+=======
+          // Center-Right: मिळाले.
+          const middleTextX = paddingX + 290;
+          setBoldFont(11);
+          doc.fillColor(pinkRed).text("मिळाले.", middleTextX, bottomY + 45, { width: 80, align: 'center' });
+>>>>>>> sonali
 
           // Right: पैसे घेणाऱ्याची सही
           const rightTextX = paddingX + 380;
@@ -560,8 +691,24 @@ exports.generateReceiptPdf = (rawDonation) => {
         }
       };
 
+<<<<<<< HEAD
       // Draw Single Copy
       drawReceiptTemplate(15, ""); // No subtitle needed as per physical copy format
+=======
+      // Draw Top Copy
+      drawReceiptTemplate(15, "भाविकाची प्रत / Devotee's Copy");
+
+      // Draw Middle Divider
+      doc.save();
+      doc.dash(4, { space: 4 }).moveTo(20, 415).lineTo(575, 415).lineWidth(1).strokeColor('gray').stroke();
+      doc.restore();
+
+      setRegularFont(6.5);
+      doc.fillColor('gray').text("✂ कापण्यासाठी / Cut Here -------------------------------------------------------------", 20, 411, { width: 555, align: 'center' });
+
+      // Draw Bottom Copy
+      drawReceiptTemplate(420, "कार्यालयीन प्रत / Office's Copy");
+>>>>>>> sonali
 
       doc.end();
     } catch (err) {

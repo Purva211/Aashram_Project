@@ -5,7 +5,13 @@ const fs = require("fs");
 const crypto = require("crypto");
 const sendEmail = require("../utils/sendEmail");
 const { issueReceipt } = require("../utils/receiptEngine");
+<<<<<<< HEAD
 const { generateReceiptPdf } = require("../utils/generateReceipt");
+=======
+const { englishToMarathi } = require("../utils/transliterate");
+// Based on previous task, nodemailer logic might be in authController, but let's assume a generic mailer or just console log if not available.
+// Let's check for an email utility later.
+>>>>>>> sonali
 
 // Generate Unique Reference (DON-YYYY-XXXXX)
 const generateDonationRef = async () => {
@@ -336,12 +342,45 @@ exports.approveDonation = async (req, res) => {
     
     let pdfUrl = `/api/donations/${donation._id}/receipt`;
     try {
+<<<<<<< HEAD
       donation.receiptNumber = donation.donationReference;
       donation.receiptPdfUrl = pdfUrl;
       await donation.save();
+=======
+      const dynamicData = {
+        donorName: await englishToMarathi(donation.donorName),
+        date: new Date(donation.date).toLocaleDateString("en-IN", { day: '2-digit', month: '2-digit', year: 'numeric' }),
+        address: await englishToMarathi(donation.address),
+        phone: donation.phone,
+        amount: donation.amount,
+        amountInWords: `रुपये ${donation.amount} मात्र`,
+        paymentMethod: donation.paymentApp || "Online",
+        utrNumber: donation.utrNumber
+      };
+
+      archive = await issueReceipt({
+        category: 'Donation',
+        year: new Date().getFullYear(),
+        dynamicData,
+        referenceId: donation._id,
+        referenceModel: 'Donation',
+        generatedBy: req.user._id,
+        generatedByModel: req.user.role,
+        branchId: donation.branchId
+      });
+
+      pdfUrl = archive.pdfUrl;
+      donation.receiptNumber = archive.receiptNumber;
+      donation.receiptPdfUrl = archive.pdfUrl;
+>>>>>>> sonali
     } catch (receiptError) {
       console.error("Error generating receipt via engine:", receiptError);
+      if (!donation.receiptNumber) {
+        donation.receiptNumber = await generateReceiptRef(donation.donationType);
+      }
     }
+    
+    await donation.save();
 
     try {
       if (donation.email && pdfUrl) {
@@ -496,6 +535,7 @@ exports.downloadReceipt = async (req, res) => {
       return res.status(403).json({ success: false, message: "Unauthorized to access this receipt." });
     }
 
+<<<<<<< HEAD
     // Update last downloaded timestamp
     donation.lastReceiptDownloadedAt = new Date();
     await donation.save();
@@ -504,6 +544,19 @@ exports.downloadReceipt = async (req, res) => {
 
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", `attachment; filename=Donation_Receipt_${donation.receiptNumber || donation.donationReference}.pdf`);
+=======
+    const donationObj = donation.toObject();
+    donationObj.donorName = await englishToMarathi(donationObj.donorName);
+    donationObj.address = await englishToMarathi(donationObj.address);
+    if (donationObj.message) {
+      donationObj.message = await englishToMarathi(donationObj.message);
+    }
+
+    const pdfBuffer = await generateReceiptPdf(donationObj);
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename=Donation_Receipt_${donation.receiptNumber}.pdf`);
+>>>>>>> sonali
     return res.send(pdfBuffer);
   } catch (err) {
     console.error("[donationController][ERROR] downloadReceipt:", err.message);

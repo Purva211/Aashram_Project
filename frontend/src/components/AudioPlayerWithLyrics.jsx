@@ -220,7 +220,7 @@ const AudioPlayerWithLyrics = () => {
       </div>
 
       {/* Right side: Lyrics Display or Thumbnail */}
-      <div className={`w-full md:w-7/12 relative z-10 flex flex-col ${track.thumbnailUrl && lyrics.length === 0 ? '' : 'h-64 sm:h-80 md:h-[400px] p-6 sm:p-8 md:p-10'}`}>
+      <div className={`w-full md:w-7/12 relative z-10 flex flex-col ${track.thumbnailUrl && lyrics.length === 0 ? 'min-h-[320px] md:min-h-full' : 'h-64 sm:h-80 md:h-[400px] p-6 sm:p-8 md:p-10'}`}>
         {lyrics.length > 0 ? (
           <div 
             ref={lyricsContainerRef}
