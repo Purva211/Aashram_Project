@@ -20,8 +20,7 @@ export const MyDonations = () => {
   
   const [filterYear, setFilterYear] = useState('');
   const [filterMonth, setFilterMonth] = useState('');
-  const [filterMinAmount, setFilterMinAmount] = useState('');
-  const [filterMaxAmount, setFilterMaxAmount] = useState('');
+  const [filterCategory, setFilterCategory] = useState('');
   const [showFilters, setShowFilters] = useState(false);
 
   const fetchDonations = async () => {
@@ -49,8 +48,12 @@ export const MyDonations = () => {
     const dDate = new Date(d.date || d.createdAt);
     if (filterYear && dDate.getFullYear() !== parseInt(filterYear)) match = false;
     if (filterMonth && dDate.getMonth() !== parseInt(filterMonth)) match = false;
-    if (filterMinAmount && d.amount < parseInt(filterMinAmount)) match = false;
-    if (filterMaxAmount && d.amount > parseInt(filterMaxAmount)) match = false;
+    
+    if (filterCategory) {
+      const type = d.donationType || 'dengi_pavti';
+      if (type !== filterCategory) match = false;
+    }
+
     return match;
   });
 
@@ -76,7 +79,8 @@ export const MyDonations = () => {
         ₹{d.amount.toLocaleString('en-IN')}
       </td>
       <td className="px-6 py-4 font-black text-slate-700">
-        {d.purpose || 'General'}
+        {d.donationType === 'jama_pavti' ? 'Jama Pavati' : 
+         d.donationType === 'shakha_pavti' ? 'Shakha Pavati' : 'Donation Receipt'}
       </td>
       <td className="px-6 py-4">
         <StatusBadge status={d?.status || 'Completed'} />
@@ -93,8 +97,10 @@ export const MyDonations = () => {
       <td className="px-6 py-4 text-center">
         {d.status === 'APPROVED' ? (
           <button
-            onClick={() => {
-              if (d.receiptPdfUrl) {
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (d.receiptPdfUrl && d.receiptPdfUrl.startsWith('http')) {
                 window.open(d.receiptPdfUrl, '_blank');
               } else {
                 handleDownloadReceipt(d._id);
@@ -195,16 +201,17 @@ export const MyDonations = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Min Amount (₹)</label>
-                <input type="number" value={filterMinAmount} onChange={(e) => setFilterMinAmount(e.target.value)} placeholder="0" className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500" />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Max Amount (₹)</label>
-                <input type="number" value={filterMaxAmount} onChange={(e) => setFilterMaxAmount(e.target.value)} placeholder="Any" className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500" />
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Category</label>
+                <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500">
+                  <option value="">All Categories</option>
+                  <option value="jama_pavti">Jama Pavati</option>
+                  <option value="dengi_pavti">Dengi Pavati</option>
+                  <option value="shakha_pavti">Shakha Pavati</option>
+                </select>
               </div>
             </div>
             <div className="flex justify-end mt-4">
-              <button onClick={() => { setFilterYear(''); setFilterMonth(''); setFilterMinAmount(''); setFilterMaxAmount(''); }} className="text-sm font-bold text-gray-500 hover:text-gray-700">Clear Filters</button>
+              <button onClick={() => { setFilterYear(''); setFilterMonth(''); setFilterCategory(''); }} className="text-sm font-bold text-gray-500 hover:text-gray-700">Clear Filters</button>
             </div>
           </motion.div>
         )}
@@ -256,7 +263,7 @@ export const MyDonations = () => {
                   <tr className="bg-slate-100 border-b border-slate-200 text-xs font-black uppercase tracking-wider text-slate-700">
                     <th className="px-6 py-4">Reference ID</th>
                     <th className="px-6 py-4">Amount</th>
-                    <th className="px-6 py-4">Purpose</th>
+                    <th className="px-6 py-4">Category</th>
                     <th className="px-6 py-4">Status</th>
                     <th className="px-6 py-4">Method / Date</th>
                     <th className="px-6 py-4 text-center">Receipt</th>
@@ -291,7 +298,7 @@ export const MyDonations = () => {
                   <tr className="bg-slate-100 border-b border-slate-200 text-xs font-black uppercase tracking-wider text-slate-700">
                     <th className="px-6 py-4">Reference ID</th>
                     <th className="px-6 py-4">Amount</th>
-                    <th className="px-6 py-4">Purpose</th>
+                    <th className="px-6 py-4">Category</th>
                     <th className="px-6 py-4">Status</th>
                     <th className="px-6 py-4">Method / Date</th>
                     <th className="px-6 py-4 text-center">Receipt</th>
@@ -326,7 +333,7 @@ export const MyDonations = () => {
                   <tr className="bg-slate-100 border-b border-slate-200 text-xs font-black uppercase tracking-wider text-slate-700">
                     <th className="px-6 py-4">Reference ID</th>
                     <th className="px-6 py-4">Amount</th>
-                    <th className="px-6 py-4">Purpose</th>
+                    <th className="px-6 py-4">Category</th>
                     <th className="px-6 py-4">Status</th>
                     <th className="px-6 py-4">Method / Date</th>
                     <th className="px-6 py-4 text-center">Receipt</th>

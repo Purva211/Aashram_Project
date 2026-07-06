@@ -46,9 +46,7 @@ const DonationVerification = () => {
       });
       if (res.data.success) {
         toast.success("Donation Approved! Generating receipt...");
-        if (res.data.pdfUrl) {
-           window.open(res.data.pdfUrl, '_blank');
-        } else {
+        if (!res.data.pdfUrl) {
            toast.error("Donation approved, but backend did not return a PDF receipt URL.");
         }
         setShowApproveModal(false);

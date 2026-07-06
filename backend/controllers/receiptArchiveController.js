@@ -36,9 +36,19 @@ exports.generateNotice = async (req, res) => {
 // Get all receipts (with role-based filtering)
 exports.getReceipts = async (req, res) => {
   try {
-    const { category, branchId, search } = req.query;
+    const { category, branchId, search, year, month } = req.query;
     
     let query = {};
+    
+    if (year) {
+      const y = parseInt(year);
+      if (month) {
+        const m = parseInt(month) - 1; // 0-indexed month for Date
+        query.createdAt = { $gte: new Date(y, m, 1), $lt: new Date(y, m + 1, 1) };
+      } else {
+        query.createdAt = { $gte: new Date(y, 0, 1), $lt: new Date(y + 1, 0, 1) };
+      }
+    }
 
     // Role Based Filtering
     if (req.user.role === "BranchManager") {
@@ -47,7 +57,7 @@ exports.getReceipts = async (req, res) => {
       query.category = { $in: ['Branch Donation', 'Annadan', 'Prasad'] };
     } else if (req.user.role === "Accountant") {
       // Can only see financial receipts
-      query.category = { $in: ['Payment', 'Expense', 'Donation'] };
+      query.category = { $in: ['Payment', 'Expense', 'Jama Pavti', 'Dengi Pavti', 'Branch Pavti'] };
     } else if (req.user.role === "Trustee" || req.user.role === "Admin") {
       // Trustee and Admin can see everything natively (or filter as they choose)
     } else if (req.user.role === "Devotee") {
@@ -67,24 +77,30 @@ exports.getReceipts = async (req, res) => {
        query.receiptNumber = { $regex: search, $options: "i" };
     }
 
+    const donationCategories = ["Jama Pavti", "Dengi Pavti", "Branch Pavti", "Donation"];
+
     // Prevent fetching duplicates from ReceiptArchive since we fetch Donations natively
     let receipts = [];
-    if (query.category !== "Donation") {
-      let archiveQuery = { ...query };
-      
-      // Deep clone category object if it exists to avoid mutating the original query object
-      if (archiveQuery.category && typeof archiveQuery.category === 'object') {
-        archiveQuery.category = { ...archiveQuery.category };
-      }
-      
-      if (!archiveQuery.category) {
-        archiveQuery.category = { $ne: 'Donation' };
-      } else if (archiveQuery.category.$in) {
-        archiveQuery.category.$in = archiveQuery.category.$in.filter(c => c !== 'Donation');
-      } else if (archiveQuery.category.$nin) {
-        archiveQuery.category.$nin = [...archiveQuery.category.$nin, 'Donation'];
-      }
-      
+    let archiveQuery = { ...query };
+    
+    // Always exclude donationCategories from archiveQuery to prevent duplicates (since Donations are fetched directly)
+    if (archiveQuery.category && typeof archiveQuery.category === 'object') {
+      archiveQuery.category = { ...archiveQuery.category };
+    }
+    
+    if (!archiveQuery.category || archiveQuery.category === "All") {
+      archiveQuery.category = { $nin: donationCategories };
+    } else if (typeof archiveQuery.category === 'string' && donationCategories.includes(archiveQuery.category)) {
+      // If the exact category is a donation category, don't query ReceiptArchive at all
+      archiveQuery = null; 
+    } else if (archiveQuery.category.$in) {
+      archiveQuery.category.$in = archiveQuery.category.$in.filter(c => !donationCategories.includes(c));
+      if (archiveQuery.category.$in.length === 0) archiveQuery = null;
+    } else if (archiveQuery.category.$nin) {
+      archiveQuery.category.$nin = [...archiveQuery.category.$nin, ...donationCategories];
+    }
+    
+    if (archiveQuery) {
       receipts = await ReceiptArchive.find(archiveQuery)
         .populate('generatedBy', 'name fullName displayName')
         .populate('branchId', 'name')
@@ -96,8 +112,35 @@ exports.getReceipts = async (req, res) => {
 
     // Fetch approved donations if Category filter allows it
     const effectiveCategory = query.category || category;
-    if (!effectiveCategory || effectiveCategory === "All" || effectiveCategory === "Donation" || (effectiveCategory.$in && effectiveCategory.$in.includes("Donation"))) {
+    const isDonationCategory = !effectiveCategory || effectiveCategory === "All" || (typeof effectiveCategory === 'string' && donationCategories.includes(effectiveCategory)) || (effectiveCategory.$in && effectiveCategory.$in.some(c => donationCategories.includes(c)));
+    
+    if (isDonationCategory) {
       const donationQuery = { status: "APPROVED", receiptNumber: { $exists: true } };
+      
+      if (year) {
+        const y = parseInt(year);
+        if (month) {
+          const m = parseInt(month) - 1;
+          donationQuery.approvalDate = { $gte: new Date(y, m, 1), $lt: new Date(y, m + 1, 1) };
+        } else {
+          donationQuery.approvalDate = { $gte: new Date(y, 0, 1), $lt: new Date(y + 1, 0, 1) };
+        }
+      }
+      
+      // Filter by specific donation category if selected
+      if (typeof effectiveCategory === 'string' && effectiveCategory !== "All" && effectiveCategory !== "Donation") {
+        if (effectiveCategory === "Jama Pavti") donationQuery.donationType = "jama_pavti";
+        if (effectiveCategory === "Dengi Pavti") donationQuery.donationType = "dengi_pavti";
+        if (effectiveCategory === "Branch Pavti") donationQuery.donationType = "shakha_pavti";
+      } else if (effectiveCategory.$in) {
+        const dTypes = [];
+        if (effectiveCategory.$in.includes("Jama Pavti")) dTypes.push("jama_pavti");
+        if (effectiveCategory.$in.includes("Dengi Pavti")) dTypes.push("dengi_pavti");
+        if (effectiveCategory.$in.includes("Branch Pavti")) dTypes.push("shakha_pavti");
+        if (dTypes.length > 0 && !effectiveCategory.$in.includes("Donation")) {
+           donationQuery.donationType = { $in: dTypes };
+        }
+      }
       
       if (req.user.role === "BranchManager") {
         donationQuery.branchId = req.user.branch;
@@ -118,11 +161,17 @@ exports.getReceipts = async (req, res) => {
         .sort({ approvalDate: -1 })
         .lean();
 
-      const mappedDonations = donations.map(d => ({
-        _id: d._id,
-        receiptNumber: d.receiptNumber,
-        category: "Donation",
-        branchId: d.branchId,
+      const mappedDonations = donations.map(d => {
+        let cat = "Donation";
+        if (d.donationType === "jama_pavti") cat = "Jama Pavti";
+        if (d.donationType === "dengi_pavti") cat = "Dengi Pavti";
+        if (d.donationType === "shakha_pavti") cat = "Branch Pavti";
+        
+        return {
+          _id: d._id,
+          receiptNumber: d.receiptNumber,
+          category: cat,
+          branchId: d.branchId,
         generatedBy: d.approvedBy,
         createdAt: d.createdAt,
         approvalDate: d.approvalDate,
@@ -133,7 +182,8 @@ exports.getReceipts = async (req, res) => {
           amount: d.amount,
           donationReference: d.donationReference
         }
-      }));
+      };
+    });
 
       mergedReceipts = [...mergedReceipts, ...mappedDonations];
       

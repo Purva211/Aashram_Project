@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../utils/api';
+import { useAuth } from '../../context/AuthContext';
 import { Search, Download, Share2, Printer, Eye, Info, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -9,11 +10,38 @@ const ReceiptHistory = ({ defaultCategory = 'All', hideTitle = false, hideCatego
   const [filters, setFilters] = useState({
     category: defaultCategory,
     branchId: 'All',
-    search: ''
+    search: '',
+    month: '',
+    year: new Date().getFullYear().toString()
   });
   const [selectedInfo, setSelectedInfo] = useState(null);
+  const { user } = useAuth();
 
-  const categories = ['All', 'Notice', 'Donation', 'Branch Donation', 'Annadan', 'Prasad', 'Payment', 'Expense'];
+  const [showFilters, setShowFilters] = useState(false);
+
+  let categories = ['All', 'Notice', 'Jama Pavti', 'Branch Pavti', 'Dengi Pavti', 'Donation', 'Branch Donation', 'Annadan', 'Prasad', 'Payment', 'Expense'];
+  if (user?.role === 'Accountant') {
+    categories = ['All', 'Jama Pavti', 'Branch Pavti', 'Dengi Pavti'];
+  } else if (user?.role === 'BranchManager') {
+    categories = ['All', 'Branch Donation', 'Annadan', 'Prasad'];
+  }
+  
+  const months = [
+    { value: '', label: 'All Months' },
+    { value: '1', label: 'January' },
+    { value: '2', label: 'February' },
+    { value: '3', label: 'March' },
+    { value: '4', label: 'April' },
+    { value: '5', label: 'May' },
+    { value: '6', label: 'June' },
+    { value: '7', label: 'July' },
+    { value: '8', label: 'August' },
+    { value: '9', label: 'September' },
+    { value: '10', label: 'October' },
+    { value: '11', label: 'November' },
+    { value: '12', label: 'December' },
+  ];
+  const years = Array.from({length: 5}, (_, i) => (new Date().getFullYear() - i).toString());
 
   const fetchReceipts = async () => {
     try {
@@ -33,7 +61,7 @@ const ReceiptHistory = ({ defaultCategory = 'All', hideTitle = false, hideCatego
 
   useEffect(() => {
     fetchReceipts();
-  }, [filters.category, filters.branchId]);
+  }, [filters.category, filters.branchId, filters.year, filters.month]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -95,13 +123,42 @@ const ReceiptHistory = ({ defaultCategory = 'All', hideTitle = false, hideCatego
     }
   };
 
+  const handleShare = (receipt) => {
+    const fullUrl = receipt.pdfUrl.startsWith('/api') 
+        ? window.location.origin + receipt.pdfUrl 
+        : receipt.pdfUrl;
+        
+    const title = `Document: ${receipt.category}`;
+    const text = `View ${receipt.category} document (No: ${receipt.receiptNumber}).`;
+    
+    if (navigator.share) {
+      navigator.share({ title, text, url: fullUrl })
+        .catch(err => console.log('Error sharing', err));
+    } else {
+      // Fallback
+      window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text + " " + fullUrl)}`, '_blank');
+    }
+  };
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto">
         {!hideTitle && <h1 className="text-3xl font-bold text-gray-800 mb-8 border-b pb-4">Document & Receipt History</h1>}
 
+        {/* Filter Toggle Button */}
+        <div className="flex justify-end mb-4">
+          <button 
+            onClick={() => setShowFilters(!showFilters)}
+            className="flex items-center gap-2 px-5 py-2.5 bg-red-600 text-white rounded-xl text-sm font-bold shadow-sm hover:bg-red-700 transition-all"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+            Filter
+          </button>
+        </div>
+
         {/* Filters */}
-        <div className="bg-white p-4 rounded-xl shadow-sm mb-6 flex flex-wrap gap-4 items-end">
+        {showFilters && (
+          <div className="bg-white p-5 rounded-xl shadow-sm mb-6 flex flex-wrap gap-4 items-end border border-gray-100">
           <div className="flex-1 min-w-[200px]">
             <label className="block text-sm font-medium text-gray-700 mb-1">Search Document No.</label>
             <form onSubmit={handleSearch} className="relative">
@@ -130,13 +187,32 @@ const ReceiptHistory = ({ defaultCategory = 'All', hideTitle = false, hideCatego
             </div>
           )}
           
-          <button 
-            onClick={fetchReceipts}
-            className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
-          >
-            Apply Filters
-          </button>
-        </div>
+          <div className="min-w-[120px]">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
+            <select
+              className="w-full p-2 border rounded-lg bg-gray-50"
+              value={filters.year}
+              onChange={(e) => setFilters({ ...filters, year: e.target.value })}
+            >
+              <option value="">All Time</option>
+              {years.map(y => <option key={y} value={y}>{y}</option>)}
+            </select>
+          </div>
+
+          <div className="min-w-[150px]">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Month</label>
+            <select
+              className="w-full p-2 border rounded-lg bg-gray-50"
+              value={filters.month}
+              onChange={(e) => setFilters({ ...filters, month: e.target.value })}
+              disabled={!filters.year}
+            >
+              {months.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
+            </select>
+          </div>
+          
+          </div>
+        )}
 
         {/* Table */}
         <div className="bg-white rounded-xl shadow-sm overflow-hidden">
@@ -186,7 +262,7 @@ const ReceiptHistory = ({ defaultCategory = 'All', hideTitle = false, hideCatego
                             <button onClick={() => handleDownload(receipt)} className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg" title="Download">
                               <Download className="w-5 h-5" />
                             </button>
-                            <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg" title="Share via WhatsApp" onClick={() => window.open(`https://api.whatsapp.com/send?text=View your document here: ${receipt.pdfUrl.startsWith('/api') ? '(Requires Login) ' + window.location.origin + receipt.pdfUrl : receipt.pdfUrl}`, '_blank')}>
+                            <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg" title="Share" onClick={() => handleShare(receipt)}>
                               <Share2 className="w-5 h-5" />
                             </button>
                             <button className="p-2 text-indigo-500 hover:bg-indigo-50 rounded-lg" title="More Info" onClick={() => setSelectedInfo(receipt)}>

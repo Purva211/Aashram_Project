@@ -10,6 +10,9 @@ const translate = require('google-translate-api-x');
 async function transliterateToMarathi(text) {
   if (!text) return '';
   
+  // Collapse 3 or more consecutive identical letters to 2 to help the transliteration API (e.g. "sonaaaa" -> "sonaa")
+  text = text.replace(/(.)\1{2,}/g, '$1$1');
+  
   const words = text.split(/\s+/);
   const resultWords = [];
 

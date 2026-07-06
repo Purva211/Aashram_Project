@@ -6,7 +6,6 @@ const crypto = require("crypto");
 const sendEmail = require("../utils/sendEmail");
 const { issueReceipt } = require("../utils/receiptEngine");
 const { generateReceiptPdf } = require("../utils/generateReceipt");
-const { englishToMarathi } = require("../utils/transliterate");
 
 // Generate Unique Reference (DON-YYYY-XXXXX)
 const generateDonationRef = async () => {
@@ -336,8 +335,16 @@ exports.approveDonation = async (req, res) => {
     donation.approvalRemarks = remarks;
     
     let pdfUrl = `/api/donations/${donation._id}/receipt`;
-    donation.receiptNumber = donation.donationReference;
-    donation.receiptPdfUrl = pdfUrl;
+    try {
+      donation.receiptNumber = donation.donationReference;
+      donation.receiptPdfUrl = pdfUrl;
+      await donation.save();
+    } catch (receiptError) {
+      console.error("Error generating receipt via engine:", receiptError);
+      if (!donation.receiptNumber) {
+        donation.receiptNumber = await generateReceiptRef(donation.donationType);
+      }
+    }
     
     await donation.save();
 
@@ -498,7 +505,7 @@ exports.downloadReceipt = async (req, res) => {
     donation.lastReceiptDownloadedAt = new Date();
     await donation.save();
 
-    const pdfBuffer = await generateReceiptPdf(donation);
+    const pdfBuffer = await generateReceiptPdf(donation.toObject());
 
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", `attachment; filename=Donation_Receipt_${donation.receiptNumber || donation.donationReference}.pdf`);

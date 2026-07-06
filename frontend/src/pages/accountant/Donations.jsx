@@ -19,6 +19,7 @@ const Donations = () => {
   const [filterMinAmount, setFilterMinAmount] = useState('');
   const [filterMaxAmount, setFilterMaxAmount] = useState('');
   const [filterBranch, setFilterBranch] = useState('');
+  const [filterCategory, setFilterCategory] = useState('');
   const [branches, setBranches] = useState([]);
 
   // Filtering first
@@ -32,6 +33,13 @@ const Donations = () => {
     if (filterMinAmount && d.amount < parseInt(filterMinAmount)) match = false;
     if (filterMaxAmount && d.amount > parseInt(filterMaxAmount)) match = false;
     if (filterBranch && d.branchId && (typeof d.branchId === 'string' ? d.branchId : d.branchId._id) !== filterBranch) match = false;
+
+    if (filterBranch && d.branchId && (typeof d.branchId === 'string' ? d.branchId : d.branchId._id) !== filterBranch) match = false;
+    
+    if (filterCategory) {
+      const type = d.donationType || 'dengi_pavti';
+      if (type !== filterCategory) match = false;
+    }
 
     return match;
   });
@@ -184,6 +192,15 @@ const Donations = () => {
               </select>
             </div>
             <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Category</label>
+              <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500">
+                <option value="">All Categories</option>
+                <option value="jama_pavti">Jama Pavati</option>
+                <option value="dengi_pavti">Dengi Pavati</option>
+                <option value="shakha_pavti">Shakha Pavati</option>
+              </select>
+            </div>
+            <div>
               <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Status</label>
               <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500">
                 <option value="">All</option>
@@ -229,7 +246,7 @@ const Donations = () => {
             </div>
           </div>
           <div className="flex justify-end mt-4">
-            <button onClick={() => { setFilterYear(''); setFilterMonth(''); setFilterStatus(''); setFilterMinAmount(''); setFilterMaxAmount(''); setFilterBranch(''); }} className="text-sm font-bold text-gray-500 hover:text-gray-700">Clear Filters</button>
+            <button onClick={() => { setFilterYear(''); setFilterMonth(''); setFilterStatus(''); setFilterMinAmount(''); setFilterMaxAmount(''); setFilterBranch(''); setFilterCategory(''); }} className="text-sm font-bold text-gray-500 hover:text-gray-700">Clear Filters</button>
           </div>
         </motion.div>
       )}

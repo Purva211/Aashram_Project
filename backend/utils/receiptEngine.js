@@ -7,6 +7,18 @@ const cloudinary = require('../config/cloudinary');
 const QRCode = require('qrcode');
 const { generateReceiptPdf: generateOldReceiptPdfBuffer } = require('./generateReceipt');
 
+let browserInstance = null;
+
+const getBrowser = async () => {
+  if (!browserInstance || !browserInstance.isConnected()) {
+    browserInstance = await puppeteer.launch({
+      headless: "new",
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+  }
+  return browserInstance;
+};
+
 /**
  * Generates the next sequential number for a given prefix.
  * @param {string} prefix - e.g., 'DON-2026', 'BDN-MRJ-2026'
@@ -75,10 +87,7 @@ const generateReceiptPdf = async (templateName, data, receiptNumber) => {
   // Add backend base URL for absolute image paths if needed
   htmlContent = htmlContent.replace(/{{baseUrl}}/g, process.env.BASE_URL || 'http://localhost:5000');
 
-  const browser = await puppeteer.launch({
-    headless: "new",
-    args: ['--no-sandbox', '--disable-setuid-sandbox']
-  });
+  const browser = await getBrowser();
   
   const page = await browser.newPage();
   
@@ -93,7 +102,7 @@ const generateReceiptPdf = async (templateName, data, receiptNumber) => {
     margin: { top: 0, right: 0, bottom: 0, left: 0 } // No margins, let template handle it
   });
 
-  await browser.close();
+  await page.close();
 
   // Save locally instead of Cloudinary to avoid 401 Unauthorized PDF restrictions
   const pdfUrl = await savePdfLocally(pdfBuffer, receiptNumber);
