@@ -119,9 +119,22 @@ const Layout = ({ children, user }) => {
       { name: 'Lineage', path: '/trustee/lineage', icon: <FaSitemap /> },
       { name: 'Monastery History', path: '/trustee/math-history', icon: <FaHistory /> },
       { name: 'Sansthan Updates', path: '/trustee/bulletins', icon: <FaBullhorn /> },
+      { name: 'Receipts', path: '/trustee/receipts', icon: <FaReceipt /> },
       { name: 'Audio Tracks', path: '/trustee/audio', icon: <FaMusic /> },
       { name: 'News', path: '/trustee/news', icon: <FaBullhorn /> },
     ];
+    
+    // Safely parse permissions if they were saved as a JSON string in DB
+    let userPerms = user.permissions || [];
+    if (typeof userPerms === 'string') {
+      try { userPerms = JSON.parse(userPerms); } catch (e) { userPerms = []; }
+    }
+    if (!Array.isArray(userPerms)) userPerms = [];
+
+
+    if (userPerms.some(p => p.module === 'Issue Notice' || p === 'Issue Notice')) {
+      navItems.push({ name: 'Issue Notice', path: '/trustee/notice-generator', icon: <FaFileAlt /> });
+    }
   } else if (user?.role === 'BranchManager') {
     navItems = [
       { name: 'Dashboard', path: '/branch/dashboard', icon: <FaHome /> },
@@ -134,6 +147,7 @@ const Layout = ({ children, user }) => {
       { name: 'Documents', path: '/branch/documents', icon: <FaFileAlt /> },
       { name: 'Donations', path: '/branch/donations', icon: <FaDonate /> },
       { name: 'Events', path: '/branch/events', icon: <FaCalendarAlt /> },
+      { name: 'Receipts', path: '/branch/receipts', icon: <FaReceipt /> },
       { name: 'News', path: '/branch/news', icon: <FaBullhorn /> },
     ];
   } else if (user?.role === 'Accountant') {
@@ -152,6 +166,7 @@ const Layout = ({ children, user }) => {
       { name: 'Announcements', path: '/document-handler/announcements', icon: <FaBullhorn />, showRedDot: unreadAnnouncementsCount > 0 },
       { name: 'Deletion Requests', path: '/document-handler/deletion-requests', icon: <FaTrash /> },
       { name: 'Documents', path: '/document-handler/documents', icon: <FaFileAlt /> },
+      { name: 'Receipts', path: '/document-handler/receipts', icon: <FaReceipt /> },
     ];
   } else {
     navItems = [
@@ -168,6 +183,8 @@ const Layout = ({ children, user }) => {
       { name: 'Documents', path: '/admin/documents', icon: <FaFileAlt /> },
       { name: 'Donations', path: '/admin/donations', icon: <FaDonate /> },
       { name: 'Events', path: '/admin/events', icon: <FaCalendarAlt /> },
+      { name: 'Receipts', path: '/admin/receipts', icon: <FaReceipt /> },
+      { name: 'Issue Notice', path: '/admin/notice-generator', icon: <FaFileAlt /> },
       { name: 'Sansthan Updates', path: '/trustee/bulletins', icon: <FaBullhorn /> },
       { name: 'Trustees', path: '/admin/trustees', icon: <FaUserShield /> },
       { name: 'News', path: '/admin/news', icon: <FaBullhorn /> },
@@ -184,7 +201,7 @@ const Layout = ({ children, user }) => {
 
       {/* Sidebar */}
       <aside 
-        className={`fixed md:relative top-0 left-0 h-full bg-[#05051F] border-r border-[#0A0A2A] flex-col items-center py-8 z-40 text-white shadow-2xl transition-transform duration-300 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} flex ${isCollapsed ? 'md:w-20 w-64' : 'w-64'}`}
+        className={`fixed md:relative top-0 left-0 h-full bg-[#05051F] border-r border-[#0A0A2A] flex-col items-center py-4 lg:py-8 z-40 text-white shadow-2xl transition-transform duration-300 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} flex ${isCollapsed ? 'md:w-20 w-64' : 'w-64'} group`}
       >
         
         {/* Mobile Close Button */}
@@ -193,12 +210,12 @@ const Layout = ({ children, user }) => {
         </button>
 
         {/* Logo Area */}
-        <div className="flex flex-col items-center mb-6 text-center px-4 relative">
+        <div className="flex flex-col items-center mb-2 lg:mb-6 text-center px-4 relative">
           <Link to="/">
             <motion.div 
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.3 }}
-              className={`bg-white rounded-full flex items-center justify-center shadow-lg mb-4 border-2 border-white drop-shadow-md overflow-hidden transition-all duration-300 ${isCollapsed ? 'w-10 h-10' : 'w-20 h-20'}`}
+              className={`bg-white rounded-full flex items-center justify-center shadow-lg mb-2 lg:mb-4 border-2 border-white drop-shadow-md overflow-hidden transition-all duration-300 ${isCollapsed ? 'w-10 h-10' : 'w-14 h-14 lg:w-20 lg:h-20'}`}
             >
               <img 
                 src="/logo.png" 
@@ -207,31 +224,29 @@ const Layout = ({ children, user }) => {
               />
             </motion.div>
           </Link>
-          {!isCollapsed && (
-            <>
-              <h1 className="text-xl font-black tracking-wider text-white">Shri Gurumurti Rudrapashupati Lingayat Monastery</h1>
-              <p className="text-[10px] text-gray-400 font-bold tracking-widest mt-1 uppercase">{user?.role} Panel</p>
-            </>
-          )}
+          <div className={`text-center ${isCollapsed ? 'block md:hidden' : 'block'}`}>
+            <h1 className="text-sm lg:text-base font-black tracking-wider text-white">Shri Gurumurti Rudrapashupati Lingayat Monastery</h1>
+            <p className="text-[10px] text-gray-400 font-bold tracking-widest mt-1 uppercase">{user?.role} Panel</p>
+          </div>
         </div>
 
         {/* Toggle Collapse Button */}
         <button 
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="flex absolute top-6 -right-3 bg-[#FF7A2F] text-white w-6 h-6 rounded-full items-center justify-center shadow-md z-50 hover:scale-110 transition-transform"
+          className="flex absolute top-1/2 -translate-y-1/2 -right-3 bg-[#FF7A2F] text-white w-6 h-6 rounded-full items-center justify-center shadow-md z-50 hover:scale-110 transition-all duration-300 md:opacity-0 md:group-hover:opacity-100"
         >
           <span className="text-xs">{isCollapsed ? '▶' : '◀'}</span>
         </button>
 
         {/* Navigation Links */}
-        <nav className="w-full px-4 flex-1 overflow-y-auto space-y-2 mt-4 pb-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+        <nav className="w-full px-4 flex-1 overflow-y-auto space-y-1 lg:space-y-2 mt-2 lg:mt-4 pb-2 lg:pb-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
           {navItems.map((item) => (
               <NavLink
                key={item.name}
                to={item.path}
                onClick={() => setIsMobileMenuOpen(false)}
                className={({ isActive }) => 
-                 `flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 font-bold relative overflow-hidden ${
+                 `flex items-center justify-between px-3 py-2 lg:px-4 lg:py-3 rounded-xl transition-all duration-300 font-bold relative overflow-hidden ${
                    isActive 
                      ? 'bg-[#FF7A2F]/10 text-[#FF7A2F] border-l-4 border-[#FF7A2F] shadow-sm' 
                      : 'text-gray-400 hover:bg-[#0A0A2A] hover:text-white'
@@ -239,8 +254,8 @@ const Layout = ({ children, user }) => {
                }
              >
                <div className="flex items-center gap-4 z-10">
-                 <div className="relative">
-                   <span className="text-lg" title={isCollapsed ? item.name : ""}>{item.icon}</span>
+                 <div className="relative shrink-0">
+                   <span className="text-lg" title={item.name}>{item.icon}</span>
                    {item.showRedDot && (
                      <>
                        <span className="absolute -top-1 -right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full animate-ping opacity-75"></span>
@@ -248,10 +263,10 @@ const Layout = ({ children, user }) => {
                      </>
                    )}
                  </div>
-                 {!isCollapsed && <span>{item.name}</span>}
+                 <span className={`${isCollapsed ? 'block md:hidden' : 'block'} truncate w-full text-left`}>{item.name}</span>
                </div>
                {item.badge !== undefined && (
-                 <span className={`z-10 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-md ${item.badge > 0 ? 'bg-red-500 animate-pulse' : 'bg-gray-500'} ${isCollapsed ? 'absolute top-1 right-1 px-1.5 text-[8px]' : ''}`}>
+                 <span className={`z-10 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-md ${item.badge > 0 ? 'bg-red-500 animate-pulse' : 'bg-gray-500'} ${isCollapsed ? 'md:absolute md:top-1 md:right-1 md:px-1.5 md:text-[8px]' : ''}`}>
                    {item.badge}
                  </span>
                )}
@@ -259,13 +274,13 @@ const Layout = ({ children, user }) => {
           ))}
         </nav>
 
-        <div className="w-full px-4 pb-4 pt-4">
+        <div className="w-full px-4 pb-2 pt-2 lg:pb-4 lg:pt-4">
           <div 
             onClick={handleLogout}
-            className={`flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all cursor-pointer group ${isCollapsed ? 'justify-center p-2' : ''}`}
+            className={`flex items-center justify-between p-2 lg:p-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all cursor-pointer group ${isCollapsed ? 'justify-center p-2' : ''}`}
             title={isCollapsed ? "Logout" : ""}
           >
-            <div className="flex items-center gap-3 overflow-hidden">
+            <div className="flex items-center gap-3 overflow-hidden w-full">
               <div className="w-10 h-10 rounded-full bg-[#0EA5E9] flex items-center justify-center text-white font-bold text-lg shrink-0 overflow-hidden">
                 {user?.profilePhoto ? (
                   <img src={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${user.profilePhoto}`} alt="Profile" className="w-full h-full object-cover" />
@@ -273,18 +288,14 @@ const Layout = ({ children, user }) => {
                   user?.name ? user.name.charAt(0).toUpperCase() : (user?.displayName ? user.displayName.charAt(0).toUpperCase() : 'M')
                 )}
               </div>
-              {!isCollapsed && (
-                <div className="flex flex-col truncate">
-                  <span className="text-sm font-bold text-white truncate">{user?.name || user?.displayName || 'Main System Admin'}</span>
-                  <span className="text-[10px] text-gray-400 uppercase tracking-wider truncate">{user?.role || 'Admin'}</span>
-                </div>
-              )}
-            </div>
-            {!isCollapsed && (
-              <div className="text-gray-400 group-hover:text-red-500 transition-colors shrink-0 pr-1">
-                <FaSignOutAlt className="text-lg" />
+              <div className={`flex flex-col truncate ${isCollapsed ? 'block md:hidden' : 'block'}`}>
+                <span className="text-sm font-bold text-white truncate">{user?.name || user?.displayName || 'Main System Admin'}</span>
+                <span className="text-[10px] text-gray-400 uppercase tracking-wider truncate">{user?.role || 'Admin'}</span>
               </div>
-            )}
+            </div>
+            <div className={`text-gray-400 group-hover:text-red-500 transition-colors shrink-0 pr-1 ${isCollapsed ? 'block md:hidden' : 'block'}`}>
+              <FaSignOutAlt className="text-lg" />
+            </div>
           </div>
         </div>
       </aside>

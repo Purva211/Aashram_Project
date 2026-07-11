@@ -8,7 +8,8 @@ import TablePagination from '../../components/TablePagination';
 const availablePermissions = [
   'Dashboard', 'Devotees', 'Donations', 'Events', 
   'Announcements', 'Branches', 'Documents', 'Annadan',
-  'Sansthan Updates', 'Gallery', 'Monastery History', 'Lineage', 'Accountants'
+  'Sansthan Updates', 'Gallery', 'Monastery History', 'Lineage', 'Accountants',
+  'Issue Notice'
 ];
 
 const systemRoles = ['Chairman', 'Vice Chairman', 'Secretary', 'Treasurer', 'Trust Member'];

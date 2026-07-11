@@ -18,7 +18,7 @@ const donationSchema = new mongoose.Schema({
   branchId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Branch",
-    required: true
+    required: false
   },
   email: {
     type: String,
@@ -73,6 +73,10 @@ const donationSchema = new mongoose.Schema({
     sparse: true,
     required: false
   },
+  receiptPdfUrl: {
+    type: String,
+    required: false
+  },
   approvedBy: {
     type: mongoose.Schema.Types.ObjectId,
     refPath: 'approvedByModel',
@@ -99,6 +103,10 @@ const donationSchema = new mongoose.Schema({
   date: {
     type: Date,
     default: Date.now
+  },
+  lastReceiptDownloadedAt: {
+    type: Date,
+    required: false
   }
 }, { timestamps: true });
 

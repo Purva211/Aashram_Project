@@ -41,6 +41,8 @@ app.use("/api/lineage", require("./routes/lineageRoutes"));
 app.use("/api/user", require("./routes/userDashboardRoutes"));
 app.use("/api/contact", require("./routes/contactRoutes"));
 app.use("/api/audio", require("./routes/audioRoutes"));
+app.use("/api/receipts", require("./routes/receiptArchiveRoutes"));
+app.use("/api/correspondence", require("./routes/correspondenceRoutes"));
 
 app.get("/", (req, res) => {
   res.send("Temple Management System API is running...");

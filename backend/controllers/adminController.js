@@ -113,7 +113,11 @@ exports.verifyTrusteeOtp = async (req, res) => {
 
 exports.createTrustee = async (req, res) => {
   try {
-    const { name, email, mobile, designation, address, password, systemRole, permissions, status, verifiedToken } = req.body;
+    let { name, email, mobile, designation, address, password, systemRole, permissions, status, verifiedToken } = req.body;
+    
+    if (permissions && typeof permissions === 'string') {
+      try { permissions = JSON.parse(permissions); } catch(e){}
+    }
     
     // Verify Token
     try {
@@ -140,7 +144,11 @@ exports.createTrustee = async (req, res) => {
 
 exports.updateTrustee = async (req, res) => {
   try {
-    const { name, email, mobile, designation, address, password, systemRole, permissions, status } = req.body;
+    let { name, email, mobile, designation, address, password, systemRole, permissions, status } = req.body;
+    
+    if (permissions && typeof permissions === 'string') {
+      try { permissions = JSON.parse(permissions); } catch(e){}
+    }
     
     const updateData = { name, email, mobile, designation, address, systemRole, permissions, status };
     if (password) {

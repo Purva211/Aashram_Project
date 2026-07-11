@@ -151,7 +151,7 @@ const AudioPlayerWithLyrics = () => {
   if (!track) return null; // Don't show anything if no active track
 
   return (
-    <div className="w-full max-w-5xl mx-auto my-12 bg-gradient-to-br from-orange-50 to-amber-50 rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row relative border border-orange-100">
+    <div className="w-full max-w-5xl mx-auto my-12 bg-gradient-to-br from-orange-50 to-amber-50 rounded-2xl shadow-xl overflow-hidden flex flex-col-reverse md:flex-row relative border border-orange-100">
       
       {/* Background decoration */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-orange-300 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob"></div>
@@ -169,13 +169,13 @@ const AudioPlayerWithLyrics = () => {
       {/* Left side: Player Controls */}
       <div className="w-full md:w-5/12 p-8 md:p-10 flex flex-col justify-center relative z-10 border-b md:border-b-0 md:border-r border-orange-200/50 backdrop-blur-sm">
         
-        <div className="mb-8">
-          <h3 className="text-orange-600 text-sm font-bold tracking-wider uppercase mb-2 flex items-center">
+        <div className="mb-8 md:mb-8 text-center md:text-left">
+          <h3 className="text-orange-600 text-[10px] md:text-sm font-bold tracking-wider uppercase mb-2 flex items-center justify-center md:justify-start">
              {track.sourceType === 'youtube' && <FaYoutube className="mr-2" />}
              Daily {track.language} Audio
           </h3>
-          <h2 className="text-4xl font-black text-mahakal-burgundy mb-2 leading-tight">{track.title}</h2>
-          <p className="text-gray-600 font-semibold text-base">Listen and follow along with the divine verses.</p>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-mahakal-burgundy mb-2 leading-tight">{track.title}</h2>
+          <p className="text-gray-600 font-semibold text-xs md:text-base">Listen and follow along with the divine verses.</p>
         </div>
 
         {/* Controls */}
@@ -220,7 +220,7 @@ const AudioPlayerWithLyrics = () => {
       </div>
 
       {/* Right side: Lyrics Display or Thumbnail */}
-      <div className={`w-full md:w-7/12 relative z-10 flex flex-col ${track.thumbnailUrl && lyrics.length === 0 ? 'min-h-[320px] md:min-h-full' : 'h-80 md:h-[400px] p-8 md:p-10'}`}>
+      <div className={`w-full md:w-7/12 relative z-10 flex flex-col ${track.thumbnailUrl && lyrics.length === 0 ? 'min-h-[320px] md:min-h-full' : 'h-64 sm:h-80 md:h-[400px] p-6 sm:p-8 md:p-10'}`}>
         {lyrics.length > 0 ? (
           <div 
             ref={lyricsContainerRef}
@@ -240,8 +240,8 @@ const AudioPlayerWithLyrics = () => {
                 transition={{ duration: 0.3 }}
                 className={`text-center transition-all duration-300 transform origin-center flex-1 ${
                   index === activeLyricIndex 
-                    ? 'text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-red-500 to-orange-600 drop-shadow-md' 
-                    : 'text-2xl font-bold text-gray-400 cursor-pointer hover:text-orange-500'
+                    ? 'text-3xl sm:text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-red-500 to-orange-600 drop-shadow-md' 
+                    : 'text-lg sm:text-xl md:text-2xl font-bold text-gray-400 cursor-pointer hover:text-orange-500'
                 }`}
                 onClick={() => {
                   audioRef.current.currentTime = lyric.start;
@@ -253,18 +253,18 @@ const AudioPlayerWithLyrics = () => {
             ))}
           </div>
         ) : track.thumbnailUrl ? (
-          <div className="absolute inset-0 w-full h-full overflow-hidden group">
+          <div className="w-full overflow-hidden group bg-stone-50 flex items-center justify-center border-b md:border-b-0 md:border-l border-orange-100">
              <img 
                src={track.thumbnailUrl} 
                alt={track.title} 
-               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+               className="w-full h-auto md:h-full md:object-cover lg:object-contain object-contain max-h-[60vh] md:max-h-none group-hover:scale-105 transition-transform duration-700" 
              />
           </div>
         ) : (
-          <div className="h-full flex flex-1 items-center justify-center">
+          <div className="h-full flex flex-1 items-center justify-center min-h-[150px]">
              <div className="text-center text-gray-400">
-               <FaMusic className="text-4xl mx-auto mb-4 opacity-30 text-orange-600" />
-               <p className="text-xl font-bold text-gray-600">Looks like we don't have the lyrics for this audio.</p>
+               <FaMusic className="text-3xl md:text-4xl mx-auto mb-2 md:mb-4 opacity-30 text-orange-600" />
+               <p className="text-sm md:text-xl font-bold text-gray-600">Looks like we don't have the lyrics for this audio.</p>
              </div>
           </div>
         )}

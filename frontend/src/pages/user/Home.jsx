@@ -37,11 +37,11 @@ const StatCounter = ({ end, label, duration = 2.5, textColor = "text-[#4A0E0E]",
         whileInView={{ scale: 1, opacity: 1 }}
         viewport={{ once: true }}
         transition={{ type: "spring", stiffness: 100, delay: 0.2 }}
-        className={`text-5xl md:text-6xl font-black ${textColor} mb-3 font-serif relative z-10 drop-shadow-sm`}
+        className={`text-4xl md:text-6xl font-black ${textColor} mb-3 font-serif relative z-10 drop-shadow-sm`}
       >
         <CountUp end={end} duration={duration} enableScrollSpy scrollSpyOnce />+
       </motion.span>
-      <span className={`font-black tracking-[0.2em] uppercase text-xs md:text-sm ${labelColor} relative z-10`}>{label}</span>
+      <span className={`font-black tracking-[0.15em] uppercase text-[10px] md:text-sm text-center ${labelColor} relative z-10`}>{label}</span>
       <div className="w-12 h-1 bg-[#FF8C00]/50 mt-4 relative z-10 group-hover:w-24 group-hover:bg-[#FF8C00] transition-all duration-500 rounded-full"></div>
     </motion.div>
   );
@@ -339,7 +339,7 @@ const Home = () => {
                 )}
                 <FaVideo className={`text-xl ${isLive ? "text-red-400" : "text-[#FF8C00]"}`} />
               </div>
-              <div className="text-left">
+              <div className="text-left hidden sm:block">
                 <h4 className="text-white font-bold text-[11px] md:text-base tracking-wide uppercase group-hover:text-[#FF8C00] transition-colors">Live Darshan</h4>
                 <p className="text-stone-300 text-[10px] md:text-xs font-light">{isLive ? "Join Aarti" : "Timings"}</p>
               </div>
@@ -351,7 +351,7 @@ const Home = () => {
               <div className="flex items-center justify-center w-12 h-12 md:w-14 md:h-14 bg-black/20 rounded-full border border-white/10 shadow-[0_10px_20px_rgba(0,0,0,0.5)] group-hover:border-[#FF8C00] transition-colors shadow-inner">
                 <FaPrayingHands className="text-xl text-[#FF8C00]" />
               </div>
-              <div className="text-left">
+              <div className="text-left hidden sm:block">
                 <h4 className="text-white font-bold text-[11px] md:text-base tracking-wide uppercase group-hover:text-[#FF8C00] transition-colors">Make Offering</h4>
                 <p className="text-stone-300 text-[10px] md:text-xs font-light">Support Us</p>
               </div>
@@ -363,7 +363,7 @@ const Home = () => {
               <div className="flex items-center justify-center w-12 h-12 md:w-14 md:h-14 bg-black/20 rounded-full border border-white/10 shadow-[0_10px_20px_rgba(0,0,0,0.5)] group-hover:border-[#FF8C00] transition-colors shadow-inner">
                 <FaHands className="text-xl text-[#FF8C00]" />
               </div>
-              <div className="text-left">
+              <div className="text-left hidden sm:block">
                 <h4 className="text-white font-bold text-[11px] md:text-base tracking-wide uppercase group-hover:text-[#FF8C00] transition-colors">Book Annadaan</h4>
                 <p className="text-stone-300 text-[10px] md:text-xs font-light">Sponsor Meals</p>
               </div>
@@ -718,7 +718,7 @@ const Home = () => {
             <h2 className="text-primary font-bold uppercase tracking-[0.3em] text-xs mb-4 flex items-center gap-4 justify-center">
               <span className="w-12 h-px bg-primary/40"></span> Discover More <span className="w-12 h-px bg-primary/40"></span>
             </h2>
-            <h3 className="text-4xl md:text-5xl font-serif font-bold text-caramel-deep tracking-tight">Explore the Sansthan</h3>
+            <h3 className="text-3xl md:text-5xl font-serif font-bold text-caramel-deep tracking-tight">Explore the Sansthan</h3>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pb-12">
@@ -728,13 +728,13 @@ const Home = () => {
               { to: "/annadaan", img: "/about_images/kolekar_real_2.jpg", title: "Annadaan", desc: "The sacred offering of food to devotees and the needy.", offset: "lg:-translate-y-4" },
               { to: "/gallery", img: "/about_images/kolekar_real_1.jpg", title: "Gallery", desc: "Visual memories of divine festivals and rituals.", offset: "lg:translate-y-8" }
             ].map((item, idx) => (
-              <Link key={idx} to={item.to} className={`block relative h-[500px] rounded-[2rem] overflow-hidden group shadow-[0_20px_50px_rgba(0,0,0,0.15)] hover:shadow-[0_30px_60px_rgba(0,0,0,0.25)] border-0 bg-white flex flex-col transform ${item.offset}`}>
+              <Link key={idx} to={item.to} className={`block relative h-[350px] md:h-[450px] lg:h-[500px] rounded-[2rem] overflow-hidden group shadow-[0_20px_50px_rgba(0,0,0,0.15)] hover:shadow-[0_30px_60px_rgba(0,0,0,0.25)] border-0 bg-white flex flex-col transform ${item.offset}`}>
                 <div className="flex-1 relative overflow-hidden bg-cream">
                   <div className="absolute inset-0 bg-cover bg-top opacity-70 group-hover:scale-105 transition-transform duration-1000" style={{ backgroundImage: `url('${item.img}')` }}></div>
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
                   <div className="absolute bottom-6 left-6 right-6">
-                    <h3 className="text-2xl font-bold text-white mb-2 font-serif">{item.title}</h3>
-                    <p className="text-gray-300 text-sm font-light line-clamp-2">{item.desc}</p>
+                    <h3 className="text-xl md:text-2xl font-bold text-white mb-2 font-serif">{item.title}</h3>
+                    <p className="text-gray-300 text-xs md:text-sm font-light line-clamp-2">{item.desc}</p>
                   </div>
                 </div>
                 <div className="bg-white p-6 flex justify-between items-center group-hover:bg-cream transition-colors">
@@ -814,9 +814,9 @@ const Home = () => {
 
         {/* Analytics seamlessly blended */}
         <div className="max-w-7xl mx-auto px-6 relative z-10 mt-12 mb-20">
-          <div className="bg-white rounded-[3rem] p-10 md:p-16 shadow-[0_30px_80px_rgba(0,0,0,0.15)] border-0 relative overflow-hidden group">
+          <div className="bg-white rounded-[3rem] p-6 md:p-16 shadow-[0_30px_80px_rgba(0,0,0,0.15)] border-0 relative overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-br from-transparent to-[#FF8C00]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 divide-x divide-stone-100 relative z-10">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 md:divide-x divide-stone-100 relative z-10">
               <StatCounter end={stats.totalDonation || 0} label="Unique Donors" duration={2.5} textColor="text-[#FF8C00]" labelColor="text-stone-800" />
               <StatCounter end={stats.totalDevotees || 0} label="Registered Devotees" duration={2} textColor="text-[#FF8C00]" labelColor="text-stone-800" />
               <StatCounter end={stats.totalEvents || 0} label="Events Conducted" duration={2} textColor="text-[#FF8C00]" labelColor="text-stone-800" />
@@ -907,7 +907,7 @@ const Home = () => {
                 {branches.map(branch => (
                   <motion.div
                     key={branch._id}
-                    className="min-w-[300px] md:min-w-[350px] snap-center bg-gray-50 rounded-2xl p-8 border border-gray-200 shadow-xl hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 text-center flex flex-col items-center"
+                    className="min-w-[280px] sm:min-w-[320px] md:min-w-[350px] snap-center bg-gray-50 rounded-2xl p-6 md:p-8 border border-gray-200 shadow-xl hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 text-center flex flex-col items-center"
                   >
                     <div className="w-16 h-16 bg-white rounded-full border border-gold/30 flex items-center justify-center mb-6 shadow-inner text-primary">
                       <FaMapMarkerAlt className="text-2xl" />

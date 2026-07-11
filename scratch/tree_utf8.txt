@@ -1,0 +1,359 @@
+|-- backend
+|   |-- config
+|   |   |-- cloudinary.js
+|   |   |-- db.js
+|   |   +-- s3.js
+|   |-- controllers
+|   |   |-- accountantController.js
+|   |   |-- adminController.js
+|   |   |-- annadaanController.js
+|   |   |-- announcementController.js
+|   |   |-- audioController.js
+|   |   |-- auditController.js
+|   |   |-- authController.js
+|   |   |-- branchController.js
+|   |   |-- branchManagerController.js
+|   |   |-- bulletinController.js
+|   |   |-- contactController.js
+|   |   |-- devoteeController.js
+|   |   |-- documentAuthController.js
+|   |   |-- documentController.js
+|   |   |-- donationController.js
+|   |   |-- eventController.js
+|   |   |-- galleryController.js
+|   |   |-- lineageController.js
+|   |   |-- liveController.js
+|   |   |-- mathHistoryController.js
+|   |   |-- prasadController.js
+|   |   |-- statsController.js
+|   |   |-- trusteeController.js
+|   |   +-- userDashboardController.js
+|   |-- middleware
+|   |   |-- authMiddleware.js
+|   |   |-- documentUpload.js
+|   |   |-- errorMiddleware.js
+|   |   |-- optionalAuthMiddleware.js
+|   |   |-- permissionMiddleware.js
+|   |   |-- roleMiddleware.js
+|   |   |-- uploadMiddleware.js
+|   |   |-- validationMiddleware.js
+|   |   +-- verifyDocumentAdmin.js
+|   |-- models
+|   |   |-- Accountant.js
+|   |   |-- Admin.js
+|   |   |-- Annadaan.js
+|   |   |-- Announcement.js
+|   |   |-- AnnouncementRecipient.js
+|   |   |-- AudioTrack.js
+|   |   |-- AuditLog.js
+|   |   |-- Branch.js
+|   |   |-- BranchManager.js
+|   |   |-- Bulletin.js
+|   |   |-- Devotee.js
+|   |   |-- Document.js
+|   |   |-- DocumentAdmin.js
+|   |   |-- Donation.js
+|   |   |-- Event.js
+|   |   |-- Gallery.js
+|   |   |-- LineageMember.js
+|   |   |-- LiveStream.js
+|   |   |-- MathHistory.js
+|   |   |-- OtpRateLimit.js
+|   |   |-- OTPVerification.js
+|   |   |-- PrasadRequest.js
+|   |   |-- SystemSettings.js
+|   |   +-- Trustee.js
+|   |-- routes
+|   |   |-- accountantRoutes.js
+|   |   |-- adminRoutes.js
+|   |   |-- annadaanRoutes.js
+|   |   |-- announcementRoutes.js
+|   |   |-- audioRoutes.js
+|   |   |-- auditRoutes.js
+|   |   |-- authRoutes.js
+|   |   |-- branchManagerRoutes.js
+|   |   |-- branchRoutes.js
+|   |   |-- bulletinRoutes.js
+|   |   |-- contactRoutes.js
+|   |   |-- devoteeRoutes.js
+|   |   |-- documentAuthRoutes.js
+|   |   |-- documentRoutes.js
+|   |   |-- donationRoutes.js
+|   |   |-- eventRoutes.js
+|   |   |-- galleryRoutes.js
+|   |   |-- lineageRoutes.js
+|   |   |-- liveRoutes.js
+|   |   |-- mathHistoryRoutes.js
+|   |   |-- prasadRoutes.js
+|   |   |-- statsRoutes.js
+|   |   |-- trusteeRoutes.js
+|   |   +-- userDashboardRoutes.js
+|   |-- services
+|   |   |-- emailService.js
+|   |   |-- eventReminderCron.js
+|   |   |-- mailService.js
+|   |   +-- otpService.js
+|   |-- uploads
+|   |   |-- documents
+|   |   |   |-- doc-1779528325934-141508822.pdf
+|   |   |   |-- doc-1780987980820-837271109.pdf
+|   |   |   |-- doc-1780988321953-261330986.pdf
+|   |   |   +-- doc-1781582306455-469805184.pdf
+|   |   |-- profiles
+|   |   |   |-- profile_6a2915df57f8dcaa8c4a907a_1781774148916.jpg
+|   |   |   |-- profile_6a2915df57f8dcaa8c4a907a_1781774178467.jpg
+|   |   |   |-- profile_6a2915df57f8dcaa8c4a907a_1781774222982.jpg
+|   |   |   |-- profile_6a2915df57f8dcaa8c4a907a_1781774818523.jpg
+|   |   |   |-- profile_6a2915df57f8dcaa8c4a907a_1781774820474.jpg
+|   |   |   |-- profile_6a2915df57f8dcaa8c4a907a_1781774820882.jpg
+|   |   |   |-- profile_6a2915df57f8dcaa8c4a907a_1781774821746.jpg
+|   |   |   |-- profile_6a2915df57f8dcaa8c4a907a_1781774821962.jpg
+|   |   |   |-- profile_6a2915df57f8dcaa8c4a907a_1781774822195.jpg
+|   |   |   |-- profile_6a2915df57f8dcaa8c4a907a_1781775251139.jpg
+|   |   |   |-- profile_6a2915df57f8dcaa8c4a907a_1781775252950.jpg
+|   |   |   |-- profile_6a2915df57f8dcaa8c4a907a_1781775253346.jpg
+|   |   |   |-- profile_6a2915df57f8dcaa8c4a907a_1781775253709.jpg
+|   |   |   |-- profile_6a2915df57f8dcaa8c4a907a_1781775254023.jpg
+|   |   |   |-- profile_6a2915df57f8dcaa8c4a907a_1781775254396.jpg
+|   |   |   |-- profile_6a2915df57f8dcaa8c4a907a_1781775254620.jpg
+|   |   |   |-- profile_6a2915df57f8dcaa8c4a907a_1781775308004.jpg
+|   |   |   |-- profile_6a2915df57f8dcaa8c4a907a_1781775308369.jpg
+|   |   |   |-- profile_6a2915df57f8dcaa8c4a907a_1781775573506.jpg
+|   |   |   |-- profile_6a2915df57f8dcaa8c4a907a_1781775575215.jpg
+|   |   |   |-- profile_6a2915df57f8dcaa8c4a907a_1781775575693.jpg
+|   |   |   |-- profile_6a2915df57f8dcaa8c4a907a_1781775633927.jpg
+|   |   |   |-- profile_6a2915df57f8dcaa8c4a907a_1781775638268.jpg
+|   |   |   |-- profile_6a2915df57f8dcaa8c4a907a_1781775639386.jpg
+|   |   |   |-- profile_6a2915df57f8dcaa8c4a907a_1781775938285.jpg
+|   |   |   |-- profile_6a29999f9f0f9ac93b29b07a_1781261749795.jpeg
+|   |   |   |-- profile_6a29999f9f0f9ac93b29b07a_1781264229545.jpeg
+|   |   |   |-- profile_6a29999f9f0f9ac93b29b07a_1781264231568.jpeg
+|   |   |   |-- profile_6a29999f9f0f9ac93b29b07a_1781264231840.jpeg
+|   |   |   |-- profile_6a29999f9f0f9ac93b29b07a_1781264232817.jpeg
+|   |   |   |-- profile_6a29999f9f0f9ac93b29b07a_1781688690927.jpg
+|   |   |   +-- profile_6a29999f9f0f9ac93b29b07a_1781688693459.jpg
+|   |   |-- deepgram-lyrics-1781720985085.vtt
+|   |   |-- deepgram-lyrics-1781721077375.vtt
+|   |   |-- deepgram-lyrics-1781721209325.vtt
+|   |   |-- deepgram-lyrics-1781722493083.vtt
+|   |   |-- featuredImage-1779529662289-186328838.jpg
+|   |   |-- featuredImage-1779530128740-222515392.jpg
+|   |   |-- featuredImage-1779530334640-665034102.jpg
+|   |   |-- featuredImage-1779530550230-995851679.jpg
+|   |   |-- featuredImage-1779530896632-566243097.jpg
+|   |   |-- featuredImage-1779535888340-789529314.jpg
+|   |   |-- featuredImage-1780596868558-780563765.jpeg
+|   |   |-- featuredImage-1781522155718-3182224.jpeg
+|   |   |-- featuredImage-1781522262745-609011741.png
+|   |   |-- featuredImage-1781522331550-60915268.jpeg
+|   |   |-- image-1779536810134-702752808.jpg
+|   |   |-- image-1780591449942-39203972.jpg
+|   |   |-- image-1781259605957-658800733.jpg
+|   |   |-- lyrics-1781721010505.vtt
+|   |   |-- media-1781540134302-520313324.jpeg
+|   |   |-- media-1781540187569-591943133.jpeg
+|   |   |-- media-1781540207682-78120232.mp4
+|   |   |-- media-1781585988045-190091158.jpeg
+|   |   |-- mediaFile-1780586532660-139693055.jpeg
+|   |   |-- mediaFile-1780591552735-344571391.jpg
+|   |   |-- mediaFile-1781521338482-342458740.mp4
+|   |   |-- mediaFile-1781521553072-223208192.jpeg
+|   |   |-- profileImage-1781605972482-597210627.jpg
+|   |   |-- profileImage-1781605991317-279318105.jpg
+|   |   |-- profileImage-1781672953143-101991319.jpg
+|   |   |-- profileImage-1781674325881-957760981.png
+|   |   |-- profileImage-1781677426908-281245800.jpeg
+|   |   |-- profileImage-1781688899459-123188375.png
+|   |   |-- profileImage-1781692711042-812088659.png
+|   |   |-- profileImage-1781692853951-905066348.jpeg
+|   |   |-- profileImage-1781696209782-619602540.jpg
+|   |   |-- videoFile-1781522155720-521650998.mp4
+|   |   |-- videoFile-1781586274122-363121102.mp4
+|   |   +-- videoFile-1781586416266-101422007.mp4
+|   |-- utils
+|   |   |-- cronJobs.js
+|   |   |-- generateReceipt.js
+|   |   |-- generateToken.js
+|   |   |-- jwtUtils.js
+|   |   |-- otpGenerator.js
+|   |   |-- seedUsers.js
+|   |   |-- sendEmail.js
+|   |   |-- transcribe.js
+|   |   +-- validation.js
+|   |-- .env
+|   |-- app.js
+|   |-- check_documents.js
+|   |-- check_pin.js
+|   |-- inject-emails.cjs
+|   |-- package-lock.json
+|   |-- package.json
+|   |-- seedUsers.js
+|   |-- server.js
+|   |-- test_annadaan.pdf
+|   |-- test_api.cjs
+|   |-- test_counts.js
+|   |-- test_mongoose.js
+|   |-- test_pin.js
+|   +-- testDb.js
+|-- frontend
+|   |-- src
+|   |   |-- assets
+|   |   |   |-- event_card.png
+|   |   |   |-- hero_bg.jpeg
+|   |   |   +-- kolekar1.jpeg
+|   |   |-- components
+|   |   |   |-- dashboard
+|   |   |   |   |-- AnimatedCounter.jsx
+|   |   |   |   |-- EmptyState.jsx
+|   |   |   |   |-- LoadingSkeleton.jsx
+|   |   |   |   +-- StatusBadge.jsx
+|   |   |   |-- dashboards
+|   |   |   |   +-- DevoteeDashboard.jsx
+|   |   |   |-- AudioPlayerWithLyrics.jsx
+|   |   |   |-- Footer.jsx
+|   |   |   |-- Navbar.jsx
+|   |   |   |-- OTPInput.jsx
+|   |   |   |-- ProtectedRoute.jsx
+|   |   |   |-- Receipt.jsx
+|   |   |   |-- ScrollToTop.jsx
+|   |   |   +-- TablePagination.jsx
+|   |   |-- context
+|   |   |   +-- AuthContext.jsx
+|   |   |-- hooks
+|   |   |   |-- usePermissions.js
+|   |   |   +-- useTableFeatures.js
+|   |   |-- layouts
+|   |   |   +-- Layout.jsx
+|   |   |-- locales
+|   |   |   |-- en
+|   |   |   |   +-- translation.json
+|   |   |   |-- hi
+|   |   |   |   +-- translation.json
+|   |   |   +-- mr
+|   |   |       +-- translation.json
+|   |   |-- pages
+|   |   |   |-- accountant
+|   |   |   |   |-- Announcements.jsx
+|   |   |   |   |-- Dashboard.jsx
+|   |   |   |   |-- Donations.jsx
+|   |   |   |   |-- DonationVerification.jsx
+|   |   |   |   |-- Profile.jsx
+|   |   |   |   +-- Receipts.jsx
+|   |   |   |-- admin
+|   |   |   |   |-- AdminDocuments.jsx
+|   |   |   |   |-- AdminLogin.jsx
+|   |   |   |   |-- Announcements.jsx
+|   |   |   |   |-- Dashboard.jsx
+|   |   |   |   |-- Devotees.jsx
+|   |   |   |   |-- Donations.jsx
+|   |   |   |   |-- Events.jsx
+|   |   |   |   |-- ManageAnnadan.jsx
+|   |   |   |   |-- ManageBranches.jsx
+|   |   |   |   |-- ManageBranchManagers.jsx
+|   |   |   |   |-- ManageDocumentAdmins.jsx
+|   |   |   |   |-- ManageGallery.jsx
+|   |   |   |   |-- ManageLineage.jsx
+|   |   |   |   |-- ManageMathHistory.jsx
+|   |   |   |   |-- ManageTrustees.jsx
+|   |   |   |   +-- Profile.jsx
+|   |   |   |-- auth
+|   |   |   |   |-- LoginSelection.jsx
+|   |   |   |   +-- RegisterDevotee.jsx
+|   |   |   |-- branch
+|   |   |   |   |-- Announcements.jsx
+|   |   |   |   |-- Branches.jsx
+|   |   |   |   |-- Dashboard.jsx
+|   |   |   |   |-- Devotees.jsx
+|   |   |   |   |-- Documents.jsx
+|   |   |   |   |-- Donations.jsx
+|   |   |   |   |-- Events.jsx
+|   |   |   |   +-- Profile.jsx
+|   |   |   |-- document-admin
+|   |   |   |   |-- Announcements.jsx
+|   |   |   |   |-- Dashboard.jsx
+|   |   |   |   |-- DeletionRequests.jsx
+|   |   |   |   |-- Login.jsx
+|   |   |   |   +-- Profile.jsx
+|   |   |   |-- trustee
+|   |   |   |   |-- Accountants.jsx
+|   |   |   |   |-- Annadaan.jsx
+|   |   |   |   |-- Announcements.jsx
+|   |   |   |   |-- AudioTracks.jsx
+|   |   |   |   |-- Branches.jsx
+|   |   |   |   |-- Bulletins.jsx
+|   |   |   |   |-- Dashboard.jsx
+|   |   |   |   |-- Devotees.jsx
+|   |   |   |   |-- Documents.jsx
+|   |   |   |   |-- Donations.jsx
+|   |   |   |   |-- Events.jsx
+|   |   |   |   |-- Gallery.jsx
+|   |   |   |   +-- Profile.jsx
+|   |   |   +-- user
+|   |   |       |-- dashboard
+|   |   |       |   |-- DashboardHome.jsx
+|   |   |       |   |-- MyAnnadaan.jsx
+|   |   |       |   |-- MyDonations.jsx
+|   |   |       |   |-- MyOrders.jsx
+|   |   |       |   +-- Settings.jsx
+|   |   |       |-- About.jsx
+|   |   |       |-- Annadaan.jsx
+|   |   |       |-- BranchDetails.jsx
+|   |   |       |-- Branches.jsx
+|   |   |       |-- ContactUs.jsx
+|   |   |       |-- Documents.jsx
+|   |   |       |-- Donations.jsx
+|   |   |       |-- EventDetails.jsx
+|   |   |       |-- Events.jsx
+|   |   |       |-- ForgotPassword.jsx
+|   |   |       |-- Gallery.jsx
+|   |   |       |-- Home.jsx
+|   |   |       |-- Lineage.jsx
+|   |   |       |-- LiveAarti.jsx
+|   |   |       |-- Login.jsx
+|   |   |       |-- MathHistory.jsx
+|   |   |       |-- Register.jsx
+|   |   |       |-- Services.jsx
+|   |   |       +-- TrusteeBoard.jsx
+|   |   |-- services
+|   |   |   |-- annadaanService.js
+|   |   |   |-- liveService.js
+|   |   |   +-- userDashboardService.js
+|   |   |-- translations
+|   |   |   |-- en.json
+|   |   |   |-- hi.json
+|   |   |   |-- kn.json
+|   |   |   +-- mr.json
+|   |   |-- utils
+|   |   |   |-- api.js
+|   |   |   |-- exportUtils.js
+|   |   |   |-- imageUtils.js
+|   |   |   |-- pdfGenerator.js
+|   |   |   +-- reportGenerator.js
+|   |   |-- App.css
+|   |   |-- App.jsx
+|   |   |-- i18n.js
+|   |   |-- index.css
+|   |   +-- main.jsx
+|   |-- .env
+|   |-- .gitignore
+|   |-- copy-trustee.cjs
+|   |-- eslint.config.js
+|   |-- fix-branch.cjs
+|   |-- index.html
+|   |-- logo_b64.txt
+|   |-- merge.py
+|   |-- package-lock.json
+|   |-- package.json
+|   |-- postcss.config.js
+|   |-- README.md
+|   |-- remove-whatsapp-analytics.cjs
+|   |-- remove-whatsapp.cjs
+|   |-- tailwind.config.js
+|   |-- test_browser.cjs
+|   |-- update_all.py
+|   |-- update_home_styles.py
+|   |-- update_home.py
+|   +-- vite.config.js
+|-- .gitignore
+|-- package-lock.json
++-- README.md

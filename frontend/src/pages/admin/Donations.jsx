@@ -6,14 +6,11 @@ import { useTableFeatures } from '../../hooks/useTableFeatures';
 import TablePagination from '../../components/TablePagination';
 import { exportToCSV } from '../../utils/exportUtils';
 import { generateFinancialReport } from '../../utils/reportGenerator';
-import Receipt from '../../components/Receipt';
 
 const Donations = () => {
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
-  const [selectedDonation, setSelectedDonation] = useState(null);
-
   // Filters
   const [filterYear, setFilterYear] = useState('');
   const [filterMonth, setFilterMonth] = useState('');
@@ -297,7 +294,13 @@ const Donations = () => {
                   </td>
                   <td className="p-4 text-center">
                     <button 
-                      onClick={() => setSelectedDonation(donation)}
+                      onClick={() => {
+                        if (donation.receiptPdfUrl) {
+                          window.open(donation.receiptPdfUrl, '_blank');
+                        } else {
+                          alert('This is a legacy donation. The old receipt format has been removed.');
+                        }
+                      }}
                       className="p-2 bg-slate-100 hover:bg-emerald-100 text-slate-600 hover:text-emerald-700 rounded-lg transition-colors"
                       title="View Receipt"
                     >
@@ -318,47 +321,7 @@ const Donations = () => {
         />
       </div>
 
-      {/* Receipt Modal */}
-      <AnimatePresence>
-        {selectedDonation && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm overflow-y-auto"
-          >
-            <motion.div 
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-gray-100 w-full max-w-5xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
-            >
-              <div className="p-4 bg-white border-b flex justify-between items-center sticky top-0 z-20">
-                <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-                  <FiPrinter className="text-emerald-600" /> Donation Receipt
-                </h2>
-                <div className="flex gap-2">
-                  <button 
-                    onClick={() => window.print()}
-                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold transition-colors flex items-center gap-2"
-                  >
-                    <FiPrinter /> Print Receipt
-                  </button>
-                  <button 
-                    onClick={() => setSelectedDonation(null)}
-                    className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-500"
-                  >
-                    <FiX size={24} />
-                  </button>
-                </div>
-              </div>
-              <div className="p-8 overflow-y-auto bg-gray-200 flex-1 flex justify-center custom-scrollbar">
-                <Receipt donation={selectedDonation} />
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+
     </div>
   );
 };

@@ -18,9 +18,9 @@ Message:
 ${message}
     `;
 
-    // send to gurumurtikolekarmaharaj44@gmail.com
+    // send to shrirudrpashupati@gmail.com
     await sendEmail({
-      email: "gurumurtikolekarmaharaj44@gmail.com",
+      email: "shrirudrpashupati@gmail.com",
       subject: subject,
       message: text
     });

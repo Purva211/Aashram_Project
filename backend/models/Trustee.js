@@ -32,7 +32,8 @@ const trusteeSchema = new mongoose.Schema({
       { module: 'Gallery', level: 'View' },
       { module: 'Monastery History', level: 'View' },
       { module: 'Lineage', level: 'View' },
-      { module: 'Accountants', level: 'View' }
+      { module: 'Accountants', level: 'View' },
+      { module: 'Official Correspondence', level: 'Manage' }
     ]
   }
 }, { timestamps: true });
