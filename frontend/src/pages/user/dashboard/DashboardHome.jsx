@@ -6,9 +6,10 @@ import { CardSkeleton, RowSkeleton } from '../../../components/dashboard/Loading
 import { FaClipboardList, FaDonate, FaUtensils, FaUserCheck, FaCalendarAlt, FaHistory } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedCounter from '../../../components/dashboard/AnimatedCounter';
+import VanshawalPrompt from '../../../components/family/VanshawalPrompt';
 
 export const DashboardHome = () => {
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
   const navigate = useNavigate();
   
   const [loading, setLoading] = useState(true);
@@ -147,6 +148,7 @@ export const DashboardHome = () => {
 
   return (
     <div className="space-y-8">
+      <VanshawalPrompt user={user} onSetupComplete={(updatedUser) => setUser(updatedUser)} />
       {/* Welcome Panel */}
       <div 
         className="bg-slate-50 border border-slate-200 p-6 md:p-8 rounded-xl shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
