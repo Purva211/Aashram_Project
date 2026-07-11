@@ -23,6 +23,7 @@ app.use("/api/accountants", require("./routes/accountantRoutes"));
 app.use("/api/audit-logs", require("./routes/auditRoutes"));
 app.use("/api/branch-managers", require("./routes/branchManagerRoutes"));
 app.use("/api/devotees", require("./routes/devoteeRoutes"));
+app.use("/api/family", require("./routes/familyRoutes"));
 app.use("/api/donations", require("./routes/donationRoutes"));
 app.use("/api/events", require("./routes/eventRoutes"));
 app.use("/api/bulletins", require("./routes/bulletinRoutes"));
