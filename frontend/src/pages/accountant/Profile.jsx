@@ -61,12 +61,7 @@ const Profile = () => {
   };
 
   const handleThemeChange = (newTheme) => {
-    setPreferences(prev => {
-      const updated = { ...prev, theme: newTheme };
-      localStorage.setItem('adminPreferences', JSON.stringify(updated));
-      return updated;
-    });
-    window.dispatchEvent(new Event('preferencesUpdated'));
+    toast.success("Dark Mode is coming soon! Stay tuned.", { icon: '🌙' });
   };
 
   const Toggle = ({ enabled, onChange }) => (
@@ -113,10 +108,10 @@ const Profile = () => {
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Account Settings</h1>
-        <p className="text-gray-500 mt-1">Manage your personal information and preferences.</p>
+    <div className="p-4 md:p-6 max-w-4xl mx-auto overflow-hidden">
+      <div className="mb-6 md:mb-8 text-center md:text-left">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 flex items-center tracking-tight">Account Settings</h1>
+        <p className="text-sm md:text-base text-gray-500 mt-1 md:mt-2">Manage your personal information and preferences.</p>
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
@@ -141,8 +136,8 @@ const Profile = () => {
             </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-8 space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-8 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             
             {/* Editable Fields */}
             <div>
@@ -242,31 +237,31 @@ const Profile = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             
             {/* Section: Dashboard Preferences */}
-            <section className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100 space-y-6">
+            <section className="bg-gray-50/50 rounded-2xl p-4 sm:p-6 border border-gray-100 space-y-6">
               <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2"><Activity className="w-5 h-5 text-indigo-500"/> Dashboard Items</h3>
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-700">Show Recent Activities</span>
+                <div className="flex items-center justify-between bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+                  <span className="text-sm font-medium text-gray-700">Recent Activities</span>
                   <Toggle enabled={preferences.showActivities} onChange={() => handleTogglePref('showActivities')} />
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-700">Show Branch Statistics</span>
+                <div className="flex items-center justify-between bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+                  <span className="text-sm font-medium text-gray-700">Branch Statistics</span>
                   <Toggle enabled={preferences.showBranches} onChange={() => handleTogglePref('showBranches')} />
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-700">Show Donation Analytics</span>
+                <div className="flex items-center justify-between bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+                  <span className="text-sm font-medium text-gray-700">Donation Analytics</span>
                   <Toggle enabled={preferences.showDonations} onChange={() => handleTogglePref('showDonations')} />
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-700">Show Upcoming Events</span>
+                <div className="flex items-center justify-between bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+                  <span className="text-sm font-medium text-gray-700">Upcoming Events</span>
                   <Toggle enabled={preferences.showEvents} onChange={() => handleTogglePref('showEvents')} />
                 </div>
               </div>
             </section>
 
             {/* Section: Localization */}
-            <section className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100 space-y-6">
-              <div className="flex justify-between items-center">
+            <section className="bg-gray-50/50 rounded-2xl p-4 sm:p-6 border border-gray-100 space-y-6">
+              <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                 <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2"><Globe className="w-5 h-5 text-indigo-500"/> Localization</h3>
                 <button 
                   onClick={() => {
@@ -279,7 +274,7 @@ const Profile = () => {
                     toast.success('Language preferences saved successfully.');
                     setTimeout(() => window.location.reload(), 1000);
                   }}
-                  className="bg-white border border-indigo-500 text-indigo-600 hover:bg-indigo-50 px-4 py-1.5 rounded-lg text-sm font-medium shadow-sm transition"
+                  className="w-full sm:w-auto bg-white border border-indigo-500 text-indigo-600 hover:bg-indigo-50 px-5 py-2 sm:py-1.5 rounded-lg text-sm font-bold shadow-sm transition whitespace-nowrap"
                 >
                   Save Language
                 </button>
@@ -299,16 +294,18 @@ const Profile = () => {
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">Interface Theme</label>
-                  <div className="flex gap-3">
+                  <div className="flex flex-col sm:flex-row gap-3">
                     <button 
+                      type="button"
                       onClick={() => handleThemeChange('Light')}
-                      className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg border font-medium transition-all ${preferences.theme === 'Light' ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+                      className={`w-full flex items-center justify-center gap-2 py-3 sm:py-2.5 rounded-lg border font-medium transition-all ${preferences.theme === 'Light' ? 'bg-indigo-50 border-indigo-500 text-indigo-700 shadow-sm' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
                     >
                       <Sun className="w-4 h-4" /> Light
                     </button>
                     <button 
+                      type="button"
                       onClick={() => handleThemeChange('Dark')}
-                      className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg border font-medium transition-all ${preferences.theme === 'Dark' ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+                      className={`w-full flex items-center justify-center gap-2 py-3 sm:py-2.5 rounded-lg border font-medium transition-all ${preferences.theme === 'Dark' ? 'bg-indigo-50 border-indigo-500 text-indigo-700 shadow-sm' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
                     >
                       <Moon className="w-4 h-4" /> Dark
                     </button>

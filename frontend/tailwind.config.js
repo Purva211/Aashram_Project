@@ -64,6 +64,8 @@ export default {
       fontFamily: {
         sans: ['Outfit', 'sans-serif'],
         serif: ['Playfair Display', 'serif'],
+        playfair: ['Playfair Display', 'serif'],
+        poppins: ['Poppins', 'sans-serif'],
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
@@ -79,6 +81,7 @@ export default {
         'float': 'float 6s ease-in-out infinite',
         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'glow-spin': 'glow-spin 10s linear infinite',
+        'marquee': 'marquee 30s linear infinite',
       },
       keyframes: {
         float: {
@@ -88,6 +91,10 @@ export default {
         'glow-spin': {
           '0%': { transform: 'rotate(0deg)' },
           '100%': { transform: 'rotate(360deg)' },
+        },
+        marquee: {
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-50%)' },
         }
       }
     },

@@ -116,7 +116,7 @@ const ManageGallery = () => {
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-10">
         <div>
-          <h1 className="text-4xl font-black mb-2 text-deepblue-900 flex flex-wrap items-center gap-2">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-black mb-2 text-deepblue-900 flex items-center gap-2 tracking-tight">
             Gallery Management
             {!hasManage && <span className="bg-yellow-100 text-yellow-800 text-sm font-bold px-3 py-1 rounded-full shadow-sm font-sans inline-block align-middle">View Only Access</span>}
           </h1>
@@ -161,36 +161,36 @@ const ManageGallery = () => {
               className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all group flex flex-col"
             >
               
-              <div className="relative h-56 overflow-hidden shrink-0 bg-gray-100 flex items-center justify-center">
+              <div className="relative h-40 md:h-56 overflow-hidden shrink-0 bg-gray-100 flex items-center justify-center">
                 {item.type === 'video' ? (
                   <div className="absolute inset-0 bg-gray-900 flex items-center justify-center group-hover:scale-105 transition-transform duration-700">
-                    <FaVideo className="text-5xl text-gray-600" />
+                    <FaVideo className="text-4xl md:text-5xl text-gray-600" />
                   </div>
                 ) : (
                   <img src={getImageUrl(item.url)} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none"></div>
                 
-                <div className="absolute top-4 left-4">
-                  <span className={`px-3 py-1.5 backdrop-blur-md rounded-lg text-[10px] uppercase font-black tracking-widest text-white shadow-sm border border-white/20 bg-[#f27415]/90 flex items-center gap-1`}>
+                <div className="absolute top-3 md:top-4 left-3 md:left-4">
+                  <span className={`px-2 md:px-3 py-1 md:py-1.5 backdrop-blur-md rounded-lg text-[9px] md:text-[10px] uppercase font-black tracking-widest text-white shadow-sm border border-white/20 bg-[#f27415]/90 flex items-center gap-1`}>
                     {item.type === 'video' ? <FaVideo /> : <FaImage />} {item.type}
                   </span>
                 </div>
                 
-                <div className="absolute bottom-4 left-4 right-4">
-                  <p className="text-[#f27415] text-xs font-black uppercase tracking-[0.2em] mb-1 drop-shadow-md">{item.category}</p>
-                  <h2 className="text-white text-2xl font-bold line-clamp-1 drop-shadow-lg">{item.title}</h2>
+                <div className="absolute bottom-3 md:bottom-4 left-3 md:left-4 right-3 md:right-4">
+                  <p className="text-[#f27415] text-[10px] md:text-xs font-black uppercase tracking-[0.2em] mb-0.5 md:mb-1 drop-shadow-md">{item.category}</p>
+                  <h2 className="text-white text-lg md:text-2xl font-bold line-clamp-1 drop-shadow-lg">{item.title}</h2>
                 </div>
               </div>
 
-              <div className="p-6 flex flex-col flex-1">
-                <p className="text-gray-500 text-sm line-clamp-1 mb-6 flex-1 break-all" title={item.url}>{item.url}</p>
+              <div className="p-4 md:p-6 flex flex-col flex-1">
+                <p className="text-gray-500 text-xs md:text-sm line-clamp-1 mb-4 md:mb-6 flex-1 break-all" title={item.url}>{item.url}</p>
                 
-                <div className="flex gap-2 pt-4 border-t border-gray-100">
+                <div className="flex flex-row gap-2 pt-3 md:pt-4 border-t border-gray-100">
                   {hasManage ? (
                     <>
-                      <button onClick={() => openModal(item)} className="flex-1 py-2.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg font-bold flex items-center justify-center gap-2 transition-colors text-sm"><FaEdit /> Edit</button>
-                      <button onClick={() => handleDelete(item._id)} className="flex-1 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg font-bold flex items-center justify-center gap-2 transition-colors text-sm"><FaTrash /> Del</button>
+                      <button onClick={() => openModal(item)} className="flex-1 py-2 md:py-2.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg font-bold flex items-center justify-center gap-2 transition-colors text-xs md:text-sm"><FaEdit /> Edit</button>
+                      <button onClick={() => handleDelete(item._id)} className="flex-1 py-2 md:py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg font-bold flex items-center justify-center gap-2 transition-colors text-xs md:text-sm"><FaTrash /> Del</button>
                     </>
                   ) : (
                     <div className="flex-1 py-2 text-center text-xs text-gray-400 font-bold">View Only Access</div>
@@ -222,7 +222,7 @@ const ManageGallery = () => {
                 <button onClick={closeModal} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 hover:bg-red-500 hover:text-white transition-colors">✕</button>
               </div>
 
-              <div className="p-6 overflow-y-auto">
+              <div className="p-6 overflow-y-auto custom-scrollbar">
                 <form id="gallery-form" onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="md:col-span-2">
                     <label className="block text-sm font-bold text-gray-700 mb-1">Title</label>
@@ -250,7 +250,7 @@ const ManageGallery = () => {
                     <p className="text-xs text-gray-400 mt-2">Select an image or video from your device. If selected, the Media URL below is ignored.</p>
                   </div>
 
-                  <div className="md:col-span-2">
+                  <div className="md:col-span-2 mb-4">
                     <label className="block text-sm font-bold text-gray-700 mb-1">Or Paste Media URL</label>
                     <input type="text" placeholder="https://youtube.com/watch?v=... or https://example.com/image.jpg" value={formData.url} onChange={(e) => setFormData({...formData, url: e.target.value})} className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-saffron-500 focus:ring-1 focus:ring-saffron-500" />
                     <p className="text-xs text-gray-400 mt-2">If uploading a local file, you can leave this blank.</p>
@@ -258,9 +258,9 @@ const ManageGallery = () => {
                 </form>
               </div>
 
-              <div className="p-6 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
-                <button type="button" onClick={closeModal} className="px-6 py-2.5 bg-white border border-gray-300 rounded-xl font-bold text-gray-700 hover:bg-gray-50 transition-colors">Cancel</button>
-                <button type="submit" form="gallery-form" disabled={submitting} className="px-8 py-2.5 bg-blue-900 hover:bg-blue-800 text-white rounded-xl font-black shadow-lg shadow-gray-900/30 transition-all hover:-translate-y-0.5 flex items-center gap-2">
+              <div className="p-6 md:p-8 border-t border-gray-100 bg-white sticky bottom-0 flex flex-col md:flex-row justify-end gap-3 rounded-b-2xl z-10 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+                <button type="button" onClick={closeModal} className="w-full md:w-auto px-6 py-2.5 bg-white border border-gray-300 rounded-xl font-bold text-gray-700 hover:bg-gray-50 transition-colors order-2 md:order-1">Cancel</button>
+                <button type="submit" form="gallery-form" disabled={submitting} className="w-full md:w-auto px-8 py-2.5 bg-blue-900 hover:bg-blue-800 text-white rounded-xl font-black shadow-lg shadow-gray-900/30 transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2 order-1 md:order-2">
                   {submitting ? <FaSpinner className="animate-spin" /> : (editId ? "Update Media" : "Save Media")}
                 </button>
               </div>

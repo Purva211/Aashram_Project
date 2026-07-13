@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import ScrollReveal from '../../components/ScrollReveal';
 import { useTranslation } from 'react-i18next';
 import { toast, Toaster } from 'react-hot-toast';
 import { FaUser, FaPhone, FaEnvelope, FaCalendarAlt, FaClock, FaOm, FaInfoCircle, FaHeart, FaPrayingHands, FaUsers, FaPrint, FaCheckCircle, FaLeaf, FaSun, FaHistory, FaSync, FaUserCircle } from 'react-icons/fa';
@@ -9,6 +10,7 @@ import Footer from '../../components/Footer';
 import { useAuth } from '../../context/AuthContext';
 import { createAnnadaan, getAnnadaans } from '../../services/annadaanService';
 import heroBg from "../../assets/hero_bg.jpeg"; 
+import { validateName, getMobileError } from '../../utils/validationUtils';
 
 const Annadaan = () => {
   const { t, i18n } = useTranslation();
@@ -86,17 +88,22 @@ const Annadaan = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    let finalValue = value;
+    if (name === 'name') finalValue = value.replace(/[^A-Za-z\s]/g, '');
+    if (name === 'phone') finalValue = value.replace(/\D/g, '');
     setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: finalValue
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name.trim()) { toast.error(t('annadaan.val_name')); return; }
-    if (!formData.phone.trim()) { toast.error(t('annadaan.val_phone')); return; }
-    if (!/^\d{10}$/.test(formData.phone.trim())) { toast.error(t('annadaan.val_phone_digits')); return; }
+    if (!validateName(formData.name.trim())) { toast.error("Name must contain only alphabets and spaces."); return; }
+    
+    const mobileError = getMobileError(formData.phone.trim());
+    if (mobileError) { toast.error(mobileError); return; }
     if (!formData.email.trim()) { toast.error(t('annadaan.val_email')); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) { toast.error(t('annadaan.val_email')); return; }
     if (!formData.date) { toast.error(t('annadaan.val_date')); return; }
@@ -170,7 +177,7 @@ const Annadaan = () => {
               >
                 <FaCheckCircle className="text-4xl" />
               </motion.div>
-              <h2 className="text-3xl md:text-4xl font-bold text-mahakal-burgundy font-serif tracking-tight">{t('annadaan.receipt_success') || 'Request Received!'}</h2>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-mahakal-burgundy font-serif tracking-tight">{t('annadaan.receipt_success') || 'Request Received!'}</h2>
               <p className="text-stone-500 mt-2 text-sm max-w-md mx-auto font-medium">Your application has been received. Our team will verify the details and reach out to you shortly to confirm the availability for your requested date.</p>
             </div>
 
@@ -204,7 +211,7 @@ const Annadaan = () => {
         <motion.div 
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="container mx-auto px-6 max-w-4xl"
+          className="w-full px-4 sm:px-6 max-w-4xl mx-auto"
         >
           <div className="flex items-center justify-center gap-4 mb-4">
              <span className="w-12 h-px bg-mahakal-saffron"></span>
@@ -212,30 +219,28 @@ const Annadaan = () => {
              <span className="w-12 h-px bg-mahakal-saffron"></span>
           </div>
           
-          <h1 className="text-4xl md:text-5xl font-serif font-bold text-mahakal-burgundy mb-4 tracking-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-mahakal-burgundy mb-4 tracking-tight">
             {t('annadaan.hero_title') || "Mahadasoha Annadaan"}
           </h1>
           
-          <p className="text-lg text-stone-600 max-w-xl mx-auto font-medium leading-relaxed italic">
+          <p className="text-base md:text-lg text-stone-600 max-w-xl mx-auto font-medium leading-relaxed italic">
             "{t('annadaan.hero_subtitle') || "To offer food is to nourish the divine within."}"
           </p>
         </motion.div>
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-grow container mx-auto px-4 mt-8 relative z-20 pb-24 -mt-10">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-10">
+      <div className="flex-grow w-full px-0 sm:px-4 mt-4 md:-mt-8 relative z-20 pb-24">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-8 lg:gap-10">
           
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
-            className="lg:col-span-7 bg-white rounded-2xl shadow-sm p-8 md:p-12 border border-stone-200 relative overflow-hidden"
+          <ScrollReveal 
+            direction="up" delay={0.3} duration={0.8}
+            className="lg:col-span-7 bg-white sm:rounded-2xl shadow-sm p-4 sm:p-8 md:p-12 border-y sm:border border-stone-200 relative overflow-hidden"
           >
             {(!user || user.role !== 'Devotee') ? (
                <div className="text-center py-16">
                  <FaUserCircle className="text-6xl text-mahakal-saffron mx-auto mb-4 opacity-50" />
-                 <h2 className="text-2xl font-bold text-mahakal-burgundy font-serif mb-2">Login Required</h2>
+                 <h2 className="text-xl md:text-2xl font-bold text-mahakal-burgundy font-serif mb-2">Login Required</h2>
                  <p className="text-stone-500 mb-6 font-medium">Please login or register as a Devotee to schedule an Annadaan offering.</p>
                  <button onClick={() => navigate('/login', { state: { returnUrl: '/annadaan' } })} className="px-8 py-3 bg-gradient-to-r from-mahakal-saffron to-amber-500 text-white rounded-xl font-bold shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all">Login to Continue</button>
                </div>
@@ -246,7 +251,7 @@ const Annadaan = () => {
                 <FaPrayingHands className="text-mahakal-saffron w-8 h-8" />
               </div>
               <div>
-                <h2 className="text-2xl md:text-3xl font-bold text-mahakal-burgundy font-serif tracking-tight">
+                <h2 className="text-xl md:text-3xl font-bold text-mahakal-burgundy font-serif tracking-tight">
                   {t('annadaan.form_title')}
                 </h2>
                 <p className="text-sm text-stone-500 mt-1 font-medium">
@@ -275,6 +280,8 @@ const Annadaan = () => {
                     onFocus={() => handleFocus('name')}
                     onBlur={() => handleBlur('name')}
                     required
+                    pattern="[A-Za-z\s]+"
+                    title="Name must contain only alphabets and spaces"
                     className="peer w-full pl-14 pr-6 py-4 rounded-xl border-2 border-stone-200 focus:ring-2 focus:ring-mahakal-saffron/20 focus:border-mahakal-saffron outline-none transition-all bg-white text-lg font-bold text-mahakal-burgundy shadow-sm hover:border-amber-100"
                   />
                   <label htmlFor="name" className={`absolute left-14 transition-all duration-300 select-none pointer-events-none font-bold ${focusedField === 'name' || formData.name ? 'top-2 text-xs text-mahakal-saffron uppercase tracking-widest' : 'top-1/2 -translate-y-1/2 text-stone-500'}`}>
@@ -296,6 +303,8 @@ const Annadaan = () => {
                       onFocus={() => handleFocus('phone')}
                       onBlur={() => handleBlur('phone')}
                       required
+                      pattern="\d{10}"
+                      title="Mobile number must be exactly 10 digits"
                       maxLength={10}
                       className="peer w-full pl-14 pr-6 py-4 rounded-xl border-2 border-stone-200 focus:ring-2 focus:ring-mahakal-saffron/20 focus:border-mahakal-saffron outline-none transition-all bg-white text-lg font-bold text-mahakal-burgundy shadow-sm hover:border-amber-100 font-mono"
                     />
@@ -442,16 +451,14 @@ const Annadaan = () => {
             </form>
             </>
             )}
-          </motion.div>
+          </ScrollReveal>
 
           <div className="lg:col-span-5">
             <div className="sticky top-32 space-y-8">
               
-              <motion.div 
-                initial={{ opacity: 0, x: 30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4, duration: 0.8 }}
-                className="bg-white rounded-[2rem] shadow-sm p-8 md:p-10 border border-gray-100 relative overflow-hidden group"
+              <ScrollReveal 
+                direction="left" delay={0.4} duration={0.8}
+                className="bg-white rounded-[2rem] shadow-sm p-6 md:p-10 border border-gray-100 relative overflow-hidden group"
               >
                 <div className="absolute -top-10 -right-10 w-40 h-40 bg-gradient-to-br from-orange-100 to-amber-50 rounded-full blur-3xl group-hover:scale-110 transition-transform duration-700"></div>
                 
@@ -465,13 +472,11 @@ const Annadaan = () => {
                     {t('annadaan.quote_meaning')}
                   </p>
                 </div>
-              </motion.div>
+              </ScrollReveal>
 
-              <motion.div 
-                initial={{ opacity: 0, x: 30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.6, duration: 0.8 }}
-                className="bg-white rounded-[2rem] shadow-sm p-8 md:p-10 relative overflow-hidden border border-stone-200"
+              <ScrollReveal 
+                direction="left" delay={0.6} duration={0.8}
+                className="bg-white rounded-[2rem] shadow-sm p-6 md:p-10 relative overflow-hidden border border-stone-200"
               >
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-xl font-bold text-mahakal-burgundy font-serif flex items-center gap-3">
@@ -520,7 +525,7 @@ const Annadaan = () => {
                     })
                   )}
                 </div>
-              </motion.div>
+              </ScrollReveal>
 
             </div>
           </div>

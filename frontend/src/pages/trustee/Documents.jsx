@@ -1,16 +1,38 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { FaFileAlt, FaDownload, FaCheck, FaTimes, FaSpinner, FaSearch, FaEye } from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FiFileText, FiDownload, FiSearch, FiEye, FiCheckCircle, FiCheck, FiX, FiFilter, FiAlertCircle } from 'react-icons/fi';
 import api from "../../utils/api";
 import { usePermissions } from '../../hooks/usePermissions';
+import { useTableFeatures } from '../../hooks/useTableFeatures';
+import TablePagination from '../../components/TablePagination';
 
 const Documents = () => {
   const [documents, setDocuments] = useState([]);
   const [deletionRequests, setDeletionRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all'); // 'all' or 'requests'
-  const [searchTerm, setSearchTerm] = useState('');
   const { hasManage } = usePermissions('Documents');
+
+  const [showFilters, setShowFilters] = useState(false);
+  const [filterCategory, setFilterCategory] = useState('');
+  const [filterBranch, setFilterBranch] = useState('');
+
+  const filteredByCustom = documents.filter(doc => {
+    let match = true;
+    if (filterCategory && doc.category !== filterCategory) match = false;
+    if (filterBranch && doc.branch?.name !== filterBranch) match = false;
+    return match;
+  });
+
+  const {
+    searchTerm, setSearchTerm, sortConfig, handleSort,
+    currentPage, setCurrentPage, itemsPerPage, setItemsPerPage,
+    totalPages, paginatedData, totalItems
+  } = useTableFeatures(filteredByCustom, ['title', 'category']);
+
+  // Extract unique categories and branches for filters
+  const categories = [...new Set(documents.map(d => d.category))].filter(Boolean);
+  const branches = [...new Set(documents.map(d => d.branch?.name))].filter(Boolean);
 
   useEffect(() => {
     fetchData();
@@ -23,8 +45,8 @@ const Documents = () => {
         api.get('/trustees/documents'),
         api.get('/trustees/documents/deletion-requests')
       ]);
-      setDocuments(docsRes.data.documents);
-      setDeletionRequests(reqsRes.data.data);
+      setDocuments(docsRes.data.documents || docsRes.data.data || []);
+      setDeletionRequests(reqsRes.data.data || []);
     } catch (error) {
       console.error("Failed to fetch documents data", error);
     } finally {
@@ -33,7 +55,7 @@ const Documents = () => {
   };
 
   const handleReviewDeletion = async (id, status) => {
-    if (!window.confirm(`Are you sure you want to ${status} this deletion request?`)) return;
+    if (!window.confirm(`Are you sure you want to ${status.toLowerCase()} this deletion request?`)) return;
     
     try {
       await api.put(`/trustees/documents/${id}/review-deletion`, { status });
@@ -43,29 +65,29 @@ const Documents = () => {
     }
   };
 
-  const filteredDocs = documents.filter(d => d.title.toLowerCase().includes(searchTerm.toLowerCase()));
+  if (loading) return <div className="h-64 flex items-center justify-center"><div className="w-8 h-8 border-4 border-saffron-500 rounded-full border-t-transparent animate-spin"></div></div>;
 
   return (
-    <div className="space-y-6">
+    <div className="w-full space-y-6 text-gray-800 pb-10">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-6 rounded-2xl shadow-sm border border-gray-100 gap-4">
         <div>
-          <h1 className="text-2xl font-black text-deepblue-900 flex items-center gap-2">
-            <FaFileAlt className="text-saffron-500" /> Document Management
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2 tracking-tight">
+            <FiFileText className="text-saffron-500" /> Document Management
             {!hasManage && <span className="bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full shadow-sm ml-4 font-sans inline-block align-middle">View Only Access</span>}
           </h1>
           <p className="text-gray-500 mt-1">View documents and manage deletion requests.</p>
         </div>
         
-        <div className="flex bg-gray-100 p-1 rounded-lg">
+        <div className="flex bg-gray-100 p-1 rounded-lg w-full sm:w-auto">
           <button 
             onClick={() => setActiveTab('all')} 
-            className={`px-6 py-2 rounded-md font-bold text-sm transition-all ${activeTab === 'all' ? 'bg-white shadow-sm text-deepblue-900' : 'text-gray-500 hover:text-gray-700'}`}
+            className={`flex-1 sm:flex-none px-6 py-2 rounded-md font-bold text-sm transition-all ${activeTab === 'all' ? 'bg-white shadow-sm text-deepblue-900' : 'text-gray-500 hover:text-gray-700'}`}
           >
             All Documents
           </button>
           <button 
             onClick={() => setActiveTab('requests')} 
-            className={`px-6 py-2 rounded-md font-bold text-sm transition-all relative ${activeTab === 'requests' ? 'bg-white shadow-sm text-deepblue-900' : 'text-gray-500 hover:text-gray-700'}`}
+            className={`flex-1 sm:flex-none px-6 py-2 rounded-md font-bold text-sm transition-all relative ${activeTab === 'requests' ? 'bg-white shadow-sm text-deepblue-900' : 'text-gray-500 hover:text-gray-700'}`}
           >
             Deletion Requests
             {deletionRequests.length > 0 && (
@@ -77,95 +99,173 @@ const Documents = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden min-h-[400px] relative">
-        {loading ? (
-           <div className="absolute inset-0 flex items-center justify-center bg-white/50 z-10 backdrop-blur-sm">
-              <FaSpinner className="animate-spin text-4xl text-saffron-500" />
-           </div>
-        ) : (
-          <>
-            {activeTab === 'all' && (
-              <div className="p-6 space-y-4">
-                <div className="relative max-w-md">
-                  <FaSearch className="absolute left-3 top-3 text-gray-400" />
-                  <input 
-                    type="text" 
-                    placeholder="Search documents..." 
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-saffron-500 outline-none"
-                  />
+      <div className="w-full">
+        {activeTab === 'all' && (
+          <div className="space-y-6">
+            
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="relative w-full md:max-w-md">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <FiSearch className="text-gray-400" />
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredDocs.map((doc, i) => (
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} key={doc._id} className="bg-white border border-gray-100 p-6 rounded-2xl hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group flex flex-col h-full relative overflow-hidden">
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform"></div>
-                      <div className="flex justify-between items-start mb-4">
-                        <div className="p-3.5 bg-gradient-to-br from-indigo-500 to-indigo-600 text-white rounded-xl shadow-lg shadow-indigo-200"><FaFileAlt className="text-2xl"/></div>
-                        <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg">{doc.category}</span>
-                      </div>
-                      <h3 className="font-black text-gray-900 text-lg mb-2 line-clamp-1">{doc.title}</h3>
-                      <p className="text-sm text-gray-500 mb-6 line-clamp-2 flex-1 leading-relaxed">{doc.description}</p>
-                      <div className="flex justify-between items-center mt-auto pt-4 border-t border-gray-100">
-                        <span className="text-xs text-gray-400 font-bold px-2 py-1 bg-gray-50 rounded-md">{(doc.fileSize / 1024 / 1024).toFixed(2)} MB</span>
-                        <div className="flex gap-2">
-                          <a href={`${import.meta.env.VITE_ASSETS_URL || 'http://localhost:5000'}${doc.pdfUrl}`} target="_blank" rel="noopener noreferrer" className="px-3 py-2 bg-indigo-50 text-indigo-600 font-bold hover:bg-indigo-600 hover:text-white rounded-xl transition-all text-sm flex items-center gap-1.5 shadow-sm" title="Read Online"><FaEye /> View</a>
-                          <a href={`${import.meta.env.VITE_ASSETS_URL || 'http://localhost:5000'}${doc.pdfUrl}`} download className="px-3 py-2 bg-saffron-50 text-saffron-600 font-bold hover:bg-saffron-500 hover:text-white rounded-xl transition-all text-sm flex items-center gap-1.5 shadow-sm" title="Download File"><FaDownload /> Save</a>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                  {filteredDocs.length === 0 && <p className="text-gray-500 col-span-full py-10 text-center">No documents found.</p>}
+                <input 
+                  type="text" 
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Search documents by title or category..." 
+                  className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-saffron-500 focus:ring-1 focus:ring-saffron-500 shadow-sm transition-all"
+                />
+              </div>
+              <button onClick={() => setShowFilters(!showFilters)} className={`flex items-center justify-center gap-2 px-5 py-3 md:py-2.5 bg-white border ${showFilters ? 'border-saffron-500 text-saffron-600' : 'border-gray-200 text-gray-700'} hover:bg-gray-50 rounded-xl text-sm font-black shadow-sm transition-colors w-full md:w-auto`}>
+                <FiFilter /> Filters
+              </button>
+            </div>
+
+            {showFilters && (
+              <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Category</label>
+                    <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-saffron-500">
+                      <option value="">All Categories</option>
+                      {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Branch</label>
+                    <select value={filterBranch} onChange={(e) => setFilterBranch(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-saffron-500">
+                      <option value="">All Branches</option>
+                      {branches.map(b => <option key={b} value={b}>{b}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div className="flex justify-end mt-4">
+                  <button onClick={() => { setFilterCategory(''); setFilterBranch(''); }} className="text-sm font-bold text-gray-500 hover:text-gray-700">Clear Filters</button>
                 </div>
               </div>
             )}
 
-            {activeTab === 'requests' && (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm text-gray-500">
-                  <thead className="text-xs text-gray-400 uppercase bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-4 font-semibold">Document Name</th>
-                      <th className="px-6 py-4 font-semibold">Requested By</th>
-                      <th className="px-6 py-4 font-semibold">Reason</th>
-                      <th className="px-6 py-4 font-semibold text-center">Status</th>
-                      <th className="px-6 py-4 font-semibold text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100">
-                    {deletionRequests.map((req, idx) => (
-                      <motion.tr initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: idx * 0.05 }} className="hover:bg-gray-50" key={req._id}>
-                        <td className="px-6 py-4 font-bold text-gray-800 flex items-center gap-3">
-                          <FaFileAlt className="text-red-400" /> {req.title}
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className="font-semibold text-gray-700">{req.uploadedBy?.username || 'Unknown'}</span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className="text-xs text-gray-500 italic max-w-xs block truncate" title={req.deletionReason}>{req.deletionReason || "No reason"}</span>
-                        </td>
-                        <td className="px-6 py-4 text-center">
-                          <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs font-bold rounded-md uppercase tracking-wider">{req.deleteStatus}</span>
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                          <div className="flex justify-end gap-2">
-                            <a href={`${import.meta.env.VITE_ASSETS_URL || 'http://localhost:5000'}${req.pdfUrl}`} target="_blank" rel="noopener noreferrer" className="p-2 text-gray-500 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors" title="View Document"><FaEye /></a>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {paginatedData.map((doc) => (
+                <div key={doc._id} className="bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all rounded-2xl p-6 group relative overflow-hidden flex flex-col h-full">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gray-50 rounded-bl-full group-hover:bg-saffron-50 transition-colors"></div>
+                  
+                  <div className="flex justify-between items-start mb-4 relative z-10">
+                    <div className="w-12 h-12 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400 group-hover:text-saffron-500 transition-colors">
+                      <FiFileText size={24} />
+                    </div>
+                    <span className={`px-2 py-1 text-[10px] uppercase tracking-wider font-bold rounded-md ${doc.status === 'Approved' ? 'bg-green-50 text-green-600 border border-green-200' : 'bg-amber-50 text-amber-600 border border-amber-200'}`}>
+                      {doc.status || doc.category}
+                    </span>
+                  </div>
+
+                  <div className="relative z-10 mb-6 flex-1">
+                    <h3 className="font-bold text-lg text-slate-900 mb-1 truncate" title={doc.title}>{doc.title}</h3>
+                    <p className="text-xs text-gray-500 font-medium">Category: <span className="text-slate-600">{doc.category}</span></p>
+                    <p className="text-xs text-gray-500 mt-2 flex items-center gap-1"><FiCheckCircle className="text-gray-400" /> Branch: {doc.branch?.name || 'Unknown'}</p>
+                    <p className="text-xs text-gray-400 mt-1">Uploaded: {new Date(doc.createdAt || doc.uploadDate || Date.now()).toLocaleDateString()}</p>
+                  </div>
+
+                  <div className="flex gap-2 relative z-10 pt-4 border-t border-gray-100">
+                    <a 
+                      href={`${import.meta.env.VITE_ASSETS_URL || 'http://localhost:5000'}${(doc.pdfUrl || '').replace(/\\/g, '/')}`}
+                      target="_blank" rel="noopener noreferrer"
+                      download
+                      className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-black border border-black text-white hover:bg-gray-900 hover:border-gray-900 rounded-xl transition-all text-sm font-black shadow-md hover:shadow-lg"
+                    >
+                      <FiDownload /> Download
+                    </a>
+                    <a 
+                      href={`${import.meta.env.VITE_ASSETS_URL || 'http://localhost:5000'}${(doc.pdfUrl || '').startsWith('/') ? '' : '/'}${(doc.pdfUrl || '').replace(/\\/g, '/')}`}
+                      target="_blank" rel="noopener noreferrer"
+                      className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-white border border-gray-900 text-black hover:bg-gray-100 rounded-xl transition-all text-sm font-black shadow-md hover:shadow-lg"
+                    >
+                      <FiEye /> Preview
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {paginatedData.length > 0 && (
+              <div className="rounded-2xl overflow-hidden shadow-sm border border-gray-100 bg-white">
+                <TablePagination 
+                  currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage}
+                  totalItems={totalItems} itemsPerPage={itemsPerPage} setItemsPerPage={setItemsPerPage}
+                />
+              </div>
+            )}
+
+            {paginatedData.length === 0 && (
+              <div className="text-center py-20 bg-white border border-gray-100 shadow-sm rounded-2xl">
+                <FiFileText className="mx-auto text-4xl text-gray-300 mb-4" />
+                <p className="text-gray-500 font-medium">No documents found matching your criteria.</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'requests' && (
+          <div className="md:bg-white md:rounded-2xl md:shadow-sm md:border border-gray-100 overflow-hidden relative z-10">
+            <div className="w-full overflow-hidden">
+              <table className="w-full text-left text-sm text-gray-500 block md:table">
+                <thead className="text-xs text-gray-400 uppercase bg-gray-50 hidden md:table-header-group border-b border-gray-100">
+                  <tr>
+                    <th className="p-4 md:p-6 font-semibold">Document Name</th>
+                    <th className="p-4 md:p-6 font-semibold">Requested By</th>
+                    <th className="p-4 md:p-6 font-semibold">Reason</th>
+                    <th className="p-4 md:p-6 font-semibold text-center">Status</th>
+                    <th className="p-4 md:p-6 font-semibold text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="block md:table-row-group w-full divide-y divide-gray-100">
+                  {deletionRequests.map((req) => (
+                    <tr className="flex flex-col md:table-row w-full bg-white md:bg-transparent border border-gray-100 md:border-b md:border-x-0 md:border-t-0 md:border-gray-50 rounded-xl md:rounded-none mb-4 md:mb-0 shadow-sm md:shadow-none hover:bg-gray-50/50" key={req._id}>
+                      <td className="p-3 md:p-6 flex flex-col md:table-cell w-full border-b border-gray-50 md:border-none">
+                        <div className="flex md:hidden justify-between items-start mb-3">
+                          <span className="text-[11px] font-bold text-gray-600 uppercase tracking-wider bg-gray-100 px-2 py-0.5 rounded">Deletion Request</span>
+                          <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-[10px] font-bold rounded-md uppercase tracking-wider border border-yellow-200">{req.deleteStatus}</span>
+                        </div>
+                        <div>
+                          <div className="font-bold text-gray-800 text-lg md:text-base flex items-center gap-3">
+                            <FiAlertCircle className="text-red-400 shrink-0" /> <span className="break-words whitespace-normal">{req.title}</span>
+                          </div>
+                          <div className="md:hidden mt-2 text-sm text-gray-600 flex flex-col gap-1">
+                            <div className="text-xs">Requested by: <span className="font-semibold text-gray-700 break-words">{req.uploadedBy?.username || 'Unknown'}</span></div>
+                            <div className="text-xs text-gray-500 italic bg-gray-50 p-2 rounded-lg mt-1 border border-gray-100 break-words whitespace-normal">Reason: {req.deletionReason || "No reason"}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="hidden md:table-cell p-4 md:p-6">
+                        <span className="font-semibold text-gray-700">{req.uploadedBy?.username || 'Unknown'}</span>
+                      </td>
+                      <td className="hidden md:table-cell p-4 md:p-6">
+                        <span className="text-xs text-gray-500 italic max-w-xs block truncate" title={req.deletionReason}>{req.deletionReason || "No reason"}</span>
+                      </td>
+                      <td className="hidden md:table-cell p-4 md:p-6 md:text-center">
+                        <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs font-bold rounded-md uppercase tracking-wider">{req.deleteStatus}</span>
+                      </td>
+                      <td className="p-3 md:p-6 md:text-right flex flex-col md:table-cell w-full bg-gray-50 md:bg-transparent rounded-b-xl md:rounded-none">
+                        <div className="flex justify-between items-center w-full">
+                          <span className="md:hidden text-xs text-gray-500 uppercase tracking-wider font-semibold px-1">Actions</span>
+                          <div className="flex flex-wrap items-center md:justify-end gap-2 w-full md:w-auto">
+                            <a href={`${import.meta.env.VITE_ASSETS_URL || 'http://localhost:5000'}${req.pdfUrl}`} target="_blank" rel="noopener noreferrer" className="p-2 w-10 h-10 md:w-auto md:h-auto flex items-center justify-center text-gray-500 bg-white md:bg-gray-100 border border-gray-200 md:border-none hover:bg-gray-200 rounded-lg transition-colors flex-1 md:flex-none shadow-sm md:shadow-none" title="View Document"><FiEye /></a>
                             {hasManage && (
                               <>
-                                <button onClick={() => handleReviewDeletion(req._id, 'Approved')} className="px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors flex items-center gap-1 font-bold text-xs"><FaCheck /> Approve</button>
-                                <button onClick={() => handleReviewDeletion(req._id, 'Rejected')} className="px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors flex items-center gap-1 font-bold text-xs"><FaTimes /> Reject</button>
+                                <button onClick={() => handleReviewDeletion(req._id, 'Approved')} className="px-3 py-2 md:py-1.5 bg-white md:bg-green-500 border border-gray-200 md:border-none hover:bg-green-50 hover:border-green-200 md:hover:bg-green-600 text-green-600 md:text-white rounded-lg transition-colors flex items-center justify-center gap-1 font-bold text-xs flex-1 md:flex-none shadow-sm md:shadow-none h-10 md:h-auto"><FiCheck /> Approve</button>
+                                <button onClick={() => handleReviewDeletion(req._id, 'Rejected')} className="px-3 py-2 md:py-1.5 bg-white md:bg-red-500 border border-gray-200 md:border-none hover:bg-red-50 hover:border-red-200 md:hover:bg-red-600 text-red-600 md:text-white rounded-lg transition-colors flex items-center justify-center gap-1 font-bold text-xs flex-1 md:flex-none shadow-sm md:shadow-none h-10 md:h-auto"><FiX /> Reject</button>
                               </>
                             )}
                           </div>
-                        </td>
-                      </motion.tr>
-                    ))}
-                    {deletionRequests.length === 0 && <tr><td colSpan="5" className="text-center py-10 text-gray-500">No pending deletion requests.</td></tr>}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  {deletionRequests.length === 0 && <tr><td colSpan="5" className="text-center py-10 text-gray-500 block md:table-cell">No pending deletion requests.</td></tr>}
+                </tbody>
+              </table>
+            </div>
+          </div>
         )}
       </div>
     </div>

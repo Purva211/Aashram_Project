@@ -292,9 +292,9 @@ const ManageNews = () => {
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-10">
         <div>
-          <h1 className="text-4xl font-black mb-2 text-slate-900 flex flex-wrap items-center gap-2">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-black mb-2 text-slate-900 flex items-center gap-2 tracking-tight">
             News & Announcements Management
-            {!hasManage && <span className="bg-yellow-100 text-yellow-800 text-sm font-bold px-3 py-1 rounded-full shadow-sm font-sans inline-block align-middle">View Only Access</span>}
+            {!hasManage && <span className="bg-yellow-100 text-yellow-800 text-xs md:text-sm font-bold px-3 py-1 rounded-full shadow-sm font-sans inline-block align-middle">View Only Access</span>}
           </h1>
           <p className="text-gray-500">Add, edit and manage articles for the public Gallery News tab and Homepage Slider.</p>
         </div>
@@ -452,33 +452,36 @@ const ManageNews = () => {
       {/* FORM MODAL */}
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={handleCloseModal} />
             <motion.div 
               initial={{ scale: 0.95, opacity: 0 }} 
               animate={{ scale: 1, opacity: 1 }} 
               exit={{ scale: 0.95, opacity: 0 }} 
-              className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto relative z-10 custom-scrollbar border border-gray-100"
             >
               {/* MODAL HEADER */}
-              <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50">
+              <div className="sticky top-0 bg-white p-6 border-b border-gray-100 flex justify-between items-center z-20">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900">{editId ? "Update News Item" : "Create News Item"}</h2>
-                  <p className="text-sm text-gray-500">Fill in the fields below to publish a news update.</p>
+                  <h2 className="text-xl font-bold text-slate-900">{editId ? "Update News Item" : "Create News Item"}</h2>
+                  <p className="text-sm text-gray-500 hidden sm:block mt-1">Fill in the fields below to publish a news update.</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <button 
                     type="button" 
                     onClick={() => setPreviewMode(!previewMode)} 
-                    className={`px-4 py-2 text-xs font-bold rounded-lg transition-colors flex items-center gap-1.5 shadow ${previewMode ? 'bg-saffron-600 text-white' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'}`}
+                    className={`px-4 py-2 text-xs font-bold rounded-xl transition-colors flex items-center gap-2 shadow-sm ${previewMode ? 'bg-saffron-600 text-white border border-saffron-600' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'}`}
                   >
                     <FaEye /> {previewMode ? "Edit Form" : "Live Preview"}
                   </button>
-                  <button onClick={handleCloseModal} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 hover:bg-red-500 hover:text-white transition-colors">✕</button>
+                  <button onClick={handleCloseModal} className="text-gray-400 hover:text-gray-600 bg-gray-50 hover:bg-gray-100 p-2 rounded-full transition-colors">
+                    <FaTimes size={20} />
+                  </button>
                 </div>
               </div>
 
               {/* MODAL CONTENT */}
-              <div className="p-6 overflow-y-auto flex-1 bg-[#FAFAF9]">
+              <div className="p-6">
                 {previewMode ? (
                   /* LIVE PREVIEW SYSTEM */
                   <div className="space-y-10 py-4 max-w-3xl mx-auto">
@@ -562,7 +565,7 @@ const ManageNews = () => {
                   </div>
                 ) : (
                   /* FORM FIELDS */
-                  <form id="news-form" onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-6 sm:p-8 rounded-2xl border border-gray-200">
+                  <form id="news-form" onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="md:col-span-2">
                       <label className="block text-sm font-bold text-gray-700 mb-1">Title</label>
                       <input 
@@ -773,22 +776,19 @@ const ManageNews = () => {
                         </div>
                       )}
                     </div>
+                    <div className="md:col-span-2 pt-6 flex flex-col md:flex-row justify-end gap-3 border-t border-gray-100 mt-4">
+                      <button type="button" onClick={handleCloseModal} className="w-full md:w-auto px-5 py-2.5 rounded-xl text-gray-600 hover:bg-gray-100 font-bold transition-colors order-2 md:order-1">Cancel</button>
+                      {!previewMode && (
+                        <button 
+                          type="submit" 
+                          disabled={submitting} 
+                          className="order-1 md:order-2 bg-blue-900 hover:bg-slate-900 w-full md:w-auto justify-center text-white px-8 py-2.5 rounded-xl font-black transition-colors shadow-lg flex items-center gap-2"
+                        >
+                          {submitting ? <FaSpinner className="animate-spin" /> : (editId ? "Save Changes" : "Publish Article")}
+                        </button>
+                      )}
+                    </div>
                   </form>
-                )}
-              </div>
-
-              {/* MODAL FOOTER */}
-              <div className="p-6 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
-                <button type="button" onClick={handleCloseModal} className="px-6 py-2.5 bg-white border border-gray-300 rounded-xl font-bold text-gray-700 hover:bg-gray-50 transition-colors">Cancel</button>
-                {!previewMode && (
-                  <button 
-                    type="submit" 
-                    form="news-form" 
-                    disabled={submitting} 
-                    className="px-8 py-2.5 bg-blue-900 hover:bg-slate-900 text-white rounded-xl font-bold shadow-md transition-colors flex items-center gap-2"
-                  >
-                    {submitting ? <FaSpinner className="animate-spin" /> : (editId ? "Update Article" : "Publish Article")}
-                  </button>
                 )}
               </div>
             </motion.div>

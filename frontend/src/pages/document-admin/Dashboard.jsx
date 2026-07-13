@@ -223,11 +223,11 @@ const DocumentAdminDashboard = () => {
   };
 
   return (
-    <div className="p-6 md:p-8 max-w-7xl mx-auto w-full">
-      <div className="mb-8 flex justify-between items-end">
+    <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto w-full overflow-hidden">
+      <div className="mb-6 md:mb-8 flex justify-between items-end">
         <div>
-          <h1 className="text-3xl font-black text-slate-800 tracking-tight">Document Hub</h1>
-          <p className="text-slate-500 mt-1">Manage all institutional documents</p>
+          <h1 className="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Document Hub</h1>
+          <p className="text-sm md:text-base text-slate-500 mt-1">Manage all institutional documents</p>
         </div>
       </div>
 
@@ -258,12 +258,12 @@ const DocumentAdminDashboard = () => {
 
         {isDashboard ? (
           <>
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 md:p-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 md:mb-6 gap-2">
+              <h3 className="text-base md:text-lg font-bold text-slate-800 flex items-center gap-2">
                 <FiClock className="text-indigo-500" /> Recent Document Activity
               </h3>
-              <Link to="/document-handler/documents" className="text-sm font-semibold text-indigo-600 hover:text-indigo-700">View All Documents &rarr;</Link>
+              <Link to="/document-handler/documents" className="text-xs md:text-sm font-semibold text-indigo-600 hover:text-indigo-700">View All Documents &rarr;</Link>
             </div>
             
             <div className="space-y-4">
@@ -301,11 +301,11 @@ const DocumentAdminDashboard = () => {
 
           {/* New System Activity Section */}
           {preferences.showActivities && activities.length > 0 && (
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mt-6">
-              <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2 mb-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 md:p-6 mt-6">
+              <h3 className="text-base md:text-lg font-bold text-slate-800 flex items-center gap-2 mb-4 md:mb-6">
                 <FiActivity className="text-emerald-500" /> My System Activity (Last 3 Hours)
               </h3>
-              <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
+              <div className="space-y-4 max-h-64 md:max-h-96 overflow-y-auto pr-2">
                 {activities.map((log, idx) => (
                   <div key={idx} className="flex items-start gap-4 p-4 rounded-xl border border-slate-50 bg-slate-50/50 hover:bg-slate-50 transition-colors">
                     <div className="w-10 h-10 rounded-full bg-white border border-slate-100 text-slate-500 flex items-center justify-center shrink-0 shadow-sm">
@@ -379,10 +379,10 @@ const DocumentAdminDashboard = () => {
         </div>
 
         {/* Documents Table */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        <div className="bg-transparent md:bg-white rounded-2xl md:shadow-sm border-0 md:border border-slate-100 overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
+            <table className="w-full text-left border-collapse block md:table">
+              <thead className="hidden md:table-header-group">
                 <tr className="bg-slate-50 border-b border-slate-100 text-slate-500 text-sm">
                   <th className="px-6 py-4 font-medium">Document Info</th>
                   <th className="px-6 py-4 font-medium">Category</th>
@@ -395,7 +395,7 @@ const DocumentAdminDashboard = () => {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan="6" className="px-6 py-12 text-center text-slate-500">
+                    <td colSpan="6" className="px-6 py-12 text-center text-slate-500 block md:table-cell">
                       <div className="flex flex-col items-center justify-center">
                         <div className="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
                         Loading documents...
@@ -404,7 +404,7 @@ const DocumentAdminDashboard = () => {
                   </tr>
                 ) : documents.length === 0 ? (
                   <tr>
-                    <td colSpan="6" className="px-6 py-12 text-center text-slate-500">
+                    <td colSpan="6" className="px-6 py-12 text-center text-slate-500 block md:table-cell">
                       <div className="flex flex-col items-center justify-center">
                         <FiFileText className="text-4xl text-slate-300 mb-3" />
                         <p>No documents found matching your criteria.</p>
@@ -415,33 +415,59 @@ const DocumentAdminDashboard = () => {
                   documents.map((doc, idx) => (
                     <tr 
                       key={doc._id} 
-                      className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors group"
+                      className="flex flex-col md:table-row w-full bg-white md:bg-transparent border border-slate-100 md:border-b md:border-x-0 md:border-t-0 md:border-slate-50 rounded-xl md:rounded-none mb-4 md:mb-0 shadow-sm md:shadow-none hover:bg-slate-50/50 transition-colors group"
                     >
-                      <td className="px-6 py-4">
+                      <td className="p-4 md:px-6 md:py-4 block md:table-cell border-b border-slate-50 md:border-none">
+                        <div className="flex justify-between items-start md:hidden mb-2">
+                          <span className="px-2 py-1 bg-slate-100 text-slate-600 rounded-md text-[10px] font-bold uppercase tracking-wider border border-slate-200">
+                            {doc.category}
+                          </span>
+                          <div className="flex gap-1">
+                            {doc.deleteStatus === "Pending" && (
+                              <span className="px-2 py-1 bg-amber-100 text-amber-700 text-[10px] font-bold rounded-md uppercase border border-amber-200">Pending</span>
+                            )}
+                            {doc.deleteStatus === "Rejected" && (
+                              <span className="px-2 py-1 bg-red-100 text-red-700 text-[10px] font-bold rounded-md uppercase border border-red-200" title="Deletion Rejected">Rejected</span>
+                            )}
+                          </div>
+                        </div>
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-lg bg-red-50 text-red-500 flex items-center justify-center shrink-0">
                             <span className="text-xs font-bold">PDF</span>
                           </div>
-                          <div>
-                            <p className="font-semibold text-slate-800 line-clamp-1">{doc.title}</p>
+                          <div className="min-w-0 flex-1">
+                            <p className="font-semibold text-slate-800 line-clamp-1 text-lg md:text-base">{doc.title}</p>
                             <div className="flex items-center gap-2">
                               <p className="text-xs text-slate-500 line-clamp-1">{doc.pdfName}</p>
-                              {doc.deleteStatus === "Pending" && (
-                                <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-[10px] font-bold rounded-md uppercase">Deletion Pending</span>
-                              )}
-                              {doc.deleteStatus === "Rejected" && (
-                                <span className="px-2 py-0.5 bg-red-100 text-red-700 text-[10px] font-bold rounded-md uppercase" title="Deletion Rejected">Rejected</span>
-                              )}
+                              <div className="hidden md:flex gap-1">
+                                {doc.deleteStatus === "Pending" && (
+                                  <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-[10px] font-bold rounded-md uppercase">Deletion Pending</span>
+                                )}
+                                {doc.deleteStatus === "Rejected" && (
+                                  <span className="px-2 py-0.5 bg-red-100 text-red-700 text-[10px] font-bold rounded-md uppercase" title="Deletion Rejected">Rejected</span>
+                                )}
+                              </div>
+                            </div>
+                            <div className="md:hidden mt-2 text-xs text-slate-600 flex flex-wrap gap-2 items-center">
+                                {doc.branch ? (
+                                   <span className="font-semibold">Branch: <span className="text-indigo-600">{doc.branch.name}</span></span>
+                                ) : (
+                                   <span className="font-semibold">Branch: <span className="text-slate-500">Global</span></span>
+                                )}
+                                <span className="text-slate-300">•</span>
+                                <span>{formatFileSize(doc.fileSize)}</span>
+                                <span className="text-slate-300">•</span>
+                                <span>{new Date(doc.createdAt).toLocaleDateString()}</span>
                             </div>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="hidden md:table-cell px-6 py-4">
                         <span className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-medium">
                           {doc.category}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-sm text-slate-600">
+                      <td className="hidden md:table-cell px-6 py-4 text-sm text-slate-600">
                         {doc.branch ? (
                            <span className="px-2 py-1 bg-indigo-50 text-indigo-600 rounded text-xs font-semibold flex items-center w-max gap-1">
                              {doc.branch.name}
@@ -452,32 +478,35 @@ const DocumentAdminDashboard = () => {
                            </span>
                         )}
                       </td>
-                      <td className="px-6 py-4 text-sm text-slate-600">
+                      <td className="hidden md:table-cell px-6 py-4 text-sm text-slate-600">
                         {formatFileSize(doc.fileSize)}
                       </td>
-                      <td className="px-6 py-4 text-sm text-slate-600">
+                      <td className="hidden md:table-cell px-6 py-4 text-sm text-slate-600">
                         {new Date(doc.createdAt).toLocaleDateString()}
                       </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button onClick={() => openViewModal(doc)} className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg tooltip" title="View">
-                            <FiEye />
-                          </button>
-                          <a href={`${ASSETS_URL}${doc.pdfUrl}`} target="_blank" rel="noopener noreferrer" className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg tooltip" title="Download">
-                            <FiDownload />
-                          </a>
-                          <button onClick={() => openEditModal(doc)} className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg tooltip" title="Edit">
-                            <FiEdit2 />
-                          </button>
-                          {doc.deleteStatus !== "Pending" ? (
-                            <button onClick={() => openDeleteModal(doc)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg tooltip" title="Request Deletion">
-                              <FiTrash2 />
+                      <td className="p-3 md:px-6 md:py-4 md:text-right block md:table-cell bg-slate-50 md:bg-transparent rounded-b-xl md:rounded-none">
+                        <div className="flex justify-between items-center w-full">
+                          <span className="md:hidden text-xs text-slate-500 uppercase font-semibold px-1">Actions</span>
+                          <div className="flex items-center justify-end w-full md:w-auto gap-2 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onClick={() => openViewModal(doc)} className="p-2 w-10 h-10 md:w-auto md:h-auto flex items-center justify-center bg-white md:bg-transparent border border-slate-200 md:border-none text-indigo-600 hover:bg-indigo-50 rounded-lg tooltip transition-colors shadow-sm md:shadow-none" title="View">
+                              <FiEye />
                             </button>
-                          ) : (
-                            <span className="p-2 text-slate-400 cursor-not-allowed tooltip" title="Deletion requested">
-                              <FiTrash2 />
-                            </span>
-                          )}
+                            <a href={`${ASSETS_URL}${doc.pdfUrl}`} target="_blank" rel="noopener noreferrer" className="p-2 w-10 h-10 md:w-auto md:h-auto flex items-center justify-center bg-white md:bg-transparent border border-slate-200 md:border-none text-emerald-600 hover:bg-emerald-50 rounded-lg tooltip transition-colors shadow-sm md:shadow-none" title="Download">
+                              <FiDownload />
+                            </a>
+                            <button onClick={() => openEditModal(doc)} className="p-2 w-10 h-10 md:w-auto md:h-auto flex items-center justify-center bg-white md:bg-transparent border border-slate-200 md:border-none text-amber-600 hover:bg-amber-50 rounded-lg tooltip transition-colors shadow-sm md:shadow-none" title="Edit">
+                              <FiEdit2 />
+                            </button>
+                            {doc.deleteStatus !== "Pending" ? (
+                              <button onClick={() => openDeleteModal(doc)} className="p-2 w-10 h-10 md:w-auto md:h-auto flex items-center justify-center bg-white md:bg-transparent border border-slate-200 md:border-none text-red-600 hover:bg-red-50 rounded-lg tooltip transition-colors shadow-sm md:shadow-none" title="Request Deletion">
+                                <FiTrash2 />
+                              </button>
+                            ) : (
+                              <span className="p-2 w-10 h-10 md:w-auto md:h-auto flex items-center justify-center bg-white md:bg-transparent border border-slate-200 md:border-none text-slate-400 cursor-not-allowed tooltip shadow-sm md:shadow-none" title="Deletion requested">
+                                <FiTrash2 />
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </td>
                     </tr>
@@ -544,9 +573,9 @@ const DocumentAdminDashboard = () => {
                     <p className="text-xs text-slate-400 mt-1">PDF or Image up to 10MB</p>
                   </div>
                 </div>
-                <div className="flex gap-3 pt-4 border-t border-slate-100">
-                  <button type="button" onClick={() => setIsUploadModalOpen(false)} className="flex-1 px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl font-medium hover:bg-slate-50">Cancel</button>
-                  <button type="submit" disabled={formLoading} className="flex-1 px-4 py-2.5 bg-blue-900 hover:bg-blue-800 text-white rounded-xl font-medium disabled:opacity-70 flex items-center justify-center gap-2">
+                <div className="flex flex-col md:flex-row gap-3 pt-4 border-t border-slate-100">
+                  <button type="button" onClick={() => setIsUploadModalOpen(false)} className="flex-1 px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl font-medium hover:bg-slate-50 order-2 md:order-1">Cancel</button>
+                  <button type="submit" disabled={formLoading} className="flex-1 px-4 py-2.5 bg-blue-900 hover:bg-blue-800 text-white rounded-xl font-medium disabled:opacity-70 flex items-center justify-center gap-2 order-1 md:order-2">
                     {formLoading && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                     {currentDocument ? "Update Document" : "Upload Document"}
                   </button>
@@ -570,9 +599,9 @@ const DocumentAdminDashboard = () => {
                 onChange={(e) => setDeletionReason(e.target.value)} 
                 className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/50 outline-none resize-none h-24 mb-6 text-sm"
               />
-              <div className="flex gap-3">
-                <button onClick={() => setIsDeleteModalOpen(false)} className="flex-1 px-4 py-2.5 bg-slate-100 text-slate-700 rounded-xl font-medium hover:bg-slate-200">Cancel</button>
-                <button onClick={handleDelete} disabled={!deletionReason.trim()} className="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 disabled:opacity-50">Submit Request</button>
+              <div className="flex flex-col md:flex-row gap-3">
+                <button onClick={() => setIsDeleteModalOpen(false)} className="flex-1 px-4 py-2.5 bg-slate-100 text-slate-700 rounded-xl font-medium hover:bg-slate-200 order-2 md:order-1">Cancel</button>
+                <button onClick={handleDelete} disabled={!deletionReason.trim()} className="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 disabled:opacity-50 order-1 md:order-2">Submit Request</button>
               </div>
             </motion.div>
           </div>
@@ -610,3 +639,4 @@ const DocumentAdminDashboard = () => {
 };
 
 export default DocumentAdminDashboard;
+

@@ -112,7 +112,7 @@ const NoticeGenerator = () => {
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="flex flex-col gap-5 h-full">
+              <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 shrink-0">
                   <div>
@@ -137,10 +137,10 @@ const NoticeGenerator = () => {
 
                 <div className="flex flex-col">
                   <label className="block text-sm font-bold text-gray-700 mb-1">Notice Body *</label>
-                  <ReactQuill theme="snow" value={formData.noticeContent} onChange={handleEditorChange} modules={modules} className="h-[300px] mb-12 bg-white rounded-lg" />
+                  <ReactQuill theme="snow" value={formData.noticeContent} onChange={handleEditorChange} modules={modules} className="h-64 mb-16 bg-white rounded-lg" />
                 </div>
 
-                <div className="shrink-0 pt-4 border-t mt-auto">
+                <div className="shrink-0 pt-4 border-t">
                   <button type="submit" disabled={generating} className="w-full py-3.5 bg-[#be1e4d] text-white font-bold rounded-xl hover:bg-[#a01640] transition flex items-center justify-center gap-2 disabled:opacity-50 shadow-md">
                     {generating ? 'Generating PDF...' : 'Generate on Letterhead'}
                     {!generating && <Send className="w-5 h-5" />}

@@ -329,9 +329,9 @@ const Announcements = () => {
     <div className="w-full space-y-6 text-gray-800 pb-12 relative">
       
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 md:mb-6">
         <div>
-          <h2 className="text-3xl font-black tracking-tight text-slate-900 flex items-center gap-3">
+          <h2 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900 flex items-center gap-3">
             <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg text-white">
               <FiSend />
             </div>
@@ -350,7 +350,7 @@ const Announcements = () => {
               className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 w-full sm:w-64 shadow-sm transition-all"
             />
           </div>
-          <button onClick={handleOpenNew} className="flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl shadow-lg transition-all whitespace-nowrap">
+          <button onClick={handleOpenNew} className="flex items-center justify-center gap-2 px-5 md:px-6 py-2.5 md:py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl shadow-lg transition-all w-full sm:w-auto">
             <FiPlus /> New Announcement
           </button>
         </div>
@@ -368,10 +368,10 @@ const Announcements = () => {
         </div>
         
         {activeTab === 'list' && (
-          <div className="flex bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
-            <button onClick={() => setOwnershipFilter('all')} className={`px-4 py-2 text-xs font-bold transition-colors ${ownershipFilter === 'all' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50'}`}>All</button>
-            <button onClick={() => setOwnershipFilter('mine')} className={`px-4 py-2 text-xs font-bold border-l border-gray-200 transition-colors ${ownershipFilter === 'mine' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50'}`}>Sent by Me</button>
-            <button onClick={() => setOwnershipFilter('others')} className={`px-4 py-2 text-xs font-bold border-l border-gray-200 transition-colors ${ownershipFilter === 'others' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50'}`}>Received by Me</button>
+          <div className="flex bg-white border border-gray-200 rounded-lg overflow-x-auto shadow-sm w-full md:w-auto">
+            <button onClick={() => setOwnershipFilter('all')} className={`flex-1 md:flex-none px-3 md:px-4 py-2 text-xs font-bold transition-colors whitespace-nowrap ${ownershipFilter === 'all' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50'}`}>All</button>
+            <button onClick={() => setOwnershipFilter('mine')} className={`flex-1 md:flex-none px-3 md:px-4 py-2 text-xs font-bold border-l border-gray-200 transition-colors whitespace-nowrap ${ownershipFilter === 'mine' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50'}`}>Sent by Me</button>
+            <button onClick={() => setOwnershipFilter('others')} className={`flex-1 md:flex-none px-3 md:px-4 py-2 text-xs font-bold border-l border-gray-200 transition-colors whitespace-nowrap ${ownershipFilter === 'others' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50'}`}>Received by Me</button>
           </div>
         )}
       </div>
@@ -478,15 +478,15 @@ const Announcements = () => {
                           </div>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
+                        <div className="flex flex-wrap md:flex-nowrap items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
                            <div className="flex gap-1.5">
-                              {ann.dashboardNotification && <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] bg-slate-100 text-slate-500 hover:bg-blue-50 hover:text-blue-500 transition-colors" title="Dashboard"><FiBell /></div>}
-                              {ann.emailIntegration && <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] bg-slate-100 text-slate-500 hover:bg-indigo-50 hover:text-indigo-500 transition-colors" title="Email"><FiMail /></div>}
-                              {ann.smsIntegration && <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] bg-slate-100 text-slate-500 hover:bg-orange-50 hover:text-orange-500 transition-colors" title="SMS"><FiSmartphone /></div>}
+                              {ann.dashboardNotification && <div className="w-7 h-7 md:w-6 md:h-6 rounded-full flex items-center justify-center text-[11px] md:text-[10px] bg-slate-100 text-slate-500 hover:bg-blue-50 hover:text-blue-500 transition-colors" title="Dashboard"><FiBell /></div>}
+                              {ann.emailIntegration && <div className="w-7 h-7 md:w-6 md:h-6 rounded-full flex items-center justify-center text-[11px] md:text-[10px] bg-slate-100 text-slate-500 hover:bg-indigo-50 hover:text-indigo-500 transition-colors" title="Email"><FiMail /></div>}
+                              {ann.smsIntegration && <div className="w-7 h-7 md:w-6 md:h-6 rounded-full flex items-center justify-center text-[11px] md:text-[10px] bg-slate-100 text-slate-500 hover:bg-orange-50 hover:text-orange-500 transition-colors" title="SMS"><FiSmartphone /></div>}
                            </div>
                            
                            {(ann.targetBranches?.length > 0 || ann.targetRoles?.length > 0 || ann.targetUsers?.length > 0) && (
-                              <div className="flex gap-1.5 border-l border-slate-200 pl-3">
+                              <div className="flex flex-wrap gap-1.5 border-l border-slate-200 pl-3">
                                 {ann.targetBranches?.length > 0 && <span className="text-[10px] font-medium text-slate-500 bg-slate-50 px-1.5 py-0.5 rounded">{ann.targetBranches.length} Branches</span>}
                                 {ann.targetRoles?.length > 0 && <span className="text-[10px] font-medium text-slate-500 bg-slate-50 px-1.5 py-0.5 rounded">{ann.targetRoles.length} Roles</span>}
                                 {ann.targetUsers?.length > 0 && <span className="text-[10px] font-medium text-slate-500 bg-slate-50 px-1.5 py-0.5 rounded">{ann.targetUsers.length} Users</span>}
@@ -755,14 +755,14 @@ const Announcements = () => {
                     </div>
                   </div>
                 </form>
-              </div>
 
-              {/* Modal Footer */}
-              <div className="p-6 border-t border-slate-100 bg-white shrink-0 flex justify-end gap-4">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="px-6 py-2.5 rounded-xl text-slate-500 hover:bg-slate-50 font-bold transition-colors">Cancel</button>
-                <button form="announcementForm" disabled={submitting || !formData.title || !formData.message} type="submit" className="flex items-center gap-2 px-8 py-2.5 bg-blue-900 hover:bg-blue-800 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 transition-all disabled:opacity-50">
-                  {submitting ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <><FiSend /> {editingId ? 'Update Broadcast' : 'Dispatch Broadcast'}</>}
-                </button>
+                {/* Modal Footer */}
+                <div className="mt-8 pt-6 border-t border-slate-100 bg-white shrink-0 flex flex-col md:flex-row justify-end gap-4">
+                  <button type="button" onClick={() => setIsModalOpen(false)} className="w-full md:w-auto px-6 py-2.5 rounded-xl text-slate-500 hover:bg-slate-50 font-bold transition-colors order-2 md:order-1 border border-slate-200">Cancel</button>
+                  <button form="announcementForm" disabled={submitting || !formData.title || !formData.message} type="submit" className="w-full md:w-auto flex justify-center items-center gap-2 px-8 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 transition-all disabled:opacity-50 order-1 md:order-2">
+                    {submitting ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <><FiSend /> {editingId ? 'Update Broadcast' : 'Dispatch Broadcast'}</>}
+                  </button>
+                </div>
               </div>
             </motion.div>
           </div>

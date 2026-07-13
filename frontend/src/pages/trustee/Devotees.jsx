@@ -219,78 +219,96 @@ const Devotees = () => {
               <p className="font-medium animate-pulse text-sm">Loading directory...</p>
             </div>
           ) : (
-            <div className="w-full bg-transparent min-w-[800px] pb-4">
-              <div className="grid grid-cols-12 text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] px-8 py-5 sticky top-0 bg-white/95 backdrop-blur-xl z-20 border-b border-gray-100/50 shadow-sm rounded-t-2xl mx-2 mt-2">
-                <div className="col-span-4 flex items-center gap-2"><FaUsers className="text-gray-300" /> Devotee Profile</div>
-                <div className="col-span-3 flex items-center gap-2"><FaPhoneAlt className="text-gray-300" /> Contact Info</div>
-                <div className="col-span-3 flex items-center gap-2"><FaMapMarkerAlt className="text-gray-300" /> Location</div>
-                <div className="col-span-2 text-right">Actions</div>
-              </div>
-              
-              <div className="flex flex-col gap-2 p-4">
-                <AnimatePresence>
-                  {filtered.map((devotee, idx) => (
-                    <motion.div 
-                      layout
-                      initial={{ opacity: 0, y: 10, scale: 0.98 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      transition={{ duration: 0.2, delay: idx * 0.05 }}
-                      className="grid grid-cols-12 items-center px-4 py-4 bg-white hover:bg-gray-50/80 rounded-2xl border border-gray-100 hover:border-saffron-200 transition-all group shadow-sm hover:shadow-md"
-                      key={devotee._id || idx}
-                    >
-                      <div className="col-span-4 flex items-center gap-4">
-                        <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${getGradient(devotee.name)} flex items-center justify-center font-bold text-white text-lg shadow-inner`}>
-                          {devotee.name.charAt(0)}
+            <div className="w-full bg-transparent pb-4 min-w-0">
+              <table className="w-full text-left border-collapse block md:table">
+                <thead className="hidden md:table-header-group">
+                  <tr className="bg-slate-100 border-b border-slate-200 text-xs uppercase tracking-wider text-slate-700">
+                    <th className="p-4 font-bold"><div className="flex items-center gap-2"><FaUsers className="text-gray-400" /> Devotee Profile</div></th>
+                    <th className="p-4 font-bold"><div className="flex items-center gap-2"><FaPhoneAlt className="text-gray-400" /> Contact Info</div></th>
+                    <th className="p-4 font-bold"><div className="flex items-center gap-2"><FaMapMarkerAlt className="text-gray-400" /> Location</div></th>
+                    <th className="p-4 font-bold text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="block md:table-row-group w-full divide-y divide-gray-100 text-sm">
+                  <AnimatePresence>
+                    {filtered.map((devotee, idx) => (
+                      <motion.tr 
+                        layout
+                        initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        transition={{ duration: 0.2, delay: idx * 0.05 }}
+                        className="flex flex-col md:table-row w-full bg-white md:bg-transparent border border-gray-100 md:border-b md:border-x-0 md:border-t-0 md:border-gray-50 rounded-xl md:rounded-none mb-4 md:mb-0 shadow-sm md:shadow-none hover:bg-gray-50/50"
+                        key={devotee._id || idx}
+                      >
+                        <td className="p-3 md:p-4 flex flex-col md:table-cell w-full border-b border-gray-50 md:border-none">
+                           <div className="flex items-center gap-4">
+                            <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${getGradient(devotee.name)} flex items-center justify-center font-bold text-white text-lg shadow-inner shrink-0`}>
+                              {devotee.name.charAt(0)}
+                            </div>
+                            <div>
+                              <p className="font-bold text-gray-900 text-base">{devotee.name}</p>
+                              <p className="text-xs text-gray-400 font-medium">Joined {new Date(devotee.registrationDate || Date.now()).toLocaleDateString()}</p>
+                            </div>
+                          </div>
+                          <div className="md:hidden mt-3 flex flex-col gap-1">
+                            <p className="text-sm font-semibold text-gray-700 flex items-center gap-2"><FaPhoneAlt className="text-gray-400 text-[10px]" /> {devotee.mobile}</p>
+                            {devotee.email && <p className="text-xs text-gray-500 flex items-center gap-2"><FaEnvelope className="text-gray-400 text-[10px]" /> {devotee.email}</p>}
+                          </div>
+                          <div className="md:hidden mt-2">
+                             <p className="text-sm text-gray-600 flex items-start gap-2 bg-gray-50 px-3 py-1.5 rounded-lg w-max max-w-[90%] truncate">
+                              <FaMapMarkerAlt className="text-saffron-500 mt-1 shrink-0" /> {devotee.address || 'Location Not Provided'}
+                            </p>
+                          </div>
+                        </td>
+                        <td className="hidden md:table-cell p-4">
+                          <p className="text-sm font-semibold text-gray-700 flex items-center gap-2"><FaPhoneAlt className="text-gray-400 text-[10px]" /> {devotee.mobile}</p>
+                          {devotee.email && <p className="text-xs text-gray-500 flex items-center gap-2"><FaEnvelope className="text-gray-400 text-[10px]" /> {devotee.email}</p>}
+                        </td>
+                        <td className="hidden md:table-cell p-4">
+                          <p className="text-sm text-gray-600 flex items-start gap-2 bg-gray-50 px-3 py-1.5 rounded-lg w-max max-w-[90%] truncate">
+                            <FaMapMarkerAlt className="text-saffron-500 mt-1 shrink-0" /> {devotee.address || 'Location Not Provided'}
+                          </p>
+                        </td>
+                        <td className="p-3 md:p-4 md:text-right flex flex-col md:table-cell w-full bg-gray-50 md:bg-transparent rounded-b-xl md:rounded-none">
+                          <div className="flex justify-between items-center w-full">
+                            <span className="md:hidden text-xs text-gray-500 uppercase tracking-wider font-semibold px-1">Actions</span>
+                            {hasManage ? (
+                              <div className="flex flex-wrap md:justify-end gap-2 w-full md:w-auto justify-end">
+                                <button 
+                                  onClick={() => handleOpenModal(devotee)} 
+                                  className="w-10 h-10 flex-1 md:flex-none flex items-center justify-center bg-white md:bg-transparent border border-gray-200 md:border-none rounded-lg text-blue-500 hover:bg-blue-50 hover:text-blue-600 transition-colors tooltip-trigger shadow-sm md:shadow-none relative"
+                                >
+                                  <FaEdit size={16} />
+                                </button>
+                                <button 
+                                  onClick={() => handleDelete(devotee._id)} 
+                                  className="w-10 h-10 flex-1 md:flex-none flex items-center justify-center bg-white md:bg-transparent border border-gray-200 md:border-none rounded-lg text-red-400 hover:bg-red-50 hover:text-red-600 transition-colors shadow-sm md:shadow-none"
+                                >
+                                  <FaTrash size={16} />
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="text-xs text-gray-400 font-bold inline-block w-full text-right md:w-auto">View Only</div>
+                            )}
+                          </div>
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </AnimatePresence>
+                  
+                  {filtered.length === 0 && (
+                    <tr>
+                      <td colSpan="4">
+                        <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+                          <FaSearch className="text-6xl mb-4 opacity-20" />
+                          <p className="text-lg font-medium">No devotees found matching your search.</p>
                         </div>
-                        <div>
-                          <p className="font-bold text-gray-900 text-base">{devotee.name}</p>
-                          <p className="text-xs text-gray-400 font-medium">Joined {new Date(devotee.registrationDate || Date.now()).toLocaleDateString()}</p>
-                        </div>
-                      </div>
-                      
-                      <div className="col-span-3 flex flex-col gap-1">
-                        <p className="text-sm font-semibold text-gray-700 flex items-center gap-2"><FaPhoneAlt className="text-gray-400 text-[10px]" /> {devotee.mobile}</p>
-                        {devotee.email && <p className="text-xs text-gray-500 flex items-center gap-2"><FaEnvelope className="text-gray-400 text-[10px]" /> {devotee.email}</p>}
-                      </div>
-                      
-                      <div className="col-span-3">
-                        <p className="text-sm text-gray-600 flex items-start gap-2 bg-gray-50 px-3 py-1.5 rounded-lg w-max max-w-[90%] truncate">
-                          <FaMapMarkerAlt className="text-saffron-500 mt-1 shrink-0" /> {devotee.address || 'Location Not Provided'}
-                        </p>
-                      </div>
-                      
-                      <div className="col-span-2 flex items-center justify-end gap-2 pr-2">
-                        {hasManage ? (
-                          <>
-                            <button 
-                              onClick={() => handleOpenModal(devotee)} 
-                              className="w-10 h-10 rounded-full flex items-center justify-center text-blue-500 hover:bg-blue-50 hover:text-blue-600 transition-colors tooltip-trigger relative"
-                            >
-                              <FaEdit size={16} />
-                            </button>
-                            <button 
-                              onClick={() => handleDelete(devotee._id)} 
-                              className="w-10 h-10 rounded-full flex items-center justify-center text-red-400 hover:bg-red-50 hover:text-red-600 transition-colors"
-                            >
-                              <FaTrash size={16} />
-                            </button>
-                          </>
-                        ) : (
-                          <div className="text-xs text-gray-400 font-bold">View Only</div>
-                        )}
-                      </div>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-                
-                {filtered.length === 0 && (
-                  <div className="flex flex-col items-center justify-center py-20 text-gray-400">
-                    <FaSearch className="text-6xl mb-4 opacity-20" />
-                    <p className="text-lg font-medium">No devotees found matching your search.</p>
-                  </div>
-                )}
-              </div>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
           )}
         </div>
@@ -305,7 +323,7 @@ const Devotees = () => {
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: -20 }}
               transition={{ type: "spring", stiffness: 300, damping: 25 }}
-              className="bg-white rounded-[2rem] shadow-2xl w-full max-w-lg overflow-hidden relative"
+              className="bg-white rounded-[2rem] shadow-2xl w-full max-w-lg overflow-hidden relative flex flex-col max-h-[90vh]"
             >
               {/* Modal Header Decorative Element */}
               <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-saffron-400 via-orange-500 to-red-500"></div>
@@ -323,7 +341,7 @@ const Devotees = () => {
                 </button>
               </div>
               
-              <form onSubmit={handleSubmit} className="p-8 pt-2 space-y-5">
+              <form onSubmit={handleSubmit} className="p-8 pt-2 space-y-5 overflow-y-auto custom-scrollbar flex-1">
                 <div className="group">
                   <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 ml-1 group-focus-within:text-saffron-500 transition-colors">Full Name <span className="text-red-500">*</span></label>
                   <input required type="text" placeholder="e.g. Rahul Sharma" value={formData.name} onChange={(e)=>setFormData({...formData, name: e.target.value})} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-saffron-500/50 focus:border-saffron-500 transition-all font-medium text-gray-800 placeholder-gray-400" />
@@ -344,18 +362,18 @@ const Devotees = () => {
                   <textarea placeholder="Enter complete address..." value={formData.address} onChange={(e)=>setFormData({...formData, address: e.target.value})} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-saffron-500/50 focus:border-saffron-500 transition-all font-medium text-gray-800 placeholder-gray-400 resize-none h-24" />
                 </div>
                 
-                <div className="pt-4 flex gap-4">
+                <div className="pt-6 mt-6 flex flex-col md:flex-row gap-4 border-t border-gray-100">
                   <button 
                     type="button" 
                     onClick={() => setIsModalOpen(false)}
-                    className="w-1/3 py-3.5 bg-gray-100 text-gray-600 font-bold rounded-xl hover:bg-gray-200 transition-colors"
+                    className="w-full md:w-1/3 py-3.5 bg-gray-100 text-gray-600 font-bold rounded-xl hover:bg-gray-200 transition-colors order-2 md:order-1"
                   >
                     Cancel
                   </button>
                   <button 
                     disabled={submitting} 
                     type="submit" 
-                    className="w-2/3 flex justify-center items-center gap-2 py-3.5 bg-black hover:bg-gray-900 text-white font-black rounded-xl hover:bg-gray-900 transition-all shadow-lg shadow-black/30 hover:-translate-y-0.5 disabled:opacity-50"
+                    className="w-full md:w-2/3 flex justify-center items-center gap-2 py-3.5 bg-black hover:bg-gray-900 text-white font-black rounded-xl hover:bg-gray-900 transition-all shadow-lg shadow-black/30 hover:-translate-y-0.5 disabled:opacity-50 order-1 md:order-2"
                   >
                     {submitting ? <FaSpinner className="animate-spin text-xl" /> : (editingId ? 'Save Changes' : 'Complete Registration')}
                   </button>
@@ -371,3 +389,5 @@ const Devotees = () => {
 };
 
 export default Devotees;
+
+

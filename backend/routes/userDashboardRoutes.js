@@ -67,6 +67,7 @@ router.get("/my-donations", controller.getMyDonations);
 router.get("/my-donations/:id/receipt", controller.downloadReceipt);
 router.get("/my-annadaan", controller.getMyAnnadaan);
 router.get("/my-annadaan/:id/receipt", controller.downloadAnnadaanReceipt);
+router.delete("/my-annadaan/:id", controller.cancelAnnadaan);
 router.get("/dashboard-stats", controller.getDashboardStats);
 
 module.exports = router;

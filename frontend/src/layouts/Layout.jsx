@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { NavLink, useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
-import { FaHome, FaDonate, FaCalendarAlt, FaUsers, FaSignOutAlt, FaBell, FaOm, FaClipboardList, FaBullhorn, FaMapMarkerAlt, FaUserShield, FaImages, FaFileAlt, FaHistory, FaSitemap, FaCalculator, FaReceipt, FaBars, FaTimes, FaTrash, FaMusic } from 'react-icons/fa';
+import { FaHome, FaDonate, FaCalendarAlt, FaUsers, FaSignOutAlt, FaBell, FaOm, FaClipboardList, FaBullhorn, FaMapMarkerAlt, FaUserShield, FaImages, FaFileAlt, FaHistory, FaSitemap, FaCalculator, FaReceipt, FaBars, FaTimes, FaTrash, FaMusic, FaRegCommentDots } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Layout = ({ children, user }) => {
@@ -109,6 +109,8 @@ const Layout = ({ children, user }) => {
       { name: 'Annadan', path: '/trustee/annadaan', icon: <FaClipboardList />, badge: pendingCounts.annadaan ?? 0 },
       { name: 'Announcements', path: '/trustee/announcements', icon: <FaBullhorn />, showRedDot: unreadAnnouncementsCount > 0 },
       { name: 'Branches', path: '/trustee/branches', icon: <FaMapMarkerAlt /> },
+      { name: 'Devotees', path: '/trustee/devotees', icon: <FaUsers /> },
+      { name: 'Contact Enquiries', path: '/trustee/contact-enquiries', icon: <FaRegCommentDots /> },
       { name: 'Vanshawal Tree', path: '/trustee/vanshawal', icon: <FaUsers /> },
       { name: 'Vanshawal Dashboard', path: '/trustee/vanshawal/dashboard', icon: <FaHistory /> },
       { name: 'Vanshawal Reports', path: '/trustee/vanshawal/reports', icon: <FaFileAlt /> },
@@ -147,7 +149,7 @@ const Layout = ({ children, user }) => {
       { name: 'Documents', path: '/branch/documents', icon: <FaFileAlt /> },
       { name: 'Donations', path: '/branch/donations', icon: <FaDonate /> },
       { name: 'Events', path: '/branch/events', icon: <FaCalendarAlt /> },
-      { name: 'Receipts', path: '/branch/receipts', icon: <FaReceipt /> },
+
       { name: 'News', path: '/branch/news', icon: <FaBullhorn /> },
     ];
   } else if (user?.role === 'Accountant') {
@@ -166,7 +168,7 @@ const Layout = ({ children, user }) => {
       { name: 'Announcements', path: '/document-handler/announcements', icon: <FaBullhorn />, showRedDot: unreadAnnouncementsCount > 0 },
       { name: 'Deletion Requests', path: '/document-handler/deletion-requests', icon: <FaTrash /> },
       { name: 'Documents', path: '/document-handler/documents', icon: <FaFileAlt /> },
-      { name: 'Receipts', path: '/document-handler/receipts', icon: <FaReceipt /> },
+
     ];
   } else {
     navItems = [
@@ -205,7 +207,7 @@ const Layout = ({ children, user }) => {
       >
         
         {/* Mobile Close Button */}
-        <button onClick={() => setIsMobileMenuOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white md:hidden p-2 text-xl">
+        <button onClick={() => setIsMobileMenuOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white md:hidden p-2 text-xl z-50 cursor-pointer">
           <FaTimes />
         </button>
 
@@ -225,28 +227,22 @@ const Layout = ({ children, user }) => {
             </motion.div>
           </Link>
           <div className={`text-center ${isCollapsed ? 'block md:hidden' : 'block'}`}>
-            <h1 className="text-sm lg:text-base font-black tracking-wider text-white">Shri Gurumurti Rudrapashupati Lingayat Monastery</h1>
-            <p className="text-[10px] text-gray-400 font-bold tracking-widest mt-1 uppercase">{user?.role} Panel</p>
+            <h1 className="text-sm font-black tracking-wider text-white leading-tight">Shri Gurumurti Rudrapashupati Lingayat Monastery</h1>
+            <p className="text-[10px] text-gray-400 font-bold tracking-widest mt-1.5 uppercase">{user?.role} Panel</p>
           </div>
         </div>
 
-        {/* Toggle Collapse Button */}
-        <button 
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="flex absolute top-1/2 -translate-y-1/2 -right-3 bg-[#FF7A2F] text-white w-6 h-6 rounded-full items-center justify-center shadow-md z-50 hover:scale-110 transition-all duration-300 md:opacity-0 md:group-hover:opacity-100"
-        >
-          <span className="text-xs">{isCollapsed ? '▶' : '◀'}</span>
-        </button>
+
 
         {/* Navigation Links */}
-        <nav className="w-full px-4 flex-1 overflow-y-auto space-y-1 lg:space-y-2 mt-2 lg:mt-4 pb-2 lg:pb-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+        <nav className="w-full px-4 flex-1 overflow-y-auto space-y-1 mt-4 pb-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
           {navItems.map((item) => (
               <NavLink
                key={item.name}
                to={item.path}
                onClick={() => setIsMobileMenuOpen(false)}
                className={({ isActive }) => 
-                 `flex items-center justify-between px-3 py-2 lg:px-4 lg:py-3 rounded-xl transition-all duration-300 font-bold relative overflow-hidden ${
+                 `flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 font-bold text-sm relative overflow-hidden ${
                    isActive 
                      ? 'bg-[#FF7A2F]/10 text-[#FF7A2F] border-l-4 border-[#FF7A2F] shadow-sm' 
                      : 'text-gray-400 hover:bg-[#0A0A2A] hover:text-white'
@@ -274,10 +270,10 @@ const Layout = ({ children, user }) => {
           ))}
         </nav>
 
-        <div className="w-full px-4 pb-2 pt-2 lg:pb-4 lg:pt-4">
+        <div className="w-full px-4 pb-4 pt-4">
           <div 
             onClick={handleLogout}
-            className={`flex items-center justify-between p-2 lg:p-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all cursor-pointer group ${isCollapsed ? 'justify-center p-2' : ''}`}
+            className={`flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all cursor-pointer group ${isCollapsed ? 'justify-center p-2' : ''}`}
             title={isCollapsed ? "Logout" : ""}
           >
             <div className="flex items-center gap-3 overflow-hidden w-full">
@@ -430,7 +426,7 @@ const Layout = ({ children, user }) => {
 
 
 
-           <div className="relative z-10 p-4 md:p-8 overflow-x-hidden">
+           <div className="relative z-10 px-2 py-4 sm:p-4 md:p-8 overflow-x-hidden">
              <div>
                {children}
              </div>

@@ -78,7 +78,7 @@ const Devotees = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold flex flex-wrap items-center gap-2 text-slate-900"><FiUsers className="text-saffron-500" /> Devotee Management</h1>
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold flex items-center gap-2 text-slate-900 tracking-tight"><FiUsers className="text-saffron-500" /> Devotee Management</h1>
           <p className="text-slate-600 font-medium text-sm mt-1">Manage devotee records, contact information, and registry.</p>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full md:w-auto mt-4 md:mt-0">
@@ -129,11 +129,11 @@ const Devotees = () => {
       </div>
 
       {/* List */}
-      <div className="bg-white border border-gray-100 shadow-sm rounded-2xl overflow-hidden flex flex-col border-t-4 border-t-saffron-500">
+      <div className="md:bg-white md:border md:border-gray-100 md:shadow-sm md:rounded-2xl overflow-hidden flex flex-col md:border-t-4 md:border-t-saffron-500">
         <div className="overflow-auto max-h-[500px] custom-scrollbar">
-          <div className="overflow-x-auto w-full">
-<table className="w-full text-left border-collapse relative">
-            <thead className="sticky top-0 z-20">
+          <div className="table-responsive-wrapper">
+            <table className="w-full text-left border-collapse relative md:min-w-[700px] block md:table">
+            <thead className="hidden md:table-header-group sticky top-0 z-20">
               <tr className="bg-slate-100 border-b border-slate-200 text-xs uppercase tracking-wider text-slate-700 shadow-sm">
                 <th className="p-4 font-bold w-1/3 cursor-pointer hover:bg-slate-200 transition-colors bg-slate-100" onClick={() => handleSort('name')}>
                   <div className="flex items-center gap-1">Devotee Profile {sortConfig.key === 'name' && (sortConfig.direction === 'asc' ? <FiChevronUp/> : <FiChevronDown/>)}</div>
@@ -144,11 +144,31 @@ const Devotees = () => {
                 <th className="p-4 font-bold w-1/3 bg-slate-100">Location</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 text-sm">
+            <tbody className="block md:table-row-group w-full divide-y divide-gray-100 text-sm">
               {paginatedData.map(d => (
-                <tr key={d._id} className="hover:bg-gray-50 transition-colors">
-                  <td className="p-4">
-                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full md:w-auto mt-4 md:mt-0">
+                <tr key={d._id} className="flex flex-col md:table-row w-full bg-white md:bg-transparent border border-gray-100 md:border-b md:border-x-0 md:border-t-0 md:border-gray-50 rounded-xl md:rounded-none mb-4 md:mb-0 shadow-sm md:shadow-none hover:bg-gray-50/50">
+                  {/* Mobile Card Top & Desktop Devotee Profile */}
+                  <td className="p-3 md:p-4 flex flex-col md:table-cell w-full border-b border-gray-50 md:border-none">
+                    {/* Mobile Only Header */}
+                    <div className="flex md:hidden items-center gap-4 w-full mb-3">
+                      <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${getGradient(d.name)} flex items-center justify-center font-bold text-white shadow-inner shrink-0`}>
+                        {d.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-bold text-slate-900">{d.name}</div>
+                        <div className="text-xs text-slate-600 font-medium mt-0.5">Joined {new Date(d.registrationDate || Date.now()).toLocaleDateString()}</div>
+                      </div>
+                    </div>
+                    {/* Mobile Only Contact Info */}
+                    <div className="md:hidden space-y-1.5">
+                       <div className="text-gray-700 font-medium flex items-center gap-2 text-sm"><FiPhone className="text-gray-400" /> {d.mobile}</div>
+                       {d.email && <div className="text-slate-600 font-medium flex items-center gap-2 text-sm"><FiMail className="text-slate-400" /> {d.email}</div>}
+                       <div className="text-slate-700 font-medium text-sm flex items-start gap-2 pt-3 mt-3 border-t border-gray-50">
+                          <FiMapPin className="mt-0.5 shrink-0 text-saffron-500" /> {d.address || 'Not Provided'}
+                       </div>
+                    </div>
+                    {/* Desktop Content */}
+                    <div className="hidden md:flex items-center gap-4 w-full">
                       <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${getGradient(d.name)} flex items-center justify-center font-bold text-white shadow-inner shrink-0`}>
                         {d.name.charAt(0).toUpperCase()}
                       </div>
@@ -158,12 +178,12 @@ const Devotees = () => {
                       </div>
                     </div>
                   </td>
-                  <td className="p-4">
+                  <td className="hidden md:table-cell p-4 pt-0 md:pt-4">
                     <div className="text-gray-700 font-medium flex items-center gap-2 mb-1"><FiPhone className="text-gray-400" /> {d.mobile}</div>
                     {d.email && <div className="text-xs text-slate-600 font-medium flex items-center gap-2"><FiMail className="text-slate-400" /> {d.email}</div>}
                   </td>
-                  <td className="p-4">
-                    <div className="flex items-start gap-2 text-slate-700 font-medium text-sm max-w-[200px] truncate" title={d.address}>
+                  <td className="hidden md:table-cell p-4 pt-0 md:pt-4">
+                    <div className="flex items-start gap-2 text-slate-700 font-medium text-sm max-w-[200px] truncate whitespace-normal" title={d.address}>
                       <FiMapPin className="mt-0.5 shrink-0 text-saffron-500" /> {d.address || 'Not Provided'}
                     </div>
                   </td>
@@ -171,7 +191,7 @@ const Devotees = () => {
               ))}
               {paginatedData.length === 0 && (
                 <tr>
-                  <td colSpan="4" className="p-8 text-center text-gray-500">No devotees found matching your search.</td>
+                  <td colSpan="4" className="p-8 text-center text-gray-500 block md:table-cell">No devotees found matching your search.</td>
                 </tr>
               )}
             </tbody>
@@ -189,13 +209,13 @@ const Devotees = () => {
         {isModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => !submitting && setIsModalOpen(false)} />
-            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="bg-white border border-gray-100 rounded-2xl shadow-2xl w-full max-w-lg relative z-10 overflow-hidden">
+            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="bg-white border border-gray-100 rounded-2xl shadow-2xl w-full max-w-lg relative z-10 overflow-hidden flex flex-col max-h-[90vh]">
               <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
                 <h2 className="text-xl font-bold text-slate-900">Register Devotee</h2>
                 <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 bg-white p-2 rounded-full shadow-sm"><FiX size={20} /></button>
               </div>
               
-              <form onSubmit={handleSubmit} className="p-6 space-y-5">
+              <form onSubmit={handleSubmit} className="p-6 space-y-5 overflow-y-auto custom-scrollbar flex-1">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1 uppercase tracking-wider">Full Name <span className="text-red-500">*</span></label>
                   <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-gray-800 focus:outline-none focus:border-saffron-500 focus:bg-white focus:ring-1 focus:ring-saffron-500 transition-all" />
@@ -216,9 +236,9 @@ const Devotees = () => {
                   <textarea value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-gray-800 focus:outline-none focus:border-saffron-500 focus:bg-white focus:ring-1 focus:ring-saffron-500 transition-all h-24 resize-none" />
                 </div>
                 
-                <div className="pt-4 flex justify-end gap-3 border-t border-gray-100">
-                  <button type="button" onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 rounded-xl text-gray-600 hover:bg-gray-100 font-bold transition-colors">Cancel</button>
-                  <button disabled={submitting} type="submit" className="bg-blue-900 hover:bg-slate-900 hover:bg-black w-full md:w-auto justify-center text-white px-8 py-2.5 rounded-xl font-black shadow-lg transition-colors disabled:opacity-50 text-sm tracking-wide">
+                <div className="pt-8 flex flex-col md:flex-row gap-4 border-t border-gray-100 mt-6">
+                  <button type="button" onClick={() => setIsModalOpen(false)} className="w-full md:w-auto px-5 py-3 md:py-2.5 rounded-xl text-gray-600 hover:bg-gray-100 font-bold transition-colors order-2 md:order-1 border border-gray-200 md:border-transparent">Cancel</button>
+                  <button disabled={submitting} type="submit" className="bg-blue-900 hover:bg-slate-900 w-full md:w-auto justify-center text-white px-8 py-3 md:py-2.5 rounded-xl font-black shadow-lg transition-colors disabled:opacity-50 text-sm tracking-wide order-1 md:order-2">
                     {submitting ? 'Saving...' : 'Save Changes'}
                   </button>
                 </div>
@@ -233,3 +253,7 @@ const Devotees = () => {
 };
 
 export default Devotees;
+
+
+
+

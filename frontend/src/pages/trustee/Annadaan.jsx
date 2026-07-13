@@ -89,7 +89,7 @@ const Annadaan = () => {
     <div className="space-y-6">
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6 w-full">
         <div className="w-full lg:w-auto">
-          <h1 className="text-2xl font-black text-deepblue-900 flex flex-wrap items-center gap-2">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-deepblue-900 flex items-center gap-2 tracking-tight">
             <FaHandHoldingHeart className="text-saffron-500" /> Annadan Records
             {!hasManage && <span className="bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full shadow-sm font-sans inline-block align-middle">View Only Access</span>}
           </h1>
@@ -157,8 +157,8 @@ const Annadaan = () => {
            </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-gray-500">
-              <thead className="text-xs text-gray-400 uppercase bg-gray-50">
+            <table className="w-full text-left text-sm text-gray-500 block md:table">
+              <thead className="text-xs text-gray-400 uppercase bg-gray-50 hidden md:table-header-group">
                 <tr>
                   <th className="px-6 py-4 font-semibold">Donor Name</th>
                   <th className="px-6 py-4 font-semibold">Contact</th>
@@ -168,30 +168,57 @@ const Annadaan = () => {
                   <th className="px-6 py-4 font-semibold text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="block md:table-row-group w-full divide-y divide-gray-100">
                 {records
                   .filter(record => filterDate ? new Date(record.date).toLocaleDateString() === new Date(filterDate).toLocaleDateString() : true)
                   .filter(record => searchTerm ? record.name.toLowerCase().includes(searchTerm.toLowerCase()) : true)
                   .map((record, idx) => (
-                  <motion.tr initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: idx * 0.05 }} className={`transition-colors border-l-4 ${record.status === 'pending' ? 'bg-yellow-50 hover:bg-yellow-100 border-yellow-500' : record.status === 'approved' ? 'bg-blue-50 hover:bg-blue-100 border-blue-500' : record.status === 'completed' ? 'bg-green-50 hover:bg-green-100 border-green-500' : record.status === 'rejected' ? 'bg-red-50 hover:bg-red-100 border-red-500' : 'hover:bg-gray-50 border-transparent'}`} key={record._id}>
-                    <td className="px-6 py-4 font-bold text-gray-800">{record.name}</td>
-                    <td className="px-6 py-4">{record.phone}<br/><span className="text-xs text-gray-400">{record.email}</span></td>
-                    <td className="px-6 py-4"><span className="px-2 py-1 bg-blue-50 text-blue-600 rounded-md font-semibold text-xs">{record.annadaanType}</span></td>
-                    <td className="px-6 py-4">{new Date(record.date).toLocaleDateString()}<br/><span className="text-xs text-gray-400">{record.time}</span></td>
-                    <td className="px-6 py-4">
+                  <motion.tr initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: idx * 0.05 }} className={`block md:table-row bg-white md:bg-transparent border border-gray-100 md:border-b md:border-x-0 md:border-t-0 md:border-gray-50 rounded-xl md:rounded-none mb-4 md:mb-0 shadow-sm md:shadow-none hover:bg-gray-50/50 border-l-4 ${record.status === 'pending' ? 'border-l-yellow-500' : record.status === 'approved' ? 'border-l-blue-500' : record.status === 'completed' ? 'border-l-green-500' : record.status === 'rejected' ? 'border-l-red-500' : 'border-l-transparent'}`} key={record._id}>
+                    <td className="p-4 md:px-6 md:py-4 block md:table-cell border-b border-gray-50 md:border-none">
+                      <div className="flex md:hidden justify-between items-start mb-3">
+                        <span className="text-[11px] font-bold text-gray-600 uppercase tracking-wider bg-gray-100 px-2 py-0.5 rounded">{record.annadaanType}</span>
+                        <span className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase ${record.status === 'completed' ? 'bg-green-100 text-green-700' : record.status === 'approved' ? 'bg-blue-100 text-blue-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                          {record.status}
+                        </span>
+                      </div>
+                      <div>
+                        <div className="font-bold text-gray-800 text-lg md:text-base">{record.name}</div>
+                        <div className="md:hidden mt-2 text-sm text-gray-600 flex flex-col gap-1">
+                          <div>{record.phone} <span className="text-gray-400">({record.email})</span></div>
+                          <div className="text-gray-500 text-xs mt-1">{new Date(record.date).toLocaleDateString()} at {record.time}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="hidden md:table-cell px-6 py-4">
+                      {record.phone}<br/><span className="text-xs text-gray-400">{record.email}</span>
+                    </td>
+                    <td className="hidden md:table-cell px-6 py-4">
+                      <span className="px-2 py-1 bg-blue-50 text-blue-600 rounded-md font-semibold text-xs">{record.annadaanType}</span>
+                    </td>
+                    <td className="hidden md:table-cell px-6 py-4">
+                      {new Date(record.date).toLocaleDateString()}<br/><span className="text-xs text-gray-400">{record.time}</span>
+                    </td>
+                    <td className="hidden md:table-cell px-6 py-4">
                       <span className={`px-2 py-1 rounded-md text-xs font-bold uppercase ${record.status === 'completed' ? 'bg-green-100 text-green-700' : record.status === 'approved' ? 'bg-blue-100 text-blue-700' : 'bg-yellow-100 text-yellow-700'}`}>
                         {record.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-right flex justify-end gap-2">
-                      {hasManage ? (
-                        <>
-                          <button onClick={() => handleEdit(record)} className="p-2 bg-blue-50 text-blue-500 hover:bg-blue-100 rounded-lg transition-colors"><FaEdit /></button>
-                          <button onClick={() => handleDelete(record._id)} className="p-2 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition-colors"><FaTrash /></button>
-                        </>
-                      ) : (
-                        <div className="text-xs text-gray-400 font-bold">View Only</div>
-                      )}
+                    <td className="p-3 md:px-6 md:py-4 md:text-right block md:table-cell bg-gray-50 md:bg-transparent rounded-b-xl md:rounded-none">
+                      <div className="flex justify-between items-center w-full">
+                        <span className="md:hidden text-xs text-gray-500 uppercase tracking-wider font-semibold px-1">Actions</span>
+                        <div className="flex flex-wrap md:justify-end gap-2 w-full md:w-auto justify-end">
+                          {hasManage ? (
+                            <>
+                              <button onClick={() => handleEdit(record)} className="p-2 w-10 h-10 md:w-auto md:h-auto flex-1 md:flex-none flex items-center justify-center bg-white md:bg-blue-50 border border-gray-200 md:border-none text-blue-500 hover:bg-blue-100 rounded-lg transition-colors shadow-sm md:shadow-none"><FaEdit /></button>
+                              {record.status === 'pending' && (
+                                <button onClick={() => handleDelete(record._id)} className="p-2 w-10 h-10 md:w-auto md:h-auto flex-1 md:flex-none flex items-center justify-center bg-white md:bg-red-50 border border-gray-200 md:border-none text-red-500 hover:bg-red-100 rounded-lg transition-colors shadow-sm md:shadow-none"><FaTrash /></button>
+                              )}
+                            </>
+                          ) : (
+                            <div className="text-xs text-gray-400 font-bold inline-block w-full text-right md:w-auto">View Only</div>
+                          )}
+                        </div>
+                      </div>
                     </td>
                   </motion.tr>
                 ))}
@@ -250,9 +277,9 @@ const Annadaan = () => {
                     <option value="rejected">Rejected</option>
                   </select>
                 </div>
-                <div className="pt-4 flex justify-end gap-3">
-                  <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 font-bold transition-colors">Cancel</button>
-                  <button type="submit" className="px-6 py-2.5 bg-blue-900 hover:bg-blue-800 text-white rounded-xl shadow-lg shadow-gray-900/30 font-black transition-all hover:-translate-y-0.5">{editingId ? 'Update' : 'Save'}</button>
+                <div className="pt-4 flex flex-col md:flex-row justify-end gap-3">
+                  <button type="button" onClick={() => setIsModalOpen(false)} className="w-full md:w-auto px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 font-bold transition-colors order-2 md:order-1">Cancel</button>
+                  <button type="submit" className="w-full md:w-auto px-6 py-2.5 bg-blue-900 hover:bg-blue-800 text-white rounded-xl shadow-lg shadow-gray-900/30 font-black transition-all hover:-translate-y-0.5 order-1 md:order-2">{editingId ? 'Update' : 'Save'}</button>
                 </div>
               </form>
             </motion.div>
@@ -264,3 +291,5 @@ const Annadaan = () => {
 };
 
 export default Annadaan;
+
+

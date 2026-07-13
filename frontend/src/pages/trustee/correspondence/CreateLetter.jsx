@@ -120,7 +120,7 @@ const CreateLetter = () => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 shrink-0 gap-4">
         <div className="flex items-center gap-4">
           <button onClick={() => navigate('/trustee/correspondence')} className="text-gray-500 hover:text-gray-900 bg-gray-100 p-3 rounded-full transition-colors"><FaArrowLeft /></button>
-          <h1 className="text-2xl font-black text-gray-900">{letterId ? 'Edit Draft' : 'Create New Letter'}</h1>
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-gray-900 flex items-center tracking-tight">{letterId ? 'Edit Draft' : 'Create New Letter'}</h1>
         </div>
         <div className="flex flex-wrap gap-3 w-full md:w-auto">
           <button onClick={handleSaveDraft} disabled={isSaving || isGenerating} className="flex-1 md:flex-none justify-center px-6 py-2 bg-yellow-100 text-yellow-700 font-bold rounded-lg hover:bg-yellow-200 transition flex items-center gap-2">
@@ -184,7 +184,7 @@ const CreateLetter = () => {
                 <div className="w-3/5 text-center">
                    <div className="text-[12pt] text-[#be1e4d] font-bold">॥ ॐ श्री गुरुनिर्वाण रुद्रपशुपति प्रसन्न ॥</div>
                    <div className="text-[12pt] text-[#be1e4d] font-bold">॥ मुळ पुरुष उपासकलिंग बडदेकरु प्रसन्न ॥</div>
-                   <h1 className="text-[24pt] text-[#be1e4d] font-black my-1 leading-none">श्री गुरुमुर्ती रुद्रपशुपति लिंगायत मठ, मिरज</h1>
+                   <h1 className="text-xl sm:text-2xl md:text-3xl text-[24pt] text-[#be1e4d] font-black my-1 leading-none flex items-center tracking-tight">श्री गुरुमुर्ती रुद्रपशुपति लिंगायत मठ, मिरज</h1>
                    <div className="text-[12pt] text-[#1e3a8a] font-bold">मिरज पंढरपूर रोड, शासकीय मेडिकल कॉलेज समोर, मिरज जि.सांगली</div>
                    <div className="text-[10pt] text-[#1e3a8a]">पत्रव्यवहार पत्ता : श्री गुरुमुर्ती रुद्रपशुपति मठ, मु.पो. कोळे ता.सांगोला, जि.सोलापूर ४१३३१४</div>
                 </div>

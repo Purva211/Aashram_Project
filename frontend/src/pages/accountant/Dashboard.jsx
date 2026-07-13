@@ -102,36 +102,36 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="p-6 w-full">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Welcome, {user?.fullName || user?.name || 'Accountant'}!</h1>
-        <p className="text-gray-500 mt-2">Here is the overview of the temple's donation finances.</p>
+    <div className="p-4 md:p-6 w-full max-w-full overflow-hidden">
+      <div className="mb-6 md:mb-8">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 flex items-center tracking-tight">Welcome, {user?.fullName || user?.name || 'Accountant'}!</h1>
+        <p className="text-sm md:text-base text-gray-500 mt-2">Here is the overview of the temple's donation finances.</p>
       </div>
 
       {preferences.showDonations && (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-6 mb-6 md:mb-8">
             {statCards.map((card, idx) => (
-              <div key={idx} className="bg-white rounded-2xl p-6 shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 flex items-center gap-4">
-                <div className={`w-14 h-14 rounded-full flex items-center justify-center ${card.bg}`}>
+              <div key={idx} className="bg-white rounded-2xl p-4 md:p-6 shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 flex items-center gap-4">
+                <div className={`w-12 h-12 md:w-14 md:h-14 shrink-0 rounded-full flex items-center justify-center ${card.bg}`}>
                   {card.icon}
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-500 mb-1">{card.title}</p>
-                  <h3 className="text-2xl font-bold text-gray-900">{card.value}</h3>
+                  <p className="text-xs md:text-sm font-semibold text-gray-500 mb-1">{card.title}</p>
+                  <h3 className="text-xl md:text-2xl font-bold text-gray-900">{card.value}</h3>
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold text-gray-900">Recent Donation Updates</h2>
+          <div className="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-4 md:p-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 md:mb-6 gap-3">
+              <h2 className="text-lg md:text-xl font-bold text-gray-900">Recent Donation Updates</h2>
             </div>
             
             <div className="overflow-x-auto">
-              <table className="w-full text-left">
-                <thead>
+              <table className="w-full text-left block md:table">
+                <thead className="hidden md:table-header-group">
                   <tr className="bg-gray-50 text-gray-500 text-sm border-b border-gray-100">
                     <th className="py-3 px-4 font-semibold rounded-tl-lg">Donation ID</th>
                     <th className="py-3 px-4 font-semibold">Donor Name</th>
@@ -145,13 +145,44 @@ const Dashboard = () => {
                     <tr><td colSpan="5" className="text-center py-8 text-gray-400">No recent activity</td></tr>
                   ) : (
                     recentDonations.map(don => (
-                      <tr key={don._id} className="border-b border-gray-50 hover:bg-gray-50/50">
-                        <td className="py-4 px-4 font-medium text-gray-900">{don.donationReference || don._id.substring(0,8)}</td>
-                        <td className="py-4 px-4 text-gray-600">{don.donorName}</td>
-                        <td className="py-4 px-4 font-bold text-gray-900">₹{don.amount.toLocaleString()}</td>
-                        <td className="py-4 px-4 text-gray-500">{new Date(don.createdAt).toLocaleDateString()}</td>
-                        <td className="py-4 px-4">
-                          <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                      <tr key={don._id} className="flex flex-col md:table-row w-full bg-white md:bg-transparent border border-gray-100 md:border-b md:border-x-0 md:border-t-0 md:border-gray-50 rounded-xl md:rounded-none mb-4 md:mb-0 shadow-sm md:shadow-none hover:bg-gray-50/50">
+                        {/* Mobile Card Top & Desktop ID */}
+                        <td className="p-3 md:p-4 flex flex-col md:table-cell w-full border-b border-gray-50 md:border-none">
+                          <div className="flex md:hidden justify-between items-start mb-3">
+                            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">ID: {don.donationReference || don._id.substring(0,8)}</span>
+                            <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${
+                              don.status === 'APPROVED' ? 'bg-green-50 text-green-700 border-green-200' :
+                              don.status === 'REJECTED' ? 'bg-red-50 text-red-700 border-red-200' :
+                              'bg-orange-50 text-orange-700 border-orange-200'
+                            }`}>
+                              {don.status.replace('_', ' ')}
+                            </span>
+                          </div>
+                          <div className="md:hidden flex justify-between items-end">
+                            <div>
+                              <span className="text-[10px] text-gray-500 uppercase tracking-wider block mb-0.5">Donor Name</span>
+                              <span className="font-bold text-gray-900 text-base">{don.donorName}</span>
+                            </div>
+                            <div className="text-right">
+                              <span className="text-[10px] text-gray-500 uppercase tracking-wider block mb-0.5">Amount</span>
+                              <span className="font-bold text-indigo-600 text-lg">₹{don.amount.toLocaleString()}</span>
+                            </div>
+                          </div>
+                          <span className="hidden md:inline font-medium text-gray-900">{don.donationReference || don._id.substring(0,8)}</span>
+                        </td>
+                        <td className="hidden md:table-cell py-4 px-4 text-gray-600">
+                          {don.donorName}
+                        </td>
+                        <td className="hidden md:table-cell py-4 px-4 font-bold text-gray-900">
+                          ₹{don.amount.toLocaleString()}
+                        </td>
+                        {/* Mobile Card Bottom & Desktop Date */}
+                        <td className="p-3 md:p-4 text-gray-500 block md:table-cell bg-gray-50 md:bg-transparent rounded-b-xl md:rounded-none flex justify-between items-center md:block">
+                          <span className="md:hidden text-xs font-medium flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> {new Date(don.createdAt).toLocaleDateString()}</span>
+                          <span className="hidden md:inline">{new Date(don.createdAt).toLocaleDateString()}</span>
+                        </td>
+                        <td className="hidden md:table-cell py-4 px-4">
+                          <span className={`px-3 py-1 rounded-full text-xs font-bold inline-block ${
                             don.status === 'APPROVED' ? 'bg-green-100 text-green-700' :
                             don.status === 'REJECTED' ? 'bg-red-100 text-red-700' :
                             'bg-orange-100 text-orange-700'
@@ -171,12 +202,12 @@ const Dashboard = () => {
 
       {/* Recent Activity Section */}
       {preferences.showActivities && activities.length > 0 && (
-        <div className="mt-10">
-          <h2 className="text-lg font-bold text-gray-700 mb-6 flex items-center gap-2 border-b border-gray-100 pb-2 uppercase tracking-wide">
+        <div className="mt-8 md:mt-10">
+          <h2 className="text-base md:text-lg font-bold text-gray-700 mb-4 md:mb-6 flex items-center gap-2 border-b border-gray-100 pb-2 uppercase tracking-wide">
             <Activity className="text-emerald-500 w-5 h-5" /> My Recent Activity (Last 3 Hours)
           </h2>
           <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.04)] overflow-hidden">
-            <div className="divide-y divide-gray-100 max-h-96 overflow-y-auto">
+            <div className="divide-y divide-gray-100 max-h-64 md:max-h-96 overflow-y-auto">
               {activities.map((log, idx) => (
                 <div key={idx} className="p-4 sm:px-6 hover:bg-gray-50 transition-colors flex flex-col sm:flex-row sm:items-center gap-4">
                   <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
@@ -199,11 +230,11 @@ const Dashboard = () => {
       )}
 
       {preferences.showActivities && activities.length === 0 && (
-        <div className="mt-10">
-          <h2 className="text-lg font-bold text-gray-700 mb-6 flex items-center gap-2 border-b border-gray-100 pb-2 uppercase tracking-wide">
+        <div className="mt-8 md:mt-10">
+          <h2 className="text-base md:text-lg font-bold text-gray-700 mb-4 md:mb-6 flex items-center gap-2 border-b border-gray-100 pb-2 uppercase tracking-wide">
             <Activity className="text-emerald-500 w-5 h-5" /> My Recent Activity (Last 3 Hours)
           </h2>
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.04)] p-8 text-center text-gray-500 font-medium">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.04)] p-6 md:p-8 text-center text-gray-500 font-medium">
             You have no activity in the last 3 hours.
           </div>
         </div>
@@ -213,3 +244,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+

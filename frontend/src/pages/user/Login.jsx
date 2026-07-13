@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import api from "../../utils/api";
 import { useAuth } from "../../context/AuthContext";
 import { FaEnvelope, FaLock, FaRegEye, FaRegEyeSlash } from "react-icons/fa";
@@ -11,7 +11,8 @@ const Login = () => {
   // UI State
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const location = useLocation();
+  const [error, setError] = useState(location.state?.message || "");
 
   // Form State
   const [email, setEmail] = useState("");
@@ -31,7 +32,8 @@ const Login = () => {
       
       if (response.data.success) {
         login(response.data.token, response.data.user);
-        navigate("/home");
+        const from = location.state?.returnUrl || "/home";
+        navigate(from);
       }
     } catch (err) {
       setError(err.response?.data?.message || "Failed to login. Please check credentials.");

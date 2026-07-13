@@ -113,7 +113,7 @@ const Bulletins = () => {
   return (
     <div className="p-6 md:p-10 w-full">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-        <h1 className="text-3xl font-bold text-caramel-deep font-serif flex flex-wrap items-center gap-2">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-caramel-deep font-serif flex items-center gap-2 tracking-tight">
           Manage Sansthan Updates
           {!hasManage && <span className="bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full shadow-sm font-sans inline-block align-middle">View Only Access</span>}
         </h1>
@@ -160,13 +160,13 @@ const Bulletins = () => {
                   type="text" 
                   value={msg}
                   onChange={(e) => handleMessageChange(index, e.target.value)}
-                  className="flex-1 border border-stone-300 rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+                  className="flex-1 min-w-0 border border-stone-300 rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
                   placeholder={`Message ${index + 1}`}
                 />
                 <button 
                   type="button" 
                   onClick={() => handleRemoveMessage(index)}
-                  className="bg-red-50 text-red-500 px-4 rounded-xl hover:bg-red-100 transition-colors"
+                  className="bg-red-50 text-red-500 px-4 rounded-xl hover:bg-red-100 transition-colors shrink-0"
                   disabled={formData.messages.length === 1}
                 >
                   <FaTrash />
@@ -199,10 +199,10 @@ const Bulletins = () => {
         </form>
       )}
 
-      <div className="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
+      <div className="bg-transparent md:bg-white rounded-2xl md:shadow-sm border-0 md:border border-stone-200 overflow-hidden relative z-10">
+        <div className="w-full overflow-hidden">
+          <table className="w-full text-left block md:table">
+            <thead className="hidden md:table-header-group">
               <tr className="bg-stone-50 border-b border-stone-200">
                 <th className="py-4 px-6 font-bold text-stone-600">Headline</th>
                 <th className="py-4 px-6 font-bold text-stone-600">Messages</th>
@@ -213,18 +213,38 @@ const Bulletins = () => {
             <tbody>
               {bulletins.length === 0 ? (
                 <tr>
-                  <td colSpan="4" className="py-8 text-center text-stone-500">No updates found.</td>
+                  <td colSpan="4" className="py-8 text-center text-stone-500 block md:table-cell">No updates found.</td>
                 </tr>
               ) : (
                 bulletins.map((bulletin) => (
-                  <tr key={bulletin._id} className="border-b border-stone-100 hover:bg-stone-50 transition-colors">
-                    <td className="py-4 px-6 font-bold text-caramel-deep">{bulletin.headline}</td>
-                    <td className="py-4 px-6">
+                  <tr key={bulletin._id} className="flex flex-col md:table-row w-full bg-white md:bg-transparent border border-gray-100 md:border-b md:border-x-0 md:border-t-0 md:border-gray-50 rounded-xl md:rounded-none mb-4 md:mb-0 shadow-sm md:shadow-none hover:bg-stone-50 transition-colors">
+                    <td className="p-4 md:py-4 md:px-6 block md:table-cell border-b border-gray-50 md:border-none">
+                      <div className="flex md:hidden justify-between items-start mb-3">
+                        <span className="text-[11px] font-bold text-stone-600 uppercase tracking-wider bg-stone-100 px-2 py-0.5 rounded">Sansthan Update</span>
+                        <button 
+                          onClick={() => hasManage && toggleStatus(bulletin)}
+                          disabled={!hasManage}
+                          className={`px-2 py-1 text-[10px] font-bold rounded-md uppercase tracking-wider border shrink-0 ${bulletin.isActive ? 'bg-green-100 text-green-700 border-green-200' : 'bg-red-100 text-red-700 border-red-200'} ${!hasManage && 'cursor-not-allowed opacity-80'}`}
+                        >
+                          {bulletin.isActive ? 'Active' : 'Inactive'}
+                        </button>
+                      </div>
+                      <div>
+                        <div className="font-bold text-caramel-deep text-lg md:text-base break-words whitespace-normal">{bulletin.headline}</div>
+                        <div className="md:hidden mt-3 text-sm text-stone-600 break-words whitespace-normal">
+                          <span className="text-xs font-bold text-stone-500 uppercase block mb-1">Messages:</span>
+                          <ul className="list-disc pl-4 text-sm text-stone-600 space-y-1">
+                            {bulletin.messages.map((m, i) => <li key={i}>{m}</li>)}
+                          </ul>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="hidden md:table-cell py-4 px-6 break-words whitespace-normal">
                       <ul className="list-disc pl-4 text-sm text-stone-600">
                         {bulletin.messages.map((m, i) => <li key={i}>{m}</li>)}
                       </ul>
                     </td>
-                    <td className="py-4 px-6">
+                    <td className="hidden md:table-cell py-4 px-6">
                       <button 
                         onClick={() => hasManage && toggleStatus(bulletin)}
                         disabled={!hasManage}
@@ -233,27 +253,32 @@ const Bulletins = () => {
                         {bulletin.isActive ? 'Active' : 'Inactive'}
                       </button>
                     </td>
-                    <td className="py-4 px-6 text-right flex items-center justify-end gap-2">
-                      {hasManage ? (
-                        <>
-                          <button 
-                            onClick={() => handleEdit(bulletin)}
-                            className="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition-colors"
-                            title="Edit Update"
-                          >
-                            <FaEdit />
-                          </button>
-                          <button 
-                            onClick={() => handleDelete(bulletin._id)}
-                            className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors"
-                            title="Delete Update"
-                          >
-                            <FaTrash />
-                          </button>
-                        </>
-                      ) : (
-                        <div className="text-xs text-gray-400 font-bold">View Only</div>
-                      )}
+                    <td className="p-3 md:py-4 md:px-6 md:text-right block md:table-cell bg-stone-50 md:bg-transparent rounded-b-xl md:rounded-none">
+                      <div className="flex justify-between items-center w-full">
+                        <span className="md:hidden text-xs text-stone-500 uppercase tracking-wider font-semibold px-1">Actions</span>
+                        <div className="flex flex-wrap md:justify-end gap-2 w-full md:w-auto justify-end">
+                          {hasManage ? (
+                            <>
+                              <button 
+                                onClick={() => handleEdit(bulletin)}
+                                className="w-10 h-10 md:w-auto md:h-auto md:p-2 flex items-center justify-center text-blue-500 bg-white md:bg-transparent border border-stone-200 md:border-none hover:bg-blue-50 rounded-lg transition-colors flex-1 md:flex-none shadow-sm md:shadow-none"
+                                title="Edit Update"
+                              >
+                                <FaEdit />
+                              </button>
+                              <button 
+                                onClick={() => handleDelete(bulletin._id)}
+                                className="w-10 h-10 md:w-auto md:h-auto md:p-2 flex items-center justify-center text-red-500 bg-white md:bg-transparent border border-stone-200 md:border-none hover:bg-red-50 rounded-lg transition-colors flex-1 md:flex-none shadow-sm md:shadow-none"
+                                title="Delete Update"
+                              >
+                                <FaTrash />
+                              </button>
+                            </>
+                          ) : (
+                            <div className="text-xs text-gray-400 font-bold inline-block w-full text-right md:w-auto">View Only</div>
+                          )}
+                        </div>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -267,3 +292,4 @@ const Bulletins = () => {
 };
 
 export default Bulletins;
+

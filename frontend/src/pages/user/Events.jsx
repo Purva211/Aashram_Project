@@ -497,7 +497,7 @@ const UserEvents = () => {
                       <motion.div 
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
+                        viewport={{ once: false, amount: 0.1 }}
                         key={event._id}
                         className="group relative bg-white rounded-3xl p-6 shadow-sm border border-stone-100 hover:border-[#D4AF37]/40 hover:shadow-[0_15px_30px_-10px_rgba(212,175,55,0.15)] hover:-translate-y-1 transition-all duration-500 overflow-hidden"
                       >
@@ -556,7 +556,7 @@ const UserEvents = () => {
                     <motion.div 
                       initial={{ opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
+                      viewport={{ once: false, amount: 0.1 }}
                       transition={{ delay: idx * 0.1 }}
                       key={event._id}
                       className="bg-white rounded-[2rem] overflow-hidden shadow-sm border border-stone-100 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] hover:border-[#D4AF37]/30 hover:-translate-y-1.5 transition-all duration-500 flex flex-col"
@@ -628,12 +628,12 @@ const UserEvents = () => {
                   layout
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
+                  viewport={{ once: false, amount: 0.1 }}
                   transition={{ duration: 0.5, delay: idx * 0.1 }}
                   key={event._id}
-                  className="group bg-white rounded-[2.5rem] overflow-hidden shadow-lg shadow-stone-200/50 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 border border-stone-100 flex flex-col"
+                  className="group bg-white rounded-3xl overflow-hidden shadow-lg shadow-stone-200/50 hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 border border-stone-100 flex flex-col"
                 >
-                  <div className="relative aspect-[4/3] overflow-hidden bg-stone-100">
+                  <div className="relative aspect-video overflow-hidden bg-stone-100">
                     <img 
                       src={getImageUrl(event.featuredImage)} 
                       alt={event.title}
@@ -641,8 +641,8 @@ const UserEvents = () => {
                     />
                     
                     {/* Status Badge */}
-                    <div className="absolute top-6 left-6 flex gap-2 z-20">
-                      <span className={`px-4 py-1.5 backdrop-blur-md text-[10px] font-black rounded-full uppercase tracking-widest shadow-md flex items-center gap-2 ${
+                    <div className="absolute top-4 left-4 flex gap-2 z-20">
+                      <span className={`px-3 py-1 backdrop-blur-md text-[9px] font-black rounded-full uppercase tracking-widest shadow-md flex items-center gap-2 ${
                         event.status === 'ongoing' ? 'bg-green-500/90 text-white' : 
                         event.status === 'upcoming' ? 'bg-amber-500/90 text-white' : 'bg-stone-900/70 text-white'
                       }`}>
@@ -652,52 +652,52 @@ const UserEvents = () => {
                     </div>
 
                     {/* Date Badge */}
-                    <div className="absolute bottom-6 right-6 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl overflow-hidden z-20 border border-white/60 text-center min-w-[3.5rem]">
-                      <div className="bg-amber-100 text-amber-700 text-[9px] font-black uppercase tracking-widest py-1.5">
+                    <div className="absolute bottom-4 right-4 bg-white/95 backdrop-blur-md rounded-xl shadow-xl overflow-hidden z-20 border border-white/60 text-center min-w-[3rem]">
+                      <div className="bg-amber-100 text-amber-700 text-[8px] font-black uppercase tracking-widest py-1">
                         {new Date(event.eventDate).toLocaleDateString('en-US', { month: 'short' })}
                       </div>
-                      <div className="text-xl font-black text-stone-900 py-1.5 bg-white">
+                      <div className="text-lg font-black text-stone-900 py-1 bg-white">
                         {new Date(event.eventDate).getDate()}
                       </div>
                       {activeTab === 'past' && (
-                        <div className="text-[9px] font-bold text-stone-500 py-1 bg-stone-50 border-t border-stone-100">
+                        <div className="text-[8px] font-bold text-stone-500 py-0.5 bg-stone-50 border-t border-stone-100">
                           {new Date(event.eventDate).getFullYear()}
                         </div>
                       )}
                     </div>
                   </div>
 
-                  <div className="p-8 flex flex-col flex-1 relative">
-                    <span className="inline-block px-3 py-1 bg-stone-100 rounded-md text-stone-500 text-[10px] font-black uppercase tracking-widest mb-4 w-fit">
+                  <div className="p-5 flex flex-col flex-1 relative">
+                    <span className="inline-block px-2 py-0.5 bg-stone-100 rounded text-stone-500 text-[9px] font-black uppercase tracking-widest mb-2 w-fit">
                       {event.branch?.name || "Global"}
                     </span>
                     
-                    <h3 className="text-xl font-serif font-bold text-stone-900 line-clamp-2 leading-tight mb-4 group-hover:text-amber-700 transition-colors">
+                    <h3 className="text-lg font-serif font-bold text-stone-900 line-clamp-1 leading-tight mb-2 group-hover:text-amber-700 transition-colors">
                       {event.title}
                     </h3>
                     
-                    <p className="text-stone-500 text-sm font-light mb-8 line-clamp-2 leading-relaxed flex-1">
+                    <p className="text-stone-500 text-xs font-light mb-4 line-clamp-2 leading-relaxed flex-1">
                       {event.shortDescription || event.fullDescription || "Join our divine celebration filled with devotion, positivity, blessings, and spiritual peace."}
                     </p>
                      
-                    <div className="space-y-3 mb-8 pt-6 border-t border-stone-100">
-                      <div className="flex items-center gap-3 text-stone-600 text-sm font-medium">
-                        <MapPin className="w-4 h-4 text-amber-500" />
+                    <div className="space-y-2 mb-4 pt-4 border-t border-stone-100">
+                      <div className="flex items-center gap-2 text-stone-600 text-xs font-medium">
+                        <MapPin className="w-3.5 h-3.5 text-amber-500" />
                         <span className="truncate">{event.location}</span>
                       </div>
-                      <div className="flex items-center gap-3 text-stone-600 text-sm font-medium">
-                        <Clock className="w-4 h-4 text-amber-500" />
+                      <div className="flex items-center gap-2 text-stone-600 text-xs font-medium">
+                        <Clock className="w-3.5 h-3.5 text-amber-500" />
                         <span>{event.eventTime}</span>
                       </div>
                     </div>
 
                     <Link 
                       to={`/events/${event.slug}`}
-                      className="inline-flex items-center justify-between w-full text-stone-900 font-bold text-sm tracking-widest uppercase hover:text-amber-600 transition-colors group/link"
+                      className="inline-flex items-center justify-between w-full text-stone-900 font-bold text-[10px] tracking-widest uppercase hover:text-amber-600 transition-colors group/link"
                     >
                       {event.videoFile && activeTab === 'past' ? 'Watch Recording' : 'View Details'}
-                      <div className="w-10 h-10 rounded-full bg-stone-50 flex items-center justify-center group-hover/link:bg-amber-50 group-hover/link:text-amber-600 transition-colors">
-                        {event.videoFile && activeTab === 'past' ? <FaVideo className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
+                      <div className="w-8 h-8 rounded-full bg-stone-50 flex items-center justify-center group-hover/link:bg-amber-50 group-hover/link:text-amber-600 transition-colors">
+                        {event.videoFile && activeTab === 'past' ? <FaVideo className="w-3 h-3" /> : <ArrowRight className="w-3 h-3" />}
                       </div>
                     </Link>
                   </div>
