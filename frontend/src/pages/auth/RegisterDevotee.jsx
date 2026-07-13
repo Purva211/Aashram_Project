@@ -46,15 +46,22 @@ const RegisterDevotee = () => {
 
   // Search relatives state
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchState, setSearchState] = useState('');
+  const [searchVillage, setSearchVillage] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [selectedRelative, setSelectedRelative] = useState(null);
 
   const handleSearchRelatives = async () => {
-    if (!searchQuery.trim()) return;
+    if (!searchQuery.trim() && !searchState.trim() && !searchVillage.trim()) return;
     setLoading(true);
     setError('');
     try {
-      const res = await api.get(`/family/search?q=${encodeURIComponent(searchQuery)}`);
+      let queryParams = [];
+      if (searchQuery.trim()) queryParams.push(`q=${encodeURIComponent(searchQuery.trim())}`);
+      if (searchState.trim()) queryParams.push(`state=${encodeURIComponent(searchState.trim())}`);
+      if (searchVillage.trim()) queryParams.push(`village=${encodeURIComponent(searchVillage.trim())}`);
+      
+      const res = await api.get(`/family/search?${queryParams.join('&')}`);
       setSearchResults(res.data.data || []);
     } catch (err) {
       setError('Failed to search family members.');
@@ -289,6 +296,23 @@ const RegisterDevotee = () => {
                       >
                         Search
                       </button>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <input 
+                        type="text" 
+                        value={searchState}
+                        onChange={(e) => setSearchState(e.target.value)}
+                        placeholder="Filter by State"
+                        className="bg-white border border-slate-200 rounded-xl px-3 py-2 text-[11px] font-bold focus:outline-none"
+                      />
+                      <input 
+                        type="text" 
+                        value={searchVillage}
+                        onChange={(e) => setSearchVillage(e.target.value)}
+                        placeholder="Filter by Village"
+                        className="bg-white border border-slate-200 rounded-xl px-3 py-2 text-[11px] font-bold focus:outline-none"
+                      />
                     </div>
 
                     {searchResults.length > 0 && (

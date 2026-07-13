@@ -9,12 +9,6 @@ require("dotenv").config();
 console.log("ENV FILE TEST");
 console.log(process.env.EMAIL_USER);
 
-// Connect to MongoDB
-connectDB();
-
-// Initialize cron scheduler
-startCronJobs();
-
 const http = require("http");
 const { Server } = require("socket.io");
 
@@ -36,8 +30,16 @@ io.on("connection", (socket) => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
+// Connect to MongoDB and start server
+connectDB().then(() => {
+  // Initialize cron scheduler after DB connection
+  startCronJobs();
 
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  const PORT = process.env.PORT || 5000;
+  server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}).catch(err => {
+  console.error("Critical error starting backend server:", err);
+  process.exit(1);
 });
