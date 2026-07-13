@@ -1,5 +1,18 @@
 const mongoose = require("mongoose");
 
+// Set up connection event listeners
+mongoose.connection.on("connected", () => {
+  console.log("Mongoose connected to MongoDB.");
+});
+
+mongoose.connection.on("error", (err) => {
+  console.error(`Mongoose connection error: ${err.message}`);
+});
+
+mongoose.connection.on("disconnected", () => {
+  console.warn("Mongoose disconnected from MongoDB. Attempting to reconnect...");
+});
+
 const connectDB = async (retries = 5, delay = 5000) => {
   while (retries > 0) {
     try {
@@ -13,7 +26,8 @@ const connectDB = async (retries = 5, delay = 5000) => {
       await new Promise(res => setTimeout(res, delay));
     }
   }
-  console.error("MongoDB connection failed after all retries.");
+  console.error("MongoDB connection failed after all retries. Exiting process...");
+  process.exit(1);
 };
 
 module.exports = connectDB;

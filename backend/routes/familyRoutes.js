@@ -2,14 +2,17 @@ const express = require("express");
 const router = express.Router();
 const familyController = require("../controllers/familyController");
 const authMiddleware = require("../middleware/authMiddleware");
+const optionalAuthMiddleware = require("../middleware/optionalAuthMiddleware");
 
-// All routes require authentication
+// Search & suggestions can be accessed without a token (e.g., during registration)
+router.get("/search", optionalAuthMiddleware, familyController.searchFamilies);
+router.get("/search-suggestions", optionalAuthMiddleware, familyController.getSearchSuggestions);
+
+// All other routes require authentication
 router.use(authMiddleware);
 
-// Search & filter routes
-router.get("/search", familyController.searchFamilies);
+// Search & filter routes (Authenticated)
 router.get("/by-city", familyController.getFamiliesByCity);
-router.get("/search-suggestions", familyController.getSearchSuggestions);
 
 // Dynamic dropdown metadata routes
 router.get("/filters/states", familyController.getStates);

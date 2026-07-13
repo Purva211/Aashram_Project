@@ -14,7 +14,7 @@ module.exports = async (req, res, next) => {
   }
 
   if (!token) {
-    return next(); // Proceed without setting req.user
+    return next();
   }
 
   try {
@@ -31,26 +31,25 @@ module.exports = async (req, res, next) => {
       case "Devotee":
         user = await Devotee.findById(decoded.id);
         break;
+      case "DocumentHandler":
+      case "document_admin":
+        user = await DocumentAdmin.findById(decoded.id);
+        break;
       case "BranchManager":
         user = await BranchManager.findById(decoded.id);
         break;
       case "Accountant":
         user = await Accountant.findById(decoded.id);
         break;
-      case "DocumentHandler":
-      case "document_admin":
-        user = await DocumentAdmin.findById(decoded.id);
-        break;
     }
 
     if (user) {
-      user.role = decoded.role;
       req.user = user;
+      req.user.role = decoded.role;
     }
     next();
   } catch (error) {
-    // If token is invalid, just proceed as an unauthenticated user instead of throwing an error
-    console.error("Optional auth error:", error);
+    // If verification fails, just proceed as unauthenticated
     next();
   }
 };

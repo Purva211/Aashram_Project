@@ -73,10 +73,12 @@ exports.searchFamilies = async (req, res) => {
     const matchCriteria = { isDeleted: { $ne: true } };
 
     // Role-based restrictions
-    if (req.user.role === 'BranchManager') {
-      matchCriteria.branch = req.user.branch;
-    } else if (req.user.role === 'Devotee') {
-      matchCriteria.familyRootId = req.user.familyRootId;
+    if (req.user) {
+      if (req.user.role === 'BranchManager') {
+        matchCriteria.branch = req.user.branch;
+      } else if (req.user.role === 'Devotee') {
+        matchCriteria.familyRootId = req.user.familyRootId;
+      }
     }
 
     // Direct filter mapping
@@ -393,7 +395,7 @@ exports.getSearchSuggestions = async (req, res) => {
       searchTokens: { $all: searchTokens }
     };
     
-    if (req.user.role === 'BranchManager') {
+    if (req.user && req.user.role === 'BranchManager') {
       matchCriteria.branch = req.user.branch;
     }
     
