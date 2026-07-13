@@ -136,7 +136,7 @@ const ManageDocumentAdmins = () => {
     <div className="h-full flex flex-col relative z-10">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 mb-2 font-serif">Document Admins</h1>
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-900 mb-2 font-serif flex items-center tracking-tight">Document Admins</h1>
           <p className="text-gray-500">Manage admins, their contact information, and active status.</p>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full md:w-auto mt-4 md:mt-0">
@@ -159,10 +159,10 @@ const ManageDocumentAdmins = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-xl border border-gray-100 flex-1 overflow-hidden flex flex-col relative z-20">
+      <div className="md:bg-white md:rounded-2xl md:shadow-xl md:border md:border-gray-100 flex-1 overflow-hidden flex flex-col relative z-20">
         <div className="overflow-x-auto flex-1">
-          <table className="w-full text-left">
-            <thead>
+          <table className="w-full text-left block md:table">
+            <thead className="hidden md:table-header-group">
               <tr className="bg-gray-50 border-b border-gray-100 text-gray-500 text-sm uppercase tracking-wider">
                 <th className="p-6 font-semibold cursor-pointer hover:bg-gray-200 transition-colors" onClick={() => handleSort('email')}>
                   <div className="flex items-center gap-1">Admin Email {sortConfig.key === 'email' && (sortConfig.direction === 'asc' ? <FiChevronUp/> : <FiChevronDown/>)}</div>
@@ -176,7 +176,7 @@ const ManageDocumentAdmins = () => {
                 <th className="p-6 font-semibold text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="block md:table-row-group w-full divide-y divide-gray-50">
               {loading ? (
                 <tr>
                   <td colSpan="3" className="text-center py-12 text-gray-500">Loading admins...</td>
@@ -187,39 +187,49 @@ const ManageDocumentAdmins = () => {
                 </tr>
               ) : (
                 paginatedData.map((admin) => (
-                  <tr key={admin._id} className="hover:bg-gray-50 transition-colors">
-                    <td className="p-6">
-                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
-                        <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
+                  <tr key={admin._id} className="flex flex-col md:table-row w-full bg-white md:bg-transparent border border-gray-100 md:border-b md:border-x-0 md:border-t-0 md:border-gray-50 rounded-xl md:rounded-none mb-4 md:mb-0 shadow-sm md:shadow-none hover:bg-gray-50/50">
+                    {/* Mobile Card Top & Desktop Info */}
+                    <td className="p-3 md:p-6 flex flex-col md:table-cell w-full border-b border-gray-50 md:border-none">
+                      <div className="flex md:hidden justify-between items-start mb-3">
+                        <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Contact: {admin.contactNo || 'N/A'}</span>
+                        <span className={`px-2.5 py-1 font-bold rounded-lg border text-[11px] ${admin.status === 'Active' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'}`}>
+                          {admin.status}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3 w-full md:w-auto">
+                        <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
                           <FaUserShield />
                         </div>
-                        <span className="font-bold text-slate-900">{admin.email}</span>
+                        <span className="font-bold text-slate-900 truncate">{admin.email}</span>
                       </div>
                     </td>
-                    <td className="p-6 text-gray-600 font-medium">
+                    <td className="hidden md:table-cell p-6 text-gray-600 font-medium">
                       {admin.contactNo || 'N/A'}
                     </td>
-                    <td className="p-6 text-gray-600">
-                      <span className={`px-3 py-1 font-bold rounded-full text-sm ${admin.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                    <td className="hidden md:table-cell p-6 text-gray-600">
+                      <span className={`px-3 py-1 font-bold rounded-full text-sm inline-block ${admin.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                         {admin.status}
                       </span>
                     </td>
-                    <td className="p-6 text-right">
-                      <div className="flex justify-end gap-2">
-                        <button
-                          onClick={() => handleEditModal(admin)}
-                          className="w-10 h-10 inline-flex rounded-lg bg-indigo-50 text-indigo-600 items-center justify-center hover:bg-indigo-600 hover:text-white transition-colors"
-                          title="Edit"
-                        >
-                          <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                        </button>
-                        <button
-                          onClick={() => handleDelete(admin._id)}
-                          className="w-10 h-10 inline-flex rounded-lg bg-red-50 text-red-600 items-center justify-center hover:bg-red-600 hover:text-white transition-colors"
-                          title="Delete"
-                        >
-                          <FaTrash />
-                        </button>
+                    <td className="p-3 md:p-6 md:text-right flex flex-col md:table-cell w-full bg-gray-50 md:bg-transparent rounded-b-xl md:rounded-none">
+                      <div className="flex justify-between items-center w-full">
+                        <span className="md:hidden text-xs text-gray-500 uppercase tracking-wider font-semibold px-1">Actions</span>
+                        <div className="flex flex-wrap md:justify-end gap-2 w-full md:w-auto justify-end">
+                          <button
+                            onClick={() => handleEditModal(admin)}
+                            className="w-10 h-10 flex-1 md:flex-none inline-flex rounded-lg bg-white md:bg-indigo-50 text-indigo-600 border border-gray-200 md:border-none items-center justify-center hover:bg-indigo-600 hover:text-white transition-colors shadow-sm md:shadow-none"
+                            title="Edit"
+                          >
+                            <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                          </button>
+                          <button
+                            onClick={() => handleDelete(admin._id)}
+                            className="w-10 h-10 flex-1 md:flex-none inline-flex rounded-lg bg-white md:bg-red-50 text-red-600 border border-gray-200 md:border-none items-center justify-center hover:bg-red-600 hover:text-white transition-colors shadow-sm md:shadow-none"
+                            title="Delete"
+                          >
+                            <FaTrash />
+                          </button>
+                        </div>
                       </div>
                     </td>
                   </tr>
@@ -239,7 +249,7 @@ const ManageDocumentAdmins = () => {
       {/* Modal for Add Admin */}
       <AnimatePresence>
       {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -252,7 +262,7 @@ const ManageDocumentAdmins = () => {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-lg relative z-10 overflow-hidden"
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-lg relative z-10 overflow-hidden flex flex-col max-h-[90vh]"
             >
               <div className="bg-gradient-to-r from-saffron-600 to-saffron-500 p-6 text-white flex justify-between items-center">
                 <h3 className="text-xl font-bold font-serif">{currentAdmin ? 'Edit Document Admin' : 'Create Document Admin'}</h3>
@@ -261,7 +271,7 @@ const ManageDocumentAdmins = () => {
                 </button>
               </div>
               
-              <form onSubmit={handleSubmit} className="p-6">
+              <form onSubmit={handleSubmit} className="p-6 overflow-y-auto custom-scrollbar">
                 <div className="space-y-5">
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Admin Email</label>
@@ -347,18 +357,18 @@ const ManageDocumentAdmins = () => {
                   </div>
                 </div>
                 
-                <div className="mt-8 flex justify-end gap-3">
+                <div className="mt-8 flex flex-col md:flex-row justify-end gap-3">
                   <button
                     type="button"
                     onClick={handleCloseModal}
-                    className="px-6 py-3 rounded-xl font-semibold text-gray-600 hover:bg-gray-100 transition-colors"
+                    className="w-full md:w-auto px-6 py-3 rounded-xl font-semibold text-gray-600 hover:bg-gray-100 transition-colors order-2 md:order-1"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="px-6 py-3 rounded-xl font-semibold bg-blue-900 hover:bg-blue-800 text-white transition-colors flex items-center gap-2"
+                    className="w-full md:w-auto justify-center px-6 py-3 rounded-xl font-semibold bg-blue-900 hover:bg-blue-800 text-white transition-colors flex items-center gap-2 order-1 md:order-2"
                   >
                     <FaSave /> {submitting ? 'Saving...' : currentAdmin ? 'Update Admin' : 'Create Admin'}
                   </button>
@@ -373,3 +383,7 @@ const ManageDocumentAdmins = () => {
 };
 
 export default ManageDocumentAdmins;
+
+
+
+

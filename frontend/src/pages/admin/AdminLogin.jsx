@@ -67,7 +67,7 @@ const Login = () => {
       {/* Left Pane */}
       <div className="hidden lg:flex w-1/2 flex-col justify-center items-center p-20 z-10 relative text-center">
         <div className="absolute rounded-full w-[400px] h-[400px] bg-white blur-[100px] animate-pulse-glow pointer-events-none opacity-50"></div>
-        <h1 className="text-6xl font-bold text-saffron-600 mb-6 drop-shadow-md flex flex-wrap items-center justify-center gap-4">
+        <h1 className="text-6xl font-bold text-saffron-600 mb-6 drop-shadow-md flex items-center justify-center gap-4">
           <span className="text-4xl text-saffron-500">🔱</span> Shri Gurumurti Rudrapashupati Lingayat Monastery <span className="text-4xl text-saffron-500">🔱</span>
         </h1>
         <p className="text-2xl text-gray-700 font-medium tracking-wide max-w-lg leading-relaxed mix-blend-multiply">

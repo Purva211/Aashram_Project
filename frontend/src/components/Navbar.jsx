@@ -91,7 +91,17 @@ const Navbar = () => {
       ]
     },
     { name: t('navbar.events') || 'Events', path: '/events' },
-    { name: t('navbar.gallery') || 'Gallery', path: '/gallery' },
+    {
+      name: t('navbar.gallery') || 'Gallery',
+      dropdown: [
+        { name: 'All Photos', path: '/gallery' },
+        { name: 'Festivals', path: '/gallery?category=Festivals' },
+        { name: 'Pooja', path: '/gallery?category=Pooja' },
+        { name: 'Pravachan', path: '/gallery?category=Pravachan' },
+        { name: 'Monastery', path: '/gallery?category=Monastery' },
+        { name: 'News', path: '/gallery?category=News' }
+      ]
+    },
     {
       name: t('navbar.donations') || 'Donation & Seva',
       dropdown: [
@@ -168,12 +178,12 @@ const Navbar = () => {
 
         {/* Desktop Links */}
         <div className="hidden lg:flex items-center gap-1 xl:gap-2">
-          {navLinks.map((link) => {
+          {navLinks.map((link, idx) => {
             const isActive = location.pathname === link.path || link.dropdown?.some(d => location.pathname === d.path);
             
             if (link.dropdown) {
               return (
-                <div key={link.name} className="relative group">
+                <div key={idx} className="relative group">
                   <div
                     className={`cursor-pointer flex items-center gap-1 font-serif font-bold text-[14px] tracking-widest px-4 py-2 rounded-xl transition-all duration-300 ${
                       isActive
@@ -202,7 +212,7 @@ const Navbar = () => {
 
             return (
               <Link
-                key={link.name}
+                key={idx}
                 to={link.path}
                 className={`font-serif font-bold text-[14px] tracking-widest px-4 py-2 rounded-xl transition-all duration-300 relative group ${
                   isActive
@@ -287,7 +297,7 @@ const Navbar = () => {
                     <p className="text-xs text-primary capitalize mt-0.5">{user.role}</p>
                   </div>
                   <Link
-                    to={user.role === 'BranchManager' ? '/branch/dashboard' : user.role === '' ? '/document-handler/dashboard' : `/${user.role.toLowerCase()}/dashboard`}
+                    to={user.role === 'BranchManager' ? '/branch/dashboard' : (user.role === 'DocumentHandler' || user.role === 'document_admin') ? '/document-handler/dashboard' : `/${user.role.toLowerCase()}/dashboard`}
                     className="block w-full text-left px-4 py-2.5 text-sm font-medium text-caramel-deep hover:bg-primary/10 hover:text-primary rounded-xl transition-colors mb-1"
                   >
                     Go to Dashboard
@@ -415,7 +425,7 @@ const Navbar = () => {
                   </button>
                 ) : (
                   <Link
-                    to={user.role === 'BranchManager' ? '/branch/dashboard' : user.role === '' ? '/document-handler/dashboard' : `/${user.role.toLowerCase()}/dashboard`}
+                    to={user.role === 'BranchManager' ? '/branch/dashboard' : (user.role === 'DocumentHandler' || user.role === 'document_admin') ? '/document-handler/dashboard' : `/${user.role.toLowerCase()}/dashboard`}
                     className="w-full text-center py-3 bg-gradient-to-r from-primary to-gold text-caramel-deep rounded-xl font-bold text-sm tracking-wider shadow-soft block uppercase"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >

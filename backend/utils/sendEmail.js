@@ -20,8 +20,9 @@ const sendEmail = async (options) => {
     });
 
     const mailOptions = {
-      from: `Kolekar Maha Swamiji Monastery, Kole <${process.env.EMAIL_USER}>`,
+      from: options.from || `Kolekar Maha Swamiji Monastery, Kole <${process.env.EMAIL_USER}>`,
       to: options.email,
+      replyTo: options.replyTo,
       subject: options.subject,
       text: options.message,
       html: options.html,

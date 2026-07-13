@@ -4,6 +4,7 @@ import { FaEnvelope, FaLock, FaArrowRight, FaCheckCircle } from "react-icons/fa"
 import OtpInput from "../../components/OTPInput";
 import { toast, Toaster } from "react-hot-toast";
 import api from "../../utils/api";
+import { getPasswordError } from "../../utils/validationUtils";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
@@ -45,11 +46,9 @@ const ForgotPassword = () => {
     if (newPassword !== confirmPassword) {
       return toast.error("Passwords do not match");
     }
-    if (!/^[a-zA-Z0-9]+$/.test(newPassword)) {
-      return toast.error("Password must contain only alphanumeric characters (letters and numbers)");
-    }
-    if (newPassword.length < 6) {
-      return toast.error("Password must be at least 6 characters long");
+    const pwdError = getPasswordError(newPassword);
+    if (pwdError) {
+      return toast.error(pwdError);
     }
 
     setLoading(true);
@@ -149,13 +148,16 @@ const ForgotPassword = () => {
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                   <FaLock className="text-caramel-dark group-focus-within:text-saffron-500 transition-colors" />
                 </div>
-                <input 
-                  type="password" 
-                  placeholder="New Password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3.5 bg-white border border-gray-200 rounded-xl focus:border-saffron-400 focus:ring-2 focus:ring-saffron-100 outline-none transition-all text-caramel-deep placeholder-gray-400 shadow-sm font-medium"
-                />
+                  <input 
+                    required
+                    type="password" 
+                    pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}" 
+                    title="Password must be at least 8 chars long with 1 uppercase, 1 lowercase, 1 number, and 1 special character"
+                    placeholder="New Password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="w-full pl-11 pr-4 py-3.5 bg-white border border-gray-200 rounded-xl focus:border-saffron-400 focus:ring-2 focus:ring-saffron-100 outline-none transition-all text-caramel-deep placeholder-gray-400 shadow-sm font-medium"
+                  />
               </div>
 
               <div className="relative group">

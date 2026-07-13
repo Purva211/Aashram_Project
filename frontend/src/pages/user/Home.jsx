@@ -5,7 +5,7 @@ const CountUp = CountUpRaw.default || CountUpRaw;
 import { Link } from 'react-router-dom';
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
-import { FaBookOpen, FaCalendarAlt, FaChevronRight, FaHands, FaLeaf, FaMapMarkerAlt, FaOm, FaPlay, FaPrayingHands, FaQuoteLeft, FaSearch, FaVideo, FaTimes } from 'react-icons/fa';
+import { FaBookOpen, FaCalendarAlt, FaChevronRight, FaHands, FaLeaf, FaMapMarkerAlt, FaOm, FaPlay, FaPrayingHands, FaQuoteLeft, FaSearch, FaVideo, FaTimes, FaChevronLeft } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 
 import herobg1 from "../../assets/kolekar1.jpeg";
@@ -28,14 +28,14 @@ const StatCounter = ({ end, label, duration = 2.5, textColor = "text-[#4A0E0E]",
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
+      viewport={{ once: false, amount: 0.1 }}
       transition={{ duration: 0.6 }}
       className="flex flex-col items-center justify-center p-6 relative group"
     >
       <motion.span
         initial={{ scale: 0.5, opacity: 0 }}
         whileInView={{ scale: 1, opacity: 1 }}
-        viewport={{ once: true }}
+        viewport={{ once: false, amount: 0.1 }}
         transition={{ type: "spring", stiffness: 100, delay: 0.2 }}
         className={`text-4xl md:text-6xl font-black ${textColor} mb-3 font-serif relative z-10 drop-shadow-sm`}
       >
@@ -53,9 +53,7 @@ const Home = () => {
   const [allEvents, setAllEvents] = useState([]);
   const [branches, setBranches] = useState([]);
   const [sliderNews, setSliderNews] = useState([]);
-  const [sliderIndex, setSliderIndex] = useState(0);
-  const [selectedNews, setSelectedNews] = useState(null);
-  const [selectedNewsSlideIdx, setSelectedNewsSlideIdx] = useState(0);
+  const [selectedNewsImageIndex, setSelectedNewsImageIndex] = useState(null);
   const [isLive, setIsLive] = useState(false);
   const [greeting, setGreeting] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -139,13 +137,7 @@ const Home = () => {
     }
   };
 
-  useEffect(() => {
-    if (sliderNews.length <= 1) return;
-    const timer = setInterval(() => {
-      setSliderIndex(prev => (prev + 1) % sliderNews.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, [sliderNews]);
+  // removed slider timer logic
 
   const formatDateString = (date) => {
     if (!date) return '';
@@ -235,7 +227,7 @@ const Home = () => {
 
             <h4 className="text-[#FF8C00] font-bold tracking-[0.3em] uppercase text-xs mb-4">{greeting}</h4>
 
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold text-white mb-6 leading-[1.1] tracking-tight drop-shadow-lg">
+            <h1 className="font-serif font-bold text-white mb-6 leading-[1.1] tracking-tight drop-shadow-lg">
               The Divine Abode of <br className="hidden md:block" />
               Kolekar Maharaj
             </h1>
@@ -397,7 +389,7 @@ const Home = () => {
             <motion.div 
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
+              viewport={{ once: false, amount: 0.1 }}
               transition={{ duration: 1, ease: "easeOut" }}
               className="lg:w-1/2"
             >
@@ -428,7 +420,7 @@ const Home = () => {
               <motion.div 
                 initial={{ opacity: 0, scale: 0.9, rotate: -2 }}
                 whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
+                viewport={{ once: false, amount: 0.1 }}
                 transition={{ duration: 1, ease: "easeOut" }}
                 className="relative rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white z-10 group"
               >
@@ -475,7 +467,7 @@ const Home = () => {
             <motion.div 
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: false, amount: 0.1 }}
               transition={{ duration: 0.8 }}
               className="w-full lg:w-5/12 relative rounded-[1.5rem] sm:rounded-[2.5rem] overflow-hidden shadow-2xl group"
             >
@@ -497,7 +489,7 @@ const Home = () => {
               <motion.div 
                 initial={{ opacity: 0, x: 50 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
+                viewport={{ once: false, amount: 0.1 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
                 whileHover={{ y: -5 }}
                 className="bg-gray-50 border border-gray-100 p-6 sm:p-8 rounded-[1.5rem] sm:rounded-[2rem] shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden group"
@@ -510,7 +502,7 @@ const Home = () => {
                 <p className="text-gray-600 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">
                   Spanning generations of divine grace, our history stands as a beacon of hope, preserving ancient rituals and eternal scriptures.
                 </p>
-                <Link to="/lineage" className="inline-flex items-center gap-2 text-gray-900 font-bold text-[10px] sm:text-sm uppercase tracking-wider hover:text-orange-600 transition-colors">
+                <Link to="/math-history" className="inline-flex items-center gap-2 text-gray-900 font-bold text-[10px] sm:text-sm uppercase tracking-wider hover:text-orange-600 transition-colors">
                   Read History <FaChevronRight size={10} className="sm:text-sm" />
                 </Link>
               </motion.div>
@@ -518,7 +510,7 @@ const Home = () => {
               <motion.div 
                 initial={{ opacity: 0, x: 50 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
+                viewport={{ once: false, amount: 0.1 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
                 whileHover={{ y: -5 }}
                 className="bg-orange-50 border border-orange-100 p-6 sm:p-8 rounded-[1.5rem] sm:rounded-[2rem] shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden group"
@@ -530,7 +522,7 @@ const Home = () => {
                 <p className="text-gray-700 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">
                   Rooted in profound devotion to Lord Shiva, embracing universal equality, spiritual awakening, and selfless service.
                 </p>
-                <Link to="/math-history" className="inline-flex items-center gap-2 text-gray-900 font-bold text-[10px] sm:text-sm uppercase tracking-wider hover:text-orange-600 transition-colors">
+                <Link to="/about/veerashaiva-philosophy" className="inline-flex items-center gap-2 text-gray-900 font-bold text-[10px] sm:text-sm uppercase tracking-wider hover:text-orange-600 transition-colors">
                   Explore Philosophy <FaChevronRight size={10} className="sm:text-sm" />
                 </Link>
               </motion.div>
@@ -540,84 +532,43 @@ const Home = () => {
         </div>
       </section>
 
-      {/* News & Announcements Slider Section */}
+      {/* News & Announcements Marquee Section */}
       <section className="py-16 lg:py-24 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden border-y border-stone-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mb-12 sm:mb-16">
+        {/* Om Watermark Background */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+          <FaOm className="text-stone-900 opacity-[0.05] blur-3xl text-[20rem] md:text-[30rem] lg:text-[40rem]" />
+        </div>
+
+        <div className="max-w-[100vw] mx-auto relative z-10">
+          <div className="text-center mb-12 sm:mb-16 px-4 max-w-7xl mx-auto">
             <span className="text-orange-500 font-bold tracking-[0.2em] uppercase text-[10px] sm:text-sm block mb-2 sm:mb-3">LATEST NEWS</span>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-gray-900">News & Announcements</h2>
           </div>
 
           {sliderNews.length > 0 ? (
-            <div className="relative group max-w-4xl mx-auto">
-              <div 
-                onClick={() => {
-                  setSelectedNews(sliderNews[sliderIndex]);
-                  setSelectedNewsSlideIdx(0);
-                }}
-                className="bg-stone-900 rounded-[2.5rem] shadow-2xl overflow-hidden h-[300px] sm:h-[450px] md:h-[500px] relative cursor-pointer group/slider border border-stone-200/20"
-              >
-                {/* Slide contents with transitions */}
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={sliderIndex}
-                    initial={{ opacity: 0, scale: 0.98 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.98 }}
-                    transition={{ duration: 0.4 }}
-                    className="w-full h-full"
+            <div className="relative w-full overflow-hidden flex flex-col group py-4">
+              <div className="flex w-max animate-marquee group-hover:[animation-play-state:paused]">
+                {/* Render the array twice for seamless looping */}
+                {[...sliderNews, ...sliderNews].map((news, idx) => (
+                  <div 
+                    key={idx}
+                    className="w-[100vw] sm:w-[50vw] md:w-[33.33vw] lg:w-[25vw] flex-shrink-0 px-3 cursor-pointer block"
+                    onClick={() => setSelectedNewsImageIndex(idx % sliderNews.length)}
                   >
-                    <img 
-                      src={getImageUrl(sliderNews[sliderIndex].coverImage)} 
-                      alt={sliderNews[sliderIndex].title} 
-                      className="w-full h-full object-contain object-center group-hover/slider:scale-102 transition-transform duration-[1.5s]" 
-                    />
-                    {/* Shadow overlay to make navigation arrows visible */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10"></div>
-                  </motion.div>
-                </AnimatePresence>
-
-                {/* Bullet indicators */}
-                {sliderNews.length > 1 && (
-                  <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2" onClick={(e) => e.stopPropagation()}>
-                    {sliderNews.map((_, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => setSliderIndex(idx)}
-                        className={`w-2.5 h-2.5 rounded-full transition-all ${sliderIndex === idx ? 'bg-orange-500 w-6 shadow-md shadow-orange-500/50' : 'bg-white/50 hover:bg-white'}`}
+                    <div className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 h-[250px] sm:h-[300px] md:h-[350px] relative group/card border border-stone-100">
+                      <img 
+                        src={getImageUrl(news.coverImage)} 
+                        alt={news.title || 'News image'} 
+                        className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700"
                       />
-                    ))}
+                    </div>
                   </div>
-                )}
+                ))}
               </div>
-
-              {/* Manual navigation arrows outside the clickable image to prevent clicking image when clicking arrows */}
-              {sliderNews.length > 1 && (
-                <>
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSliderIndex(prev => (prev - 1 + sliderNews.length) % sliderNews.length);
-                    }}
-                    className="absolute left-[-20px] sm:left-[-60px] top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-white border border-stone-100 shadow-xl text-stone-700 flex items-center justify-center hover:bg-orange-50 hover:text-orange-600 transition-all opacity-0 group-hover:opacity-100 hidden sm:flex"
-                  >
-                    <FaChevronRight className="rotate-180 text-sm" />
-                  </button>
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSliderIndex(prev => (prev + 1) % sliderNews.length);
-                    }}
-                    className="absolute right-[-20px] sm:right-[-60px] top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-white border border-stone-100 shadow-xl text-stone-700 flex items-center justify-center hover:bg-orange-50 hover:text-orange-600 transition-all opacity-0 group-hover:opacity-100 hidden sm:flex"
-                  >
-                    <FaChevronRight className="text-sm" />
-                  </button>
-                </>
-              )}
             </div>
           ) : (
-            <div className="text-center py-12 bg-[#FAF9F5] rounded-[2rem] border border-stone-200/50 max-w-lg mx-auto">
-              <p className="text-stone-500 font-light text-sm">No news updates available in the slider at this time.</p>
+            <div className="text-center py-12 bg-[#FAF9F5] rounded-[2rem] border border-stone-200/50 max-w-lg mx-auto z-10 relative">
+              <p className="text-stone-500 font-light text-sm">No news updates available at this time.</p>
             </div>
           )}
         </div>
@@ -635,7 +586,7 @@ const Home = () => {
             <motion.div 
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: false, amount: 0.1 }}
               transition={{ duration: 0.8 }}
               className="lg:w-1/2"
             >
@@ -685,7 +636,7 @@ const Home = () => {
             <motion.div 
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
+              viewport={{ once: false, amount: 0.1 }}
               transition={{ duration: 1 }}
               className="lg:w-1/2 w-full relative h-[400px] sm:h-[500px] lg:h-[600px] flex items-center justify-center mt-8 lg:mt-0"
             >
@@ -750,7 +701,7 @@ const Home = () => {
       </section>
 
       {/* Audio Player Section */}
-      <section className="relative z-30 bg-[#FDFBF7] px-6 py-12">
+      <section className="relative z-30 bg-[#FDFBF7] px-4 md:px-6 py-4 md:py-12">
         <div className="max-w-7xl mx-auto">
           <AudioPlayerWithLyrics />
         </div>
@@ -766,7 +717,7 @@ const Home = () => {
             <motion.h3
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: false, amount: 0.1 }}
               className="text-4xl md:text-5xl font-serif font-bold text-primary mb-6 tracking-tight"
             >
               {t('home.offerings_title') || 'Digital Temple Services'}
@@ -774,7 +725,7 @@ const Home = () => {
             <motion.p
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: false, amount: 0.1 }}
               transition={{ delay: 0.1 }}
               className="text-caramel-dark text-lg max-w-2xl mx-auto font-light"
             >
@@ -793,7 +744,7 @@ const Home = () => {
                 key={idx}
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
+                viewport={{ once: false, amount: 0.1 }}
                 transition={{ duration: 0.6, delay: idx * 0.1 }}
                 className={`group bg-white rounded-[2rem] p-8 border-0 shadow-[0_20px_50px_rgba(0,0,0,0.1)] hover:border-gold hover:shadow-[0_30px_60px_rgba(0,0,0,0.2)] hover:-translate-y-2 transition-all duration-500 relative overflow-hidden flex flex-col items-center text-center`}
               >
@@ -850,7 +801,7 @@ const Home = () => {
                     key={event._id}
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
+                    viewport={{ once: false, amount: 0.1 }}
                     transition={{ duration: 0.6, delay: idx * 0.1 }}
                     className="flex flex-col sm:flex-row bg-white rounded-2xl overflow-hidden group shadow-lg border border-gray-200 hover:shadow-2xl transition-all duration-500"
                   >
@@ -940,118 +891,57 @@ const Home = () => {
 
       <Footer />
 
-      {/* Detailed News Modal Popup */}
+      {/* Fullscreen Lightbox Modal for News */}
       <AnimatePresence>
-        {selectedNews && (
+        {selectedNewsImageIndex !== null && sliderNews.length > 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4"
-            onClick={() => setSelectedNews(null)}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-xl"
+            onClick={() => setSelectedNewsImageIndex(null)}
           >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-3xl overflow-hidden shadow-2xl max-w-5xl w-full flex flex-col md:flex-row relative"
-              onClick={(e) => e.stopPropagation()}
+            <button 
+              className="absolute top-6 right-6 md:top-10 md:right-10 w-12 h-12 bg-white/10 hover:bg-[#FF8C00] hover:text-[#4A0E0E] text-white rounded-full flex items-center justify-center transition-colors border border-white/20 z-[110]"
+              onClick={() => setSelectedNewsImageIndex(null)}
             >
-              {/* Left Side: Image Slider / Carousel */}
-              <div className="relative w-full md:w-[50%] h-[300px] md:h-[480px] bg-stone-900 flex items-center justify-center overflow-hidden group/modal shrink-0">
-                {(() => {
-                  const mediaList = [selectedNews.coverImage, ...(selectedNews.galleryImages || [])];
-                  const currentImgUrl = mediaList[selectedNewsSlideIdx % mediaList.length];
-                  
-                  return (
-                    <>
-                      <img src={getImageUrl(currentImgUrl)} alt={selectedNews.title} className="w-full h-full object-contain" />
-                      <div className="absolute inset-0 bg-black/20 pointer-events-none"></div>
-                      
-                      {/* Nav Arrows inside modal carousel */}
-                      {mediaList.length > 1 && (
-                        <>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedNewsSlideIdx(prev => (prev - 1 + mediaList.length) % mediaList.length);
-                            }}
-                            className="absolute left-4 w-10 h-10 rounded-full bg-white/20 hover:bg-white/40 text-white flex items-center justify-center transition-all opacity-0 group-hover/modal:opacity-100 shadow"
-                          >
-                            <FaChevronRight className="rotate-180" />
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedNewsSlideIdx(prev => (prev + 1) % mediaList.length);
-                            }}
-                            className="absolute right-4 w-10 h-10 rounded-full bg-white/20 hover:bg-white/40 text-white flex items-center justify-center transition-all opacity-0 group-hover/modal:opacity-100 shadow"
-                          >
-                            <FaChevronRight />
-                          </button>
+              <FaTimes className="w-5 h-5" />
+            </button>
 
-                          {/* Slide Indicator */}
-                          <div className="absolute bottom-4 right-4 px-3 py-1 bg-black/60 rounded-full text-white text-[10px] font-mono">
-                            { (selectedNewsSlideIdx % mediaList.length) + 1 } / { mediaList.length }
-                          </div>
-                        </>
-                      )}
-                    </>
-                  );
-                })()}
-              </div>
+            <button 
+              className="absolute left-4 md:left-10 w-12 h-12 md:w-16 md:h-16 bg-white/5 hover:bg-white/20 text-white rounded-full flex items-center justify-center transition-colors border border-white/10 z-[110] backdrop-blur-md"
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedNewsImageIndex((prev) => (prev - 1 + sliderNews.length) % sliderNews.length);
+              }}
+            >
+              <FaChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
+            </button>
+            <button 
+              className="absolute right-4 md:right-10 w-12 h-12 md:w-16 md:h-16 bg-white/5 hover:bg-white/20 text-white rounded-full flex items-center justify-center transition-colors border border-white/10 z-[110] backdrop-blur-md"
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedNewsImageIndex((prev) => (prev + 1) % sliderNews.length);
+              }}
+            >
+              <FaChevronRight className="w-5 h-5 md:w-6 md:h-6" />
+            </button>
 
-              {/* Right Side: News Information */}
-              <div className="w-full md:w-[50%] p-6 md:p-10 flex flex-col justify-between max-h-[400px] md:max-h-[480px] overflow-y-auto bg-[#FAF9F5]">
-                <div>
-                  <div className="flex flex-wrap items-center gap-2 mb-4">
-                    <span className="px-2.5 py-1 bg-saffron-500 text-white rounded-md text-[10px] font-bold uppercase tracking-wider shadow">
-                      {selectedNews.category}
-                    </span>
-                    {selectedNews.priority === 'High' && (
-                      <span className="px-2.5 py-1 bg-red-500 text-white rounded-md text-[10px] font-bold uppercase tracking-wider shadow">
-                        High Priority
-                      </span>
-                    )}
-                  </div>
-
-                  <h3 className="text-2xl sm:text-3xl font-serif font-bold text-stone-900 leading-tight mb-4">
-                    {selectedNews.title}
-                  </h3>
-
-                  <div className="text-xs text-stone-400 font-semibold mb-6 flex flex-wrap items-center gap-2 border-b border-stone-200/40 pb-4">
-                    <span>{formatDateString(selectedNews.publishDate)}</span>
-                    {selectedNews.branch?.name && (
-                      <>
-                        <span>•</span>
-                        <span>Branch: {selectedNews.branch.name}</span>
-                      </>
-                    )}
-                  </div>
-
-                  <div className="text-stone-600 text-sm sm:text-base leading-relaxed font-light whitespace-pre-wrap">
-                    {selectedNews.fullDescription || selectedNews.shortDescription}
-                  </div>
-                </div>
-
-                <div className="mt-8 pt-4 border-t border-stone-200/40 flex justify-end">
-                  <button
-                    onClick={() => setSelectedNews(null)}
-                    className="px-6 py-2.5 bg-stone-900 hover:bg-black text-white font-bold rounded-xl transition-colors text-xs uppercase tracking-wider shadow-md hover:shadow-lg"
-                  >
-                    Close
-                  </button>
-                </div>
-              </div>
-
-              {/* Close Button Top-Right */}
-              <button
-                onClick={() => setSelectedNews(null)}
-                className="absolute top-4 right-4 w-10 h-10 bg-white/95 hover:bg-red-600 hover:text-white text-stone-500 rounded-full flex items-center justify-center transition-all border border-stone-200 shadow z-50"
-              >
-                <FaTimes />
-              </button>
-            </motion.div>
+            <div 
+              className="relative w-full h-full flex flex-col items-center justify-center p-4 md:p-20"
+              onClick={(e) => e.stopPropagation()} 
+            >
+              <motion.img
+                key={selectedNewsImageIndex}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.3 }}
+                src={getImageUrl(sliderNews[selectedNewsImageIndex].coverImage)}
+                alt="News"
+                className="max-w-full max-h-[85vh] object-contain rounded-sm shadow-[0_20px_50px_rgba(0,0,0,0.5)] ring-1 ring-white/10"
+              />
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

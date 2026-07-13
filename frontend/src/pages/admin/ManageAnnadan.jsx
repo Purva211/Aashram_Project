@@ -61,7 +61,7 @@ const ManageAnnadan = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold flex flex-wrap items-center gap-2 text-slate-900"><FiHeart className="text-rose-500" /> Annadan Management</h1>
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold flex items-center gap-2 text-gray-900 tracking-tight"><FiHeart className="text-rose-500" /> Annadan Management</h1>
           <p className="text-gray-500 text-sm mt-1">Manage food donation requests, track beneficiaries, and monitor expenses.</p>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
@@ -133,76 +133,80 @@ const ManageAnnadan = () => {
       )}
 
       {/* List */}
-      <div className="bg-white border border-gray-100 shadow-sm rounded-2xl overflow-hidden flex flex-col border-t-4 border-t-saffron-500">
-        <div className="overflow-auto max-h-[500px] custom-scrollbar">
-          <div className="overflow-x-auto w-full">
-<table className="w-full text-left border-collapse relative">
-            <thead className="sticky top-0 z-20">
+      <div className="md:bg-white md:border md:border-gray-100 md:shadow-sm md:rounded-2xl overflow-hidden flex flex-col md:border-t-4 md:border-t-saffron-500 relative z-10">
+        <div className="w-full">
+            <table className="w-full text-left block md:table">
+            <thead className="hidden md:table-header-group">
               <tr className="bg-slate-100 border-b border-slate-200 text-xs uppercase tracking-wider text-slate-700 shadow-sm">
-                <th className="p-4 font-bold cursor-pointer hover:bg-slate-200 transition-colors bg-slate-100" onClick={() => handleSort('name')}>
+                <th className="p-4 md:p-6 font-bold cursor-pointer hover:bg-slate-200 transition-colors bg-slate-100" onClick={() => handleSort('name')}>
                   <div className="flex items-center gap-1">Donor Info {sortConfig.key === 'name' && (sortConfig.direction === 'asc' ? <FiChevronUp/> : <FiChevronDown/>)}</div>
                 </th>
-                <th className="p-4 font-bold cursor-pointer hover:bg-slate-200 transition-colors bg-slate-100" onClick={() => handleSort('date')}>
+                <th className="p-4 md:p-6 font-bold cursor-pointer hover:bg-slate-200 transition-colors bg-slate-100" onClick={() => handleSort('date')}>
                   <div className="flex items-center gap-1">Date & Time {sortConfig.key === 'date' && (sortConfig.direction === 'asc' ? <FiChevronUp/> : <FiChevronDown/>)}</div>
                 </th>
-                <th className="p-4 font-bold cursor-pointer hover:bg-slate-200 transition-colors bg-slate-100" onClick={() => handleSort('annadaanType')}>
+                <th className="p-4 md:p-6 font-bold cursor-pointer hover:bg-slate-200 transition-colors bg-slate-100" onClick={() => handleSort('annadaanType')}>
                   <div className="flex items-center gap-1">Type {sortConfig.key === 'annadaanType' && (sortConfig.direction === 'asc' ? <FiChevronUp/> : <FiChevronDown/>)}</div>
                 </th>
-                <th className="p-4 font-bold cursor-pointer hover:bg-slate-200 transition-colors bg-slate-100" onClick={() => handleSort('status')}>
+                <th className="p-4 md:p-6 font-bold cursor-pointer hover:bg-slate-200 transition-colors bg-slate-100" onClick={() => handleSort('status')}>
                   <div className="flex items-center gap-1">Status {sortConfig.key === 'status' && (sortConfig.direction === 'asc' ? <FiChevronUp/> : <FiChevronDown/>)}</div>
-                </th>
-                <th className="p-4 font-bold text-center bg-slate-100">
-                  Action
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 text-sm">
+            <tbody className="block md:table-row-group w-full divide-y divide-gray-100 text-sm">
               {paginatedData.map(r => (
-                <tr key={r._id} className={`transition-colors border-l-4 ${r.status === 'pending' ? 'bg-yellow-50 hover:bg-yellow-100 border-yellow-500' : r.status === 'approved' ? 'bg-blue-50 hover:bg-blue-100 border-blue-500' : r.status === 'completed' ? 'bg-green-50 hover:bg-green-100 border-green-500' : r.status === 'rejected' ? 'bg-red-50 hover:bg-red-100 border-red-500' : 'hover:bg-gray-50 border-transparent'}`}>
-                  <td className="p-4">
-                    <div className="font-bold text-slate-900">{r.name}</div>
-                    <div className="text-xs text-gray-500 mt-0.5">{r.phone}</div>
-                    <div className="text-xs text-gray-400">{r.email}</div>
+                <tr key={r._id} className={`block md:table-row bg-white md:bg-transparent border md:border-x-0 md:border-t-0 rounded-xl md:rounded-none mb-4 md:mb-0 shadow-sm md:shadow-none transition-colors border-l-4 md:border-b border-gray-200 md:border-l-transparent ${r.status === 'pending' ? 'md:bg-yellow-50/30 hover:bg-yellow-50 border-l-yellow-500' : r.status === 'approved' ? 'md:bg-blue-50/30 hover:bg-blue-50 border-l-blue-500' : r.status === 'completed' ? 'md:bg-green-50/30 hover:bg-green-50 border-l-green-500' : r.status === 'rejected' ? 'md:bg-red-50/30 hover:bg-red-50 border-l-red-500' : 'hover:bg-gray-50'}`}>
+                  {/* Mobile Card Top & Desktop Donor Info */}
+                  <td className="p-3 md:p-6 flex flex-col md:table-cell w-full border-b border-gray-50 md:border-none">
+                    <div className="flex md:hidden justify-between items-start mb-3">
+                      <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-gray-100 border border-gray-200 text-gray-600">
+                        {r.annadaanType}
+                      </span>
+                      <span className={`px-2.5 py-1 text-[10px] font-black uppercase tracking-wide rounded-md ${r.status === 'completed' ? 'bg-green-100 text-green-700' : r.status === 'approved' ? 'bg-blue-100 text-blue-700' : r.status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                        {r.status}
+                      </span>
+                    </div>
+                    <div className="font-bold text-slate-900 text-lg md:text-base break-words whitespace-normal">{r.name}</div>
+                    <div className="md:hidden flex flex-col mt-2 gap-2">
+                      <div className="flex flex-col gap-1">
+                        <div className="text-xs text-gray-500 font-medium break-words">{r.phone}</div>
+                        <div className="text-xs text-gray-400 break-words whitespace-normal">{r.email}</div>
+                      </div>
+                      <div className="bg-gray-50 p-2 rounded-lg border border-gray-100 flex justify-between items-center w-full">
+                        <span className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Date & Time</span>
+                        <div className="text-right">
+                          <div className="flex items-center gap-1.5 font-bold text-gray-700 text-sm justify-end"><FiClock className="text-saffron-500" /> {new Date(r.date).toLocaleDateString()}</div>
+                          <div className="text-xs text-gray-500 mt-0.5">{r.time}</div>
+                        </div>
+                      </div>
+                    </div>
+                    {/* Desktop Content */}
+                    <div className="hidden md:block text-xs text-gray-500 mt-0.5">{r.phone}</div>
+                    <div className="hidden md:block text-xs text-gray-400">{r.email}</div>
                   </td>
-                  <td className="p-4 text-gray-600">
+                  <td className="hidden md:table-cell p-4 md:p-6 text-gray-600">
                     <div className="flex items-center gap-1.5 font-medium"><FiClock className="text-saffron-500" /> {new Date(r.date).toLocaleDateString()}</div>
                     <div className="text-xs text-gray-500 mt-1">{r.time}</div>
                   </td>
-                  <td className="p-4">
-                    <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-gray-100 border border-gray-200 text-gray-600">
+                  <td className="hidden md:table-cell p-4 md:p-6">
+                    <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-gray-100 border border-gray-200 text-gray-600 inline-block">
                       {r.annadaanType}
                     </span>
                   </td>
-                  <td className="p-4">
-                    <span className={`px-2.5 py-1 text-xs font-black uppercase tracking-wide rounded-md ${r.status === 'completed' ? 'bg-green-100 text-green-700' : r.status === 'approved' ? 'bg-blue-100 text-blue-700' : r.status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                  <td className="hidden md:table-cell p-4 md:p-6">
+                    <span className={`px-2.5 py-1 text-xs font-black uppercase tracking-wide rounded-md inline-block ${r.status === 'completed' ? 'bg-green-100 text-green-700' : r.status === 'approved' ? 'bg-blue-100 text-blue-700' : r.status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}`}>
                       {r.status}
                     </span>
                   </td>
-                  <td className="p-4 text-center">
-                    <button 
-                      onClick={() => {
-                        if (r.receiptPdfUrl) {
-                          window.open(r.receiptPdfUrl, '_blank');
-                        } else {
-                          alert('This is a legacy record. The old receipt format has been removed.');
-                        }
-                      }}
-                      className="p-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 hover:text-gray-900 rounded-lg shadow-sm transition-colors"
-                      title="View Receipt"
-                    >
-                      <FiPrinter size={16} />
-                    </button>
-                  </td>
+
                 </tr>
               ))}
               {paginatedData.length === 0 && (
                 <tr>
-                  <td colSpan="4" className="p-8 text-center text-gray-500">No Annadan records found.</td>
+                  <td colSpan="4" className="p-8 text-center text-gray-500 block md:table-cell">No Annadan records found.</td>
                 </tr>
               )}
             </tbody>
           </table>
-</div>
         </div>
         <TablePagination 
           currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage}
@@ -216,3 +220,7 @@ const ManageAnnadan = () => {
 };
 
 export default ManageAnnadan;
+
+
+
+

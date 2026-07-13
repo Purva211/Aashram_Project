@@ -111,7 +111,7 @@ const ManageMathHistory = () => {
     <div className="w-full space-y-6 text-gray-800 pb-10">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold flex flex-wrap items-center gap-2 text-slate-900">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold flex items-center gap-2 text-slate-900 tracking-tight">
             <FiClock className="text-saffron-500" /> Monastery History Management
             {!hasManage && <span className="bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full shadow-sm ml-2 font-sans inline-block align-middle">View Only Access</span>}
           </h1>
@@ -139,10 +139,10 @@ const ManageMathHistory = () => {
         </div>
       </div>
 
-      <div className="bg-white border border-gray-100 shadow-sm rounded-2xl overflow-hidden">
+      <div className="md:bg-white md:border md:border-gray-100 md:shadow-sm md:rounded-2xl overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
+          <table className="w-full text-left border-collapse block md:table">
+            <thead className="hidden md:table-header-group">
               <tr className="bg-gray-50 border-b border-gray-100 text-xs uppercase tracking-wider text-gray-500">
                 <th className="p-4 font-bold cursor-pointer" onClick={() => handleSort('title')}>Title</th>
                 <th className="p-4 font-bold cursor-pointer" onClick={() => handleSort('era')}>Era</th>
@@ -151,29 +151,50 @@ const ManageMathHistory = () => {
                 <th className="p-4 font-bold text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 text-sm">
+            <tbody className="block md:table-row-group w-full divide-y divide-gray-100 text-sm">
               {paginatedData.map(record => (
-                <tr key={record._id} className="hover:bg-gray-50 transition-colors">
-                  <td className="p-4 font-bold text-slate-900">{record.title}</td>
-                  <td className="p-4 text-gray-600">{record.era}</td>
-                  <td className="p-4 text-gray-600">{record.category}</td>
-                  <td className="p-4">
+                <tr key={record._id} className="flex flex-col md:table-row w-full bg-white md:bg-transparent border border-gray-100 md:border-b md:border-x-0 md:border-t-0 md:border-gray-50 rounded-xl md:rounded-none mb-4 md:mb-0 shadow-sm md:shadow-none hover:bg-gray-50/50">
+                  <td className="p-3 md:p-4 flex flex-col md:table-cell w-full border-b border-gray-50 md:border-none">
+                    <div className="flex md:hidden justify-between items-start mb-3">
+                      <span className="text-[11px] font-bold text-gray-600 uppercase tracking-wider bg-gray-100 px-2 py-0.5 rounded">{record.category}</span>
+                      <button 
+                         onClick={() => hasManage && toggleStatus(record._id, record.status)}
+                         disabled={!hasManage}
+                         className={`px-2 py-0.5 rounded text-[10px] font-bold border transition-colors ${record.status === 'Published' ? 'bg-green-50 text-green-600 border-green-200 hover:bg-green-100' : record.status === 'Pending' ? 'bg-yellow-50 text-yellow-600 border-yellow-200' : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100'} ${!hasManage && 'cursor-not-allowed opacity-80'}`}>
+                        {record.status}
+                      </button>
+                    </div>
+                    <div>
+                      <div className="font-bold text-slate-900 text-lg md:text-base">{record.title}</div>
+                      <div className="md:hidden text-xs text-gray-500 mt-1 font-medium">Era: {record.era}</div>
+                    </div>
+                  </td>
+                  <td className="hidden md:table-cell p-4 text-gray-600">
+                    {record.era}
+                  </td>
+                  <td className="hidden md:table-cell p-4 text-gray-600">
+                    {record.category}
+                  </td>
+                  <td className="hidden md:table-cell p-4">
                     <button 
                        onClick={() => hasManage && toggleStatus(record._id, record.status)}
                        disabled={!hasManage}
-                       className={`px-2.5 py-1 rounded-full text-xs font-bold border transition-colors ${record.status === 'Published' ? 'bg-green-50 text-green-600 border-green-200 hover:bg-green-100' : record.status === 'Pending' ? 'bg-yellow-50 text-yellow-600 border-yellow-200' : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100'} ${!hasManage && 'cursor-not-allowed opacity-80'}`}>
+                       className={`px-2.5 py-1 rounded-full text-xs font-bold border transition-colors inline-block ${record.status === 'Published' ? 'bg-green-50 text-green-600 border-green-200 hover:bg-green-100' : record.status === 'Pending' ? 'bg-yellow-50 text-yellow-600 border-yellow-200' : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100'} ${!hasManage && 'cursor-not-allowed opacity-80'}`}>
                       {record.status}
                     </button>
                   </td>
-                  <td className="p-4 text-right">
-                    {hasManage ? (
-                      <div className="flex justify-end gap-2">
-                        <button onClick={() => openEdit(record)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"><FiEdit2 /></button>
-                        <button onClick={() => handleDelete(record._id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg"><FiTrash2 /></button>
-                      </div>
-                    ) : (
-                      <div className="text-xs text-gray-400 font-bold">View Only Access</div>
-                    )}
+                  <td className="p-3 md:p-4 md:text-right flex flex-col md:table-cell w-full bg-gray-50 md:bg-transparent rounded-b-xl md:rounded-none">
+                    <div className="flex justify-between items-center w-full">
+                      <span className="md:hidden text-xs text-gray-500 uppercase tracking-wider font-semibold px-1">Actions</span>
+                      {hasManage ? (
+                        <div className="flex flex-wrap md:justify-end gap-2 w-full md:w-auto justify-end">
+                          <button onClick={() => openEdit(record)} className="p-2 w-10 h-10 md:w-auto md:h-auto flex-1 md:flex-none flex items-center justify-center bg-white md:bg-transparent border border-gray-200 md:border-none text-blue-600 hover:bg-blue-50 rounded-lg transition-colors shadow-sm md:shadow-none"><FiEdit2 /></button>
+                          <button onClick={() => handleDelete(record._id)} className="p-2 w-10 h-10 md:w-auto md:h-auto flex-1 md:flex-none flex items-center justify-center bg-white md:bg-transparent border border-gray-200 md:border-none text-red-500 hover:bg-red-50 rounded-lg transition-colors shadow-sm md:shadow-none"><FiTrash2 /></button>
+                        </div>
+                      ) : (
+                        <div className="text-xs text-gray-400 font-bold inline-block w-full text-right md:w-auto">View Only Access</div>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -244,9 +265,9 @@ const ManageMathHistory = () => {
                   <input type="file" multiple onChange={e => setMediaFiles(e.target.files)} className="w-full" />
                 </div>
 
-                <div className="pt-6 flex justify-end gap-3 border-t border-gray-100">
-                  <button type="button" onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 rounded-xl text-gray-600 hover:bg-gray-100 font-bold transition-colors">Cancel</button>
-                  <button type="submit" className="bg-blue-900 hover:bg-slate-900 hover:bg-black w-full md:w-auto justify-center text-white px-8 py-2.5 rounded-xl font-black transition-colors shadow-lg">
+                <div className="pt-6 flex flex-col md:flex-row justify-end gap-3 border-t border-gray-100">
+                  <button type="button" onClick={() => setIsModalOpen(false)} className="w-full md:w-auto px-5 py-2.5 rounded-xl text-gray-600 hover:bg-gray-100 font-bold transition-colors order-2 md:order-1">Cancel</button>
+                  <button type="submit" className="order-1 md:order-2 bg-blue-900 hover:bg-slate-900 w-full md:w-auto justify-center text-white px-8 py-2.5 rounded-xl font-black transition-colors shadow-lg">
                     {editingId ? 'Save Changes' : 'Create Record'}
                   </button>
                 </div>
@@ -261,3 +282,7 @@ const ManageMathHistory = () => {
 };
 
 export default ManageMathHistory;
+
+
+
+

@@ -324,42 +324,14 @@ const Profile = () => {
                 </form>
               </section>
 
-              {/* Section 2: Account Security */}
-              <section className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100">
-                <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2"><Shield className="w-5 h-5 text-sky-500"/> Account Security</h3>
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-medium text-gray-900 flex items-center gap-2"><Smartphone className="w-4 h-4 text-gray-500"/> Two-Factor Authentication</h4>
-                      <p className="text-sm text-gray-500 mt-1">Add an extra layer of security to your account.</p>
-                    </div>
-                    <Toggle enabled={securitySettings.twoFactor} onChange={() => handleToggleSecurity('twoFactor')} />
-                  </div>
-                  <hr className="border-gray-200" />
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-medium text-gray-900 flex items-center gap-2"><Clock className="w-4 h-4 text-gray-500"/> Session Timeout</h4>
-                      <p className="text-sm text-gray-500 mt-1">Automatically log out after 30 minutes of inactivity.</p>
-                    </div>
-                    <Toggle enabled={securitySettings.sessionTimeout} onChange={() => handleToggleSecurity('sessionTimeout')} />
-                  </div>
-                  <hr className="border-gray-200" />
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-medium text-gray-900 flex items-center gap-2"><Monitor className="w-4 h-4 text-gray-500"/> Device Verification</h4>
-                      <p className="text-sm text-gray-500 mt-1">Require email verification for unknown devices.</p>
-                    </div>
-                    <Toggle enabled={securitySettings.deviceVerification} onChange={() => handleToggleSecurity('deviceVerification')} />
-                  </div>
-                </div>
-              </section>
+
 
               {/* Section 3: Recent Login Activity */}
               <section>
                 <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2"><Activity className="w-5 h-5 text-sky-500"/> Recent Login Activity</h3>
-                <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-                  <table className="w-full text-left text-sm text-gray-600">
-                    <thead className="bg-gray-50 text-gray-700 font-semibold border-b border-gray-200">
+                <div className="bg-transparent md:bg-white border-0 md:border md:border-gray-200 overflow-hidden rounded-xl">
+                  <table className="w-full text-left text-sm text-gray-600 block md:table">
+                    <thead className="bg-gray-50 text-gray-700 font-semibold border-b border-gray-200 hidden md:table-header-group">
                       <tr>
                         <th className="px-6 py-4">Date & Time</th>
                         <th className="px-6 py-4">Device & Browser</th>
@@ -367,18 +339,46 @@ const Profile = () => {
                         <th className="px-6 py-4">Status</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100">
-                      <tr className="hover:bg-gray-50">
-                        <td className="px-6 py-4">Today, 10:23 AM</td>
-                        <td className="px-6 py-4">Windows • Chrome</td>
-                        <td className="px-6 py-4">192.168.1.1</td>
-                        <td className="px-6 py-4"><span className="px-2.5 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">Active</span></td>
+                    <tbody className="block md:table-row-group w-full divide-y divide-gray-100">
+                      <tr className="flex flex-col md:table-row w-full bg-white md:bg-transparent border border-gray-100 md:border-b md:border-x-0 md:border-t-0 md:border-gray-100 rounded-xl md:rounded-none mb-4 md:mb-0 shadow-sm md:shadow-none hover:bg-gray-50 transition-colors">
+                        <td className="p-4 md:px-6 md:py-4 block md:table-cell border-b border-gray-50 md:border-none">
+                          <div className="flex justify-between items-start md:hidden mb-2">
+                            <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider bg-gray-100 px-2 py-0.5 rounded">Today, 10:23 AM</span>
+                            <span className="px-2.5 py-1 bg-green-100 text-green-700 rounded-md text-[10px] font-bold uppercase tracking-wider border border-green-200">Active</span>
+                          </div>
+                          <div className="hidden md:block">Today, 10:23 AM</div>
+                          <div className="md:hidden mt-2 font-medium text-gray-900 text-base">Windows • Chrome</div>
+                          <div className="md:hidden mt-1 text-sm text-gray-500">IP: 192.168.1.1</div>
+                        </td>
+                        <td className="hidden md:table-cell px-6 py-4">
+                          Windows • Chrome
+                        </td>
+                        <td className="hidden md:table-cell px-6 py-4">
+                          192.168.1.1
+                        </td>
+                        <td className="hidden md:table-cell px-6 py-4">
+                          <span className="px-2.5 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">Active</span>
+                        </td>
                       </tr>
-                      <tr className="hover:bg-gray-50">
-                        <td className="px-6 py-4">Yesterday, 04:15 PM</td>
-                        <td className="px-6 py-4">MacBook • Safari</td>
-                        <td className="px-6 py-4">10.0.0.45</td>
-                        <td className="px-6 py-4"><span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">Logged out</span></td>
+                      <tr className="flex flex-col md:table-row w-full bg-white md:bg-transparent border border-gray-100 md:border-b md:border-x-0 md:border-t-0 md:border-gray-100 rounded-xl md:rounded-none mb-4 md:mb-0 shadow-sm md:shadow-none hover:bg-gray-50 transition-colors">
+                        <td className="p-4 md:px-6 md:py-4 block md:table-cell border-b border-gray-50 md:border-none">
+                          <div className="flex justify-between items-start md:hidden mb-2">
+                            <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider bg-gray-100 px-2 py-0.5 rounded">Yesterday, 04:15 PM</span>
+                            <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-md text-[10px] font-bold uppercase tracking-wider border border-gray-200">Logged out</span>
+                          </div>
+                          <div className="hidden md:block">Yesterday, 04:15 PM</div>
+                          <div className="md:hidden mt-2 font-medium text-gray-900 text-base">MacBook • Safari</div>
+                          <div className="md:hidden mt-1 text-sm text-gray-500">IP: 10.0.0.45</div>
+                        </td>
+                        <td className="hidden md:table-cell px-6 py-4">
+                          MacBook • Safari
+                        </td>
+                        <td className="hidden md:table-cell px-6 py-4">
+                          10.0.0.45
+                        </td>
+                        <td className="hidden md:table-cell px-6 py-4">
+                          <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">Logged out</span>
+                        </td>
                       </tr>
                     </tbody>
                   </table>
@@ -391,7 +391,7 @@ const Profile = () => {
           {/* TAB 3: PREFERENCES */}
           {activeTab === 'preferences' && (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-10">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-100 pb-6 mb-6 gap-4">
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900">Preferences</h2>
                   <p className="text-gray-500 mt-1">Customize your dashboard experience.</p>
@@ -412,7 +412,7 @@ const Profile = () => {
                       window.location.reload();
                     }, 1000);
                   }}
-                  className="bg-white border border-sky-500 text-sky-600 hover:bg-sky-50 px-6 py-2.5 rounded-xl font-medium shadow-sm transition-colors flex items-center gap-2">
+                  className="w-full md:w-auto justify-center bg-white border border-sky-500 text-sky-600 hover:bg-sky-50 px-6 py-2.5 rounded-xl font-medium shadow-sm transition-colors flex items-center gap-2">
                   <Save className="w-4 h-4"/> Save Preferences
                 </button>
               </div>
@@ -494,3 +494,5 @@ const Profile = () => {
 };
 
 export default Profile;
+
+

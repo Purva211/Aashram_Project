@@ -113,7 +113,7 @@ export const MyOrders = () => {
                   <th className="px-6 py-4">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-cream-dark/10 text-sm">
+              <tbody className="block md:table-row-group w-full divide-y divide-cream-dark/10 text-sm">
                 {orders.map((order) => (
                   <tr key={order._id} className="hover:bg-cream/20 transition-colors">
                     <td className="px-6 py-4 font-medium">
@@ -175,3 +175,4 @@ export const MyOrders = () => {
 };
 
 export default MyOrders;
+

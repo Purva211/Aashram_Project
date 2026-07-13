@@ -97,11 +97,11 @@ const Philosophy = () => {
       <div className="max-w-7xl mx-auto px-6 py-16 md:py-24 space-y-20 md:space-y-32">
         
         {/* 1. Intro & Core Beliefs */}
-        <motion.section initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUp}>
+        <motion.section initial="hidden" whileInView="visible" viewport={{ once: false, amount: 0.1 }} variants={fadeUp}>
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
               <h2 className="text-3xl md:text-4xl font-serif font-bold text-mahakal-burgundy mb-6">Introduction & Origins</h2>
-              <div className="prose prose-lg prose-stone max-w-none text-stone-600 font-medium leading-relaxed mb-8">
+              <div className="text-sm md:text-lg text-stone-600 font-medium leading-relaxed mb-8 space-y-4">
                 <p>
                   The Veerashaiva Lingayat Dharma is one of the most progressive and egalitarian spiritual traditions in India. Originating in its prominent form during the 12th century under the guidance of the great social reformer Lord Basavanna and his contemporary Sharanas, it challenged the orthodox paradigms of the time.
                 </p>
@@ -123,29 +123,37 @@ const Philosophy = () => {
         </motion.section>
 
         {/* 2. Kayaka & Dasoha */}
-        <motion.section initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUp}>
-          <div className="bg-mahakal-burgundy text-white rounded-[3rem] p-8 md:p-16 relative overflow-hidden shadow-2xl">
+        <motion.section initial="hidden" whileInView="visible" viewport={{ once: false, amount: 0.1 }} variants={fadeUp}>
+          <div className="bg-mahakal-burgundy text-white rounded-3xl md:rounded-[3rem] p-6 sm:p-8 md:p-16 relative overflow-hidden shadow-2xl">
             {/* Background Texture/Image Overlay */}
             <div className="absolute inset-0 bg-[url('/about_images/monastery_hd.png')] bg-cover bg-center opacity-20 mix-blend-luminosity"></div>
-            <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
+            <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none hidden md:block">
               <Hand className="w-96 h-96" />
             </div>
             
-            <div className="relative z-10 grid md:grid-cols-2 gap-8 md:gap-12">
-              <div className="bg-black/20 backdrop-blur-sm p-8 rounded-3xl border border-white/10">
-                <h3 className="text-3xl font-serif font-bold mb-4 text-orange-200 flex items-center gap-3">
-                  <Hand className="w-8 h-8" /> Kayaka 
+            <div className="relative z-10 grid md:grid-cols-2 gap-4 sm:gap-8 md:gap-12">
+              <div className="bg-black/20 backdrop-blur-sm p-5 sm:p-6 md:p-8 rounded-2xl md:rounded-3xl border border-white/10 shadow-inner group hover:bg-black/30 transition-colors">
+                <h3 className="text-2xl md:text-3xl font-serif font-bold mb-3 md:mb-4 text-orange-200 flex items-center gap-3">
+                  <div className="p-2 md:p-3 bg-orange-500/20 rounded-xl group-hover:scale-110 transition-transform">
+                     <Hand className="w-5 h-5 md:w-8 md:h-8 text-orange-300" />
+                  </div>
+                  Kayaka 
                 </h3>
-                <p className="text-white/90 font-medium leading-relaxed text-lg mb-4">
-                  "Kayakave Kailasa" (Work is Heaven). In this dharma, physical labor is not just a means of livelihood, but a sacred spiritual practice. Every honest work, however menial it may seem, is considered a form of divine worship. There is absolute dignity of labor.
+                <p className="text-white/85 md:text-white/90 font-medium leading-relaxed text-sm md:text-lg">
+                  <span className="text-orange-200 font-bold block mb-1">"Kayakave Kailasa" (Work is Heaven).</span> 
+                  In this dharma, physical labor is not just a means of livelihood, but a sacred spiritual practice. Every honest work, however menial it may seem, is considered a form of divine worship. There is absolute dignity of labor.
                 </p>
               </div>
-              <div className="bg-black/20 backdrop-blur-sm p-8 rounded-3xl border border-white/10">
-                <h3 className="text-3xl font-serif font-bold mb-4 text-orange-200 flex items-center gap-3">
-                  <HeartHandshake className="w-8 h-8" /> Dasoha
+              <div className="bg-black/20 backdrop-blur-sm p-5 sm:p-6 md:p-8 rounded-2xl md:rounded-3xl border border-white/10 shadow-inner group hover:bg-black/30 transition-colors">
+                <h3 className="text-2xl md:text-3xl font-serif font-bold mb-3 md:mb-4 text-orange-200 flex items-center gap-3">
+                  <div className="p-2 md:p-3 bg-orange-500/20 rounded-xl group-hover:scale-110 transition-transform">
+                    <HeartHandshake className="w-5 h-5 md:w-8 md:h-8 text-orange-300" />
+                  </div>
+                  Dasoha
                 </h3>
-                <p className="text-white/90 font-medium leading-relaxed text-lg mb-4">
-                  Dasoha translates to selfless service or giving back to society. The wealth earned through honest Kayaka must be shared with the community. It represents the realization that "I am a servant of the Lord and society."
+                <p className="text-white/85 md:text-white/90 font-medium leading-relaxed text-sm md:text-lg">
+                  <span className="text-orange-200 font-bold block mb-1">Selfless service to society.</span> 
+                  The wealth earned through honest Kayaka must be shared with the community. It represents the realization that "I am a servant of the Lord and society."
                 </p>
               </div>
             </div>
@@ -153,10 +161,10 @@ const Philosophy = () => {
         </motion.section>
 
         {/* 3. The Panchacharas (Accordions) */}
-        <motion.section initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUp}>
+        <motion.section initial="hidden" whileInView="visible" viewport={{ once: false, amount: 0.1 }} variants={fadeUp}>
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-serif font-bold text-mahakal-burgundy mb-4">The Panchacharas</h2>
-            <p className="text-stone-600 font-medium max-w-2xl mx-auto">The Five Codes of Conduct that dictate the moral and social life of a follower, ensuring purity in action and thought.</p>
+            <p className="text-sm md:text-base text-stone-600 font-medium max-w-2xl mx-auto">The Five Codes of Conduct that dictate the moral and social life of a follower, ensuring purity in action and thought.</p>
           </div>
           <div className="max-w-6xl mx-auto flex flex-wrap justify-center gap-6">
             {panchacharas.map((item, idx) => (
@@ -169,18 +177,18 @@ const Philosophy = () => {
                 <div className="w-12 h-12 bg-mahakal-saffron text-white rounded-2xl flex items-center justify-center font-bold font-serif text-xl mb-6 relative z-10 shadow-md">
                   {item.id}
                 </div>
-                <h3 className="text-2xl font-serif font-bold text-mahakal-burgundy mb-4 relative z-10">{item.title}</h3>
-                <p className="text-stone-600 font-medium leading-relaxed relative z-10 flex-1">{item.desc}</p>
+                <h3 className="text-xl md:text-2xl font-serif font-bold text-mahakal-burgundy mb-3 md:mb-4 relative z-10">{item.title}</h3>
+                <p className="text-sm md:text-base text-stone-600 font-medium leading-relaxed relative z-10 flex-1">{item.desc}</p>
               </motion.div>
             ))}
           </div>
         </motion.section>
 
         {/* 4. Ashtavaranas (Grid) */}
-        <motion.section initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer}>
+        <motion.section initial="hidden" whileInView="visible" viewport={{ once: false, amount: 0.1 }} variants={staggerContainer}>
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-serif font-bold text-mahakal-burgundy mb-4">The Ashtavaranas</h2>
-            <p className="text-stone-600 font-medium max-w-2xl mx-auto">The Eight Shields that protect the devotee's spiritual aura and guide them toward ultimate liberation.</p>
+            <p className="text-sm md:text-base text-stone-600 font-medium max-w-2xl mx-auto">The Eight Shields that protect the devotee's spiritual aura and guide them toward ultimate liberation.</p>
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
@@ -199,7 +207,7 @@ const Philosophy = () => {
         </motion.section>
 
         {/* 5. Lord Basavanna & Teachings */}
-        <motion.section initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUp}>
+        <motion.section initial="hidden" whileInView="visible" viewport={{ once: false, amount: 0.1 }} variants={fadeUp}>
           <div className="grid lg:grid-cols-12 gap-12 items-center bg-white rounded-[3rem] p-6 md:p-12 border border-stone-200 shadow-xl relative overflow-hidden">
              
              {/* Left side: Image */}
@@ -216,7 +224,7 @@ const Philosophy = () => {
              <div className="lg:col-span-8 space-y-8">
                 <div>
                    <h2 className="text-3xl md:text-5xl font-serif font-bold text-mahakal-burgundy mb-4">Wisdom of the Sharanas</h2>
-                   <p className="text-stone-600 font-medium leading-relaxed text-lg">Through profound yet simple poetry called Vachanas, Lord Basavanna and his contemporaries dismantled orthodox hierarchies and spread the light of absolute equality.</p>
+                   <p className="text-sm md:text-lg text-stone-600 font-medium leading-relaxed">Through profound yet simple poetry called Vachanas, Lord Basavanna and his contemporaries dismantled orthodox hierarchies and spread the light of absolute equality.</p>
                 </div>
                 
                 <div className="space-y-6">
@@ -227,13 +235,13 @@ const Philosophy = () => {
                     <div className="relative z-10 mb-6">
                       {isMarathi ? (
                         <div>
-                           <p className="font-medium text-stone-700 leading-relaxed text-[1.1rem]">
+                           <p className="font-medium text-stone-700 leading-relaxed text-sm md:text-[1.1rem]">
                              "चोरी करू नकोस, हत्या करू नकोस, खोटे बोलू नकोस, रागवू नकोस... स्वतःची स्तुती करू नकोस, इतरांचा तिरस्कार करू नकोस. हीच अंतरंग शुद्धी, हीच बहिरंग शुद्धी आहे..."
                            </p>
                         </div>
                       ) : (
                         <div>
-                           <p className="font-medium text-stone-600 italic leading-relaxed text-[1.1rem]">
+                           <p className="font-medium text-stone-600 italic leading-relaxed text-sm md:text-[1.1rem]">
                              "Do not steal, do not kill, do not lie, do not be angry... do not praise yourself, do not despise others. This is internal purity, this is external purity."
                            </p>
                         </div>
@@ -254,13 +262,13 @@ const Philosophy = () => {
                     <div className="relative z-10 mb-6">
                       {isMarathi ? (
                         <div>
-                           <p className="font-medium text-stone-700 leading-relaxed text-[1.1rem]">
+                           <p className="font-medium text-stone-700 leading-relaxed text-sm md:text-[1.1rem]">
                              "ज्यांच्याकडे संपत्ती आहे ते शिवाची मंदिरे बांधतात. मी एक गरीब माणूस काय बांधू, देवा?... माझे पाय हेच खांब आहेत, माझे शरीर हेच मंदिर आहे, आणि माझे मस्तक हाच सुवर्ण कळस आहे."
                            </p>
                         </div>
                       ) : (
                         <div>
-                           <p className="font-medium text-stone-600 italic leading-relaxed text-[1.1rem]">
+                           <p className="font-medium text-stone-600 italic leading-relaxed text-sm md:text-[1.1rem]">
                              "Those who have money build temples to Shiva. What can I build? A poor man, Lord... My legs are pillars, my body the shrine, my head the golden cupola."
                            </p>
                         </div>
@@ -279,7 +287,7 @@ const Philosophy = () => {
         </motion.section>
 
         {/* 6. Linga Pooja Section */}
-        <motion.section initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUp}>
+        <motion.section initial="hidden" whileInView="visible" viewport={{ once: false, amount: 0.1 }} variants={fadeUp}>
           <div className="grid lg:grid-cols-12 gap-8 md:gap-12 items-center">
             <div className="lg:col-span-5 relative h-[300px] md:h-[450px] w-full rounded-[3rem] overflow-hidden group shadow-xl">
                <div className="absolute inset-0 bg-[url('/about_images/linga_pooja.png')] bg-cover bg-center group-hover:scale-105 transition-transform duration-1000"></div>
@@ -288,15 +296,15 @@ const Philosophy = () => {
                <h2 className="text-3xl md:text-5xl font-serif font-bold text-mahakal-burgundy mb-6">
                  Ishtalinga <span className="text-mahakal-saffron">Pooja</span>
                </h2>
-               <p className="text-lg text-stone-600 font-medium leading-relaxed mb-6">
+               <p className="text-sm md:text-lg text-stone-600 font-medium leading-relaxed mb-6">
                  The worship of the Ishtalinga is a deeply personal and transformative daily practice. Unlike traditional Hinduism which relies on temple priests and external idols, the Lingayat devotee becomes their own priest, and their own body becomes the temple.
                </p>
                <div className="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm relative overflow-hidden group">
                   <div className="absolute top-0 right-0 w-24 h-24 bg-orange-50 rounded-bl-[100px] transition-transform duration-500 group-hover:scale-110"></div>
-                  <h4 className="font-serif font-bold text-xl text-mahakal-burgundy mb-4 relative z-10 flex items-center gap-3">
+                  <h4 className="font-serif font-bold text-lg md:text-xl text-mahakal-burgundy mb-3 md:mb-4 relative z-10 flex items-center gap-3">
                     <Sparkles className="w-5 h-5 text-mahakal-saffron" /> The Ritual (Linganga Samarasya)
                   </h4>
-                  <p className="text-stone-600 font-medium leading-relaxed relative z-10">
+                  <p className="text-sm md:text-base text-stone-600 font-medium leading-relaxed relative z-10">
                     The devotee places the Ishtalinga on the palm of their left hand. Fixing their gaze entirely upon it, they apply holy ash (Bhasma), offer sacred water (Padodaka), and meditate deeply while chanting the Panchakshari Mantra, <em>"Om Namah Shivaya"</em>. This intense focus aligns the inner self with the supreme Absolute.
                   </p>
                </div>
@@ -305,7 +313,7 @@ const Philosophy = () => {
         </motion.section>
 
         {/* 7. Manmath Swami Section */}
-        <motion.section initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUp}>
+        <motion.section initial="hidden" whileInView="visible" viewport={{ once: false, amount: 0.1 }} variants={fadeUp}>
           <div className="grid lg:grid-cols-12 gap-12 items-center bg-white rounded-[3rem] p-6 md:p-12 border border-stone-200 shadow-xl relative overflow-hidden">
              
              {/* Left side: Text */}
@@ -319,7 +327,7 @@ const Philosophy = () => {
                   Shri Manmath Swami holds a revered place in our spiritual lineage. Known for his profound spiritual realization and immense compassion, he spent his life guiding seekers toward the path of devotion and absolute equality.
                 </p>
                 <div className="bg-[#FFFDF6] p-6 rounded-2xl border border-amber-100">
-                   <p className="text-stone-700 font-medium italic leading-relaxed">
+                   <p className="text-sm md:text-base text-stone-700 font-medium italic leading-relaxed">
                      His teachings continued the rich legacy of the Sharanas, emphasizing that true enlightenment is found not in isolation, but through unconditional love, community service, and seeing the divine in every living creature.
                    </p>
                 </div>

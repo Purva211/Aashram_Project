@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getMyAnnadaan, downloadAnnadaanReceipt } from '../../../services/userDashboardService';
+import { getMyAnnadaan, downloadAnnadaanReceipt, cancelAnnadaan } from '../../../services/userDashboardService';
 import { RowSkeleton } from '../../../components/dashboard/LoadingSkeleton';
 import EmptyState from '../../../components/dashboard/EmptyState';
 import StatusBadge from '../../../components/dashboard/StatusBadge';
@@ -11,23 +11,39 @@ export const MyAnnadaan = () => {
   const [loading, setLoading] = useState(true);
   const [annadaans, setAnnadaans] = useState([]);
 
-  useEffect(() => {
-    const fetchAnnadaan = async () => {
-      try {
-        setLoading(true);
-        const res = await getMyAnnadaan();
-        if (res.data?.success) {
-          setAnnadaans(res.data.data);
-        }
-      } catch (err) {
-        console.error("Failed to fetch annadaan records:", err);
-      } finally {
-        setLoading(false);
+  const fetchAnnadaan = async () => {
+    try {
+      setLoading(true);
+      const res = await getMyAnnadaan();
+      if (res.data?.success) {
+        setAnnadaans(res.data.data);
       }
-    };
+    } catch (err) {
+      console.error("Failed to fetch annadaan records:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchAnnadaan();
   }, []);
+
+  const handleCancelSeva = async (id) => {
+    if (!window.confirm("Are you sure you want to cancel this seva? This action cannot be undone and will permanently delete the record.")) return;
+    
+    try {
+      toast.loading('Cancelling seva...', { id: 'cancel' });
+      const res = await cancelAnnadaan(id);
+      if (res.data?.success) {
+        toast.success('Seva cancelled successfully.', { id: 'cancel' });
+        fetchAnnadaan(); // refresh list
+      }
+    } catch (err) {
+      console.error("Failed to cancel seva:", err);
+      toast.error(err.response?.data?.message || 'Failed to cancel seva', { id: 'cancel' });
+    }
+  };
 
   const handleDownloadReceipt = async (id) => {
     try {
@@ -95,19 +111,31 @@ export const MyAnnadaan = () => {
         <StatusBadge status={d.status || 'pending'} />
       </td>
       <td className="px-6 py-4 text-center">
-        {d.status === 'approved' || d.status === 'completed' ? (
-          <div className="flex gap-2 justify-center">
+        <div className="flex flex-wrap gap-2 justify-center">
+          {(d.status === 'approved' || d.status === 'completed') && (
               <button 
                 onClick={() => handleDownloadReceipt(d._id)}
                 title="Download Receipt"
                 className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-xs font-bold text-white bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5"
               >
-                <FaFileDownload size={14} /> Download Receipt
+                <FaFileDownload size={14} /> Receipt
               </button>
-          </div>
-        ) : (
-          <span className="text-xs font-black text-stone-400">N/A</span>
-        )}
+          )}
+
+          {(!d.status || d.status === 'pending') && (
+              <button 
+                onClick={() => handleCancelSeva(d._id)}
+                title="Cancel Seva"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-xs font-bold text-slate-600 bg-white border border-slate-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200 shadow-sm transition-all transform hover:-translate-y-0.5"
+              >
+                ✕ Cancel
+              </button>
+          )}
+          
+          {d.status === 'rejected' && (
+            <span className="text-xs font-black text-stone-400">N/A</span>
+          )}
+        </div>
       </td>
     </tr>
   );
@@ -134,20 +162,20 @@ export const MyAnnadaan = () => {
           {/* Approved Section */}
           <div className="bg-white/80 backdrop-blur-md rounded-2xl border border-cream-dark/20 shadow-soft overflow-hidden">
             <div className="p-4 border-b border-cream-dark/20 flex justify-between items-center bg-white/50">
-              <h3 className="text-caramel-deep font-black font-serif flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-black">✓</div>
-                Approved Sevas
+              <h3 className="text-sm sm:text-base text-caramel-deep font-black font-serif flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-black shrink-0">✓</div>
+                <span>Approved Sevas</span>
               </h3>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-left">
+              <table className="w-full min-w-max border-collapse text-left">
                 <thead>
                   <tr className="bg-slate-100 border-b border-slate-200 text-xs font-black uppercase tracking-wider text-slate-700">
                     <th className="px-6 py-4">Seva Type</th>
                     <th className="px-6 py-4">Scheduled For</th>
                     <th className="px-6 py-4">Contact Info</th>
                     <th className="px-6 py-4">Status</th>
-                    <th className="px-6 py-4 text-center">Receipt</th>
+                    <th className="px-6 py-4 text-center">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-cream-dark/10 text-sm">
@@ -168,20 +196,20 @@ export const MyAnnadaan = () => {
           {/* Pending Section */}
           <div className="bg-white/80 backdrop-blur-md rounded-2xl border border-cream-dark/20 shadow-soft overflow-hidden">
             <div className="p-4 border-b border-cream-dark/20 flex justify-between items-center bg-white/50">
-              <h3 className="text-caramel-deep font-black font-serif flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600"><FaInfoCircle size={12}/></div>
-                Pending Verification
+              <h3 className="text-sm sm:text-base text-caramel-deep font-black font-serif flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600 shrink-0"><FaInfoCircle size={12}/></div>
+                <span>Pending Verification</span>
               </h3>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-left">
+              <table className="w-full min-w-max border-collapse text-left">
                 <thead>
                   <tr className="bg-slate-100 border-b border-slate-200 text-xs font-black uppercase tracking-wider text-slate-700">
                     <th className="px-6 py-4">Seva Type</th>
                     <th className="px-6 py-4">Scheduled For</th>
                     <th className="px-6 py-4">Contact Info</th>
                     <th className="px-6 py-4">Status</th>
-                    <th className="px-6 py-4 text-center">Receipt</th>
+                    <th className="px-6 py-4 text-center">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-cream-dark/10 text-sm">
@@ -202,20 +230,20 @@ export const MyAnnadaan = () => {
           {/* Rejected Section */}
           <div className="bg-white/80 backdrop-blur-md rounded-2xl border border-cream-dark/20 shadow-soft overflow-hidden">
             <div className="p-4 border-b border-cream-dark/20 flex justify-between items-center bg-white/50">
-              <h3 className="text-caramel-deep font-black font-serif flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-black">✕</div>
-                Rejected Sevas
+              <h3 className="text-sm sm:text-base text-caramel-deep font-black font-serif flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-black shrink-0">✕</div>
+                <span>Rejected Sevas</span>
               </h3>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-left">
+              <table className="w-full min-w-max border-collapse text-left">
                 <thead>
                   <tr className="bg-slate-100 border-b border-slate-200 text-xs font-black uppercase tracking-wider text-slate-700">
                     <th className="px-6 py-4">Seva Type</th>
                     <th className="px-6 py-4">Scheduled For</th>
                     <th className="px-6 py-4">Contact Info</th>
                     <th className="px-6 py-4">Status</th>
-                    <th className="px-6 py-4 text-center">Receipt</th>
+                    <th className="px-6 py-4 text-center">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-cream-dark/10 text-sm">
@@ -240,3 +268,4 @@ export const MyAnnadaan = () => {
 };
 
 export default MyAnnadaan;
+

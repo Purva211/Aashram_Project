@@ -51,7 +51,7 @@ const Dashboard = () => {
     <div className="p-4 md:p-8">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-black text-gray-900 flex items-center gap-3">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-gray-900 flex items-center gap-3 tracking-tight">
             <FaFileAlt className="text-[#FF7A2F]" />
             Official Correspondence
           </h1>
@@ -94,8 +94,8 @@ const Dashboard = () => {
             {loading ? (
               <div className="p-8 text-center text-gray-500">Loading...</div>
             ) : recentLetters.length > 0 ? (
-              <table className="w-full text-left text-sm">
-                <thead className="bg-gray-50 text-gray-500 font-semibold uppercase text-xs">
+              <table className="w-full text-left text-sm block md:table">
+                <thead className="bg-gray-50 text-gray-500 font-semibold uppercase text-xs hidden md:table-header-group">
                   <tr>
                     <th className="px-6 py-4">Ref Number</th>
                     <th className="px-6 py-4">Recipient</th>
@@ -103,25 +103,46 @@ const Dashboard = () => {
                     <th className="px-6 py-4 text-right">Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="block md:table-row-group w-full divide-y divide-gray-100">
                   {recentLetters.map(letter => (
-                    <tr key={letter._id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 font-semibold text-gray-900">{letter.referenceNumber || 'Draft'}</td>
-                      <td className="px-6 py-4">
+                    <tr key={letter._id} className="flex flex-col md:table-row w-full bg-white md:bg-transparent border border-gray-100 md:border-b md:border-x-0 md:border-t-0 md:border-gray-50 rounded-xl md:rounded-none mb-4 md:mb-0 shadow-sm md:shadow-none hover:bg-gray-50 transition-colors">
+                      <td className="p-4 md:px-6 md:py-4 block md:table-cell border-b border-gray-50 md:border-none">
+                        <div className="flex md:hidden justify-between items-start mb-3">
+                          <span className="text-[11px] font-bold text-gray-600 uppercase tracking-wider bg-gray-100 px-2 py-0.5 rounded">{letter.referenceNumber || 'Draft'}</span>
+                          <span className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border ${
+                            letter.status === 'Draft' ? 'bg-yellow-100 text-yellow-700 border-yellow-200' :
+                            letter.status === 'Generated' ? 'bg-green-100 text-green-700 border-green-200' :
+                            'bg-blue-100 text-blue-700 border-blue-200'
+                          }`}>{letter.status}</span>
+                        </div>
+                        <div className="md:hidden">
+                          <div className="font-bold text-gray-900 text-lg">{letter.recipient?.name}</div>
+                          <div className="mt-1 text-sm text-gray-600">{letter.subject}</div>
+                        </div>
+                        <div className="hidden md:block font-semibold text-gray-900">
+                          {letter.referenceNumber || 'Draft'}
+                        </div>
+                      </td>
+                      <td className="hidden md:table-cell px-6 py-4">
                         <div className="font-bold text-gray-900">{letter.recipient?.name}</div>
                         <div className="text-xs text-gray-500">{letter.subject}</div>
                       </td>
-                      <td className="px-6 py-4">
-                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                      <td className="hidden md:table-cell px-6 py-4">
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold inline-block ${
                           letter.status === 'Draft' ? 'bg-yellow-100 text-yellow-700' :
                           letter.status === 'Generated' ? 'bg-green-100 text-green-700' :
                           'bg-blue-100 text-blue-700'
                         }`}>{letter.status}</span>
                       </td>
-                      <td className="px-6 py-4 text-right">
-                        <button onClick={() => navigate(`/trustee/correspondence/history?id=${letter._id}`)} className="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition-colors">
-                          <FaEye />
-                        </button>
+                      <td className="p-3 md:px-6 md:py-4 md:text-right block md:table-cell bg-gray-50 md:bg-transparent rounded-b-xl md:rounded-none">
+                        <div className="flex justify-between items-center w-full">
+                          <span className="md:hidden text-xs text-gray-500 uppercase tracking-wider font-semibold px-1">Action</span>
+                          <div className="flex md:justify-end w-full md:w-auto">
+                            <button onClick={() => navigate(`/trustee/correspondence/history?id=${letter._id}`)} className="p-2 w-10 h-10 md:w-auto md:h-auto flex items-center justify-center bg-white md:bg-transparent border border-gray-200 md:border-none text-blue-500 hover:bg-blue-50 rounded-lg transition-colors flex-1 md:flex-none shadow-sm md:shadow-none">
+                              <FaEye />
+                            </button>
+                          </div>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -156,3 +177,5 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
+

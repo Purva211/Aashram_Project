@@ -120,7 +120,7 @@ const MathHistory = () => {
                         key={record._id}
                         initial={{ opacity: 0, y: 100 }}
                         whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: "-150px" }}
+                        viewport={{ once: false, amount: 0.1 }}
                         transition={{ duration: 1, ease: "easeOut" }}
                         className={`relative flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-24 ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'}`}
                       >

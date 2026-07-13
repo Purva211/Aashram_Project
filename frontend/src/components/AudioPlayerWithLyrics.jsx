@@ -151,7 +151,7 @@ const AudioPlayerWithLyrics = () => {
   if (!track) return null; // Don't show anything if no active track
 
   return (
-    <div className="w-full max-w-5xl mx-auto my-12 bg-gradient-to-br from-orange-50 to-amber-50 rounded-2xl shadow-xl overflow-hidden flex flex-col-reverse md:flex-row relative border border-orange-100">
+    <div className="w-full max-w-5xl mx-auto my-6 md:my-12 bg-gradient-to-br from-orange-50 to-amber-50 rounded-2xl shadow-xl overflow-hidden flex flex-col-reverse md:flex-row relative border border-orange-100">
       
       {/* Background decoration */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-orange-300 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob"></div>
@@ -167,9 +167,9 @@ const AudioPlayerWithLyrics = () => {
       />
 
       {/* Left side: Player Controls */}
-      <div className="w-full md:w-5/12 p-8 md:p-10 flex flex-col justify-center relative z-10 border-b md:border-b-0 md:border-r border-orange-200/50 backdrop-blur-sm">
+      <div className="w-full md:w-5/12 p-5 sm:p-8 md:p-10 flex flex-col justify-center relative z-10 border-t md:border-t-0 md:border-r border-orange-200/50 backdrop-blur-sm">
         
-        <div className="mb-8 md:mb-8 text-center md:text-left">
+        <div className="mb-6 md:mb-8 text-center md:text-left">
           <h3 className="text-orange-600 text-[10px] md:text-sm font-bold tracking-wider uppercase mb-2 flex items-center justify-center md:justify-start">
              {track.sourceType === 'youtube' && <FaYoutube className="mr-2" />}
              Daily {track.language} Audio
@@ -220,7 +220,7 @@ const AudioPlayerWithLyrics = () => {
       </div>
 
       {/* Right side: Lyrics Display or Thumbnail */}
-      <div className={`w-full md:w-7/12 relative z-10 flex flex-col ${track.thumbnailUrl && lyrics.length === 0 ? 'min-h-[320px] md:min-h-full' : 'h-64 sm:h-80 md:h-[400px] p-6 sm:p-8 md:p-10'}`}>
+      <div className={`w-full md:w-7/12 relative z-10 flex flex-col ${track.thumbnailUrl && lyrics.length === 0 ? 'h-auto md:min-h-full' : 'h-64 sm:h-80 md:h-[400px] p-4 sm:p-6 md:p-10'}`}>
         {lyrics.length > 0 ? (
           <div 
             ref={lyricsContainerRef}
@@ -253,11 +253,11 @@ const AudioPlayerWithLyrics = () => {
             ))}
           </div>
         ) : track.thumbnailUrl ? (
-          <div className="w-full overflow-hidden group bg-stone-50 flex items-center justify-center border-b md:border-b-0 md:border-l border-orange-100">
+          <div className="w-full h-full overflow-hidden group bg-stone-50 flex items-center justify-center border-b md:border-b-0 md:border-l border-orange-100">
              <img 
                src={track.thumbnailUrl} 
                alt={track.title} 
-               className="w-full h-auto md:h-full md:object-cover lg:object-contain object-contain max-h-[60vh] md:max-h-none group-hover:scale-105 transition-transform duration-700" 
+               className="w-full h-auto md:h-full md:object-cover lg:object-contain object-cover max-h-[250px] sm:max-h-[300px] md:max-h-none group-hover:scale-105 transition-transform duration-700" 
              />
           </div>
         ) : (

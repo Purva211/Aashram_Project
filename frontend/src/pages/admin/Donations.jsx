@@ -117,7 +117,7 @@ const Donations = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold flex flex-wrap items-center gap-2 text-slate-900"><FiDollarSign className="text-emerald-500" /> Donation Management</h1>
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold flex items-center gap-2 text-slate-900 tracking-tight"><FiDollarSign className="text-emerald-500" /> Donation Management</h1>
           <p className="text-slate-600 font-medium text-sm mt-1">Track financial contributions and generate reports.</p>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
@@ -233,10 +233,10 @@ const Donations = () => {
       )}
 
       {/* Table */}
-      <div className="bg-white border border-gray-100 shadow-sm rounded-2xl overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
+      <div className="md:bg-white md:border md:border-gray-100 md:shadow-sm md:rounded-2xl overflow-hidden flex flex-col md:border-t-4 md:border-t-emerald-500">
+        <div className="table-responsive-wrapper">
+          <table className="w-full text-left border-collapse md:min-w-[900px] block md:table">
+            <thead className="hidden md:table-header-group">
               <tr className="bg-slate-100 border-b border-slate-200 text-xs uppercase tracking-wider text-slate-700">
                 <th className="p-4 font-bold cursor-pointer hover:bg-slate-200 transition-colors" onClick={() => handleSort('donorName')}>
                   <div className="flex items-center gap-1">Donor Name {sortConfig.key === 'donorName' && (sortConfig.direction === 'asc' ? <FiChevronUp/> : <FiChevronDown/>)}</div>
@@ -256,29 +256,52 @@ const Donations = () => {
                 <th className="p-4 font-bold text-right cursor-pointer hover:bg-slate-200 transition-colors" onClick={() => handleSort('amount')}>
                   <div className="flex items-center justify-end gap-1">Amount {sortConfig.key === 'amount' && (sortConfig.direction === 'asc' ? <FiChevronUp/> : <FiChevronDown/>)}</div>
                 </th>
-                <th className="p-4 font-bold text-center">
-                  Action
-                </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 text-sm">
+            <tbody className="block md:table-row-group w-full divide-y divide-gray-100 text-sm">
               {paginatedData.map((donation, idx) => (
                 <motion.tr 
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: idx * 0.02 }}
-                  className="hover:bg-gray-50 transition-colors"
+                  className="flex flex-col md:table-row w-full bg-white md:bg-transparent border border-gray-100 md:border-b md:border-x-0 md:border-t-0 md:border-gray-50 rounded-xl md:rounded-none mb-4 md:mb-0 shadow-sm md:shadow-none hover:bg-gray-50/50"
                   key={donation._id}
                 >
-                  <td className="p-4 font-bold text-slate-900">
-                    {donation.donorName}
+                  {/* Mobile Card Top & Desktop Donor Name */}
+                  <td className="p-3 md:p-4 flex flex-col md:table-cell w-full border-b border-gray-50 md:border-none">
+                    <div className="flex md:hidden justify-between items-start mb-3">
+                      <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Ref: {donation.donationReference || 'N/A'}</span>
+                      <span className={`px-2.5 py-1 text-[11px] font-bold rounded-lg border ${
+                        donation.status === 'APPROVED' ? 'text-green-700 bg-green-50 border-green-200' :
+                        donation.status === 'REJECTED' ? 'text-red-700 bg-red-50 border-red-200' :
+                        'text-amber-700 bg-amber-50 border-amber-200'
+                      }`}>
+                        {donation.status || 'PENDING'}
+                      </span>
+                    </div>
+                    <div className="md:hidden flex justify-between items-end mb-2">
+                      <div>
+                        <span className="text-[10px] text-gray-500 uppercase tracking-wider block mb-0.5">Donor Name</span>
+                        <span className="font-bold text-gray-900 text-base">{donation.donorName}</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-[10px] text-gray-500 uppercase tracking-wider block mb-0.5">Amount</span>
+                        <span className="font-bold text-emerald-600 text-lg">₹ {donation.amount.toLocaleString()}</span>
+                      </div>
+                    </div>
+                    <div className="md:hidden text-xs text-gray-500 font-medium bg-gray-50 -mx-4 -mb-4 p-3 px-4 border-t border-gray-100 flex justify-between items-center rounded-b-xl">
+                      <span className="flex items-center gap-1.5">{donation.branchId?.name || "Main Trust"}</span>
+                      <span className="flex items-center gap-1.5 text-gray-400">{new Date(donation.date).toLocaleDateString()}</span>
+                    </div>
+                    {/* Desktop Content */}
+                    <span className="hidden md:inline font-bold text-slate-900">{donation.donorName}</span>
                   </td>
-                  <td className="p-4 font-mono text-xs font-bold text-slate-700">
+                  <td className="hidden md:table-cell p-4 font-mono text-xs font-bold text-slate-700">
                     {donation.donationReference || "N/A"}
                   </td>
-                  <td className="p-4 text-sm font-medium text-slate-600">
+                  <td className="hidden md:table-cell p-4 text-sm font-medium text-slate-600">
                     {donation.branchId?.name || "Main Trust"}
                   </td>
-                  <td className="p-4">
-                    <span className={`px-2.5 py-1 text-[11px] font-bold rounded-lg border ${
+                  <td className="hidden md:table-cell p-4">
+                    <span className={`px-2.5 py-1 text-[11px] font-bold rounded-lg border inline-block ${
                       donation.status === 'APPROVED' ? 'text-green-700 bg-green-50 border-green-200' :
                       donation.status === 'REJECTED' ? 'text-red-700 bg-red-50 border-red-200' :
                       'text-amber-700 bg-amber-50 border-amber-200'
@@ -286,31 +309,16 @@ const Donations = () => {
                       {donation.status || 'PENDING_VERIFICATION'}
                     </span>
                   </td>
-                  <td className="p-4 text-slate-600 font-medium">
+                  <td className="hidden md:table-cell p-4 text-slate-600 font-medium">
                     {new Date(donation.date).toLocaleDateString()}
                   </td>
-                  <td className="p-4 text-right font-bold text-emerald-600 text-base">
+                  <td className="hidden md:table-cell p-4 md:text-right font-bold text-emerald-600 text-base">
                     ₹ {donation.amount.toLocaleString()}
-                  </td>
-                  <td className="p-4 text-center">
-                    <button 
-                      onClick={() => {
-                        if (donation.receiptPdfUrl) {
-                          window.open(donation.receiptPdfUrl, '_blank');
-                        } else {
-                          alert('This is a legacy donation. The old receipt format has been removed.');
-                        }
-                      }}
-                      className="p-2 bg-slate-100 hover:bg-emerald-100 text-slate-600 hover:text-emerald-700 rounded-lg transition-colors"
-                      title="View Receipt"
-                    >
-                      <FiPrinter size={16} />
-                    </button>
                   </td>
                 </motion.tr>
               ))}
               {paginatedData.length === 0 && (
-                 <tr><td colSpan="5" className="text-center py-8 text-slate-500">No donations found.</td></tr>
+                 <tr><td colSpan="6" className="text-center py-8 text-slate-500 block md:table-cell">No donations found.</td></tr>
               )}
             </tbody>
           </table>
@@ -327,4 +335,8 @@ const Donations = () => {
 };
 
 export default Donations;
+
+
+
+
 

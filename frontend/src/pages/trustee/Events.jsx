@@ -264,9 +264,11 @@ const AdminEvents = () => {
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 flex flex-wrap items-center gap-3">
-            <FaCalendarAlt className="text-gray-700" /> Event Management
-            {!hasManage && <span className="bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full shadow-sm">View Only Access</span>}
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2 md:gap-3 tracking-tight">
+            <div className="flex items-center gap-2 md:gap-3">
+              <FaCalendarAlt className="text-gray-700" /> Event Management
+            </div>
+            {!hasManage && <span className="w-max bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full shadow-sm mt-1 md:mt-0">View Only Access</span>}
           </h1>
           <p className="text-sm text-gray-500 mt-2">Manage all temple spiritual events, live aarati, and past videos.</p>
         </div>
@@ -316,51 +318,53 @@ const AdminEvents = () => {
               {filteredEvents.map((event, index) => (
                 <motion.div key={event._id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: index * 0.05 }} className="bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-lg transition-all group flex flex-col">
                   
-                  <div className="relative h-56 overflow-hidden shrink-0 bg-gray-50 flex items-center justify-center">
+                  <div className="relative h-32 md:h-56 overflow-hidden shrink-0 bg-gray-50 flex items-center justify-center">
                     <img src={getImageUrl(event.featuredImage)} alt={event.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                     <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/20 to-transparent pointer-events-none"></div>
                     
-                    <div className="absolute top-4 left-4">
-                      <span className={`px-4 py-1.5 backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-widest text-gray-900 shadow-sm bg-white/90`}>
+                    <div className="absolute top-2 md:top-4 left-2 md:left-4">
+                      <span className={`px-2 md:px-4 py-1 md:py-1.5 backdrop-blur-md rounded-full text-[10px] md:text-xs font-bold uppercase tracking-widest text-gray-900 shadow-sm bg-white/90`}>
                         {event.status}
                       </span>
                     </div>
                     
-                    <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm rounded-2xl text-center overflow-hidden shadow-sm min-w-[4rem] border border-gray-100">
-                      <div className="bg-gray-100 text-gray-500 text-[10px] font-bold uppercase tracking-widest py-2 border-b border-gray-200">{new Date(event.eventDate).toLocaleDateString("en-US", { month: "short" })}</div>
-                      <div className="text-2xl font-black text-gray-900 py-3">{new Date(event.eventDate).getDate()}</div>
+                    <div className="absolute top-2 md:top-4 right-2 md:right-4 bg-white/95 backdrop-blur-sm rounded-xl md:rounded-2xl text-center overflow-hidden shadow-sm min-w-[3rem] md:min-w-[4rem] border border-gray-100">
+                      <div className="bg-gray-100 text-gray-500 text-[8px] md:text-[10px] font-bold uppercase tracking-widest py-1 md:py-2 border-b border-gray-200">{new Date(event.eventDate).toLocaleDateString("en-US", { month: "short" })}</div>
+                      <div className="text-lg md:text-2xl font-black text-gray-900 py-1.5 md:py-3">{new Date(event.eventDate).getDate()}</div>
                     </div>
                     
-                    <div className="absolute bottom-6 left-6 right-6">
-                      <span className="inline-block px-3 py-1 mb-3 bg-blue-500/20 text-blue-100 backdrop-blur-sm rounded-full text-[10px] font-bold uppercase tracking-widest border border-blue-400/30">
+                    <div className="absolute bottom-3 md:bottom-6 left-3 md:left-6 right-3 md:right-6">
+                      <span className="inline-block px-2 md:px-3 py-0.5 md:py-1 mb-1 md:mb-3 bg-blue-500/20 text-blue-100 backdrop-blur-sm rounded-full text-[8px] md:text-[10px] font-bold uppercase tracking-widest border border-blue-400/30">
                         {event.branch?.name || "Global"}
                       </span>
-                      <h2 className="text-white text-2xl font-bold line-clamp-1">{event.title}</h2>
+                      <h2 className="text-white text-lg md:text-2xl font-bold line-clamp-1">{event.title}</h2>
                     </div>
                   </div>
 
-                  <div className="p-6 flex flex-col flex-1">
-                    <p className="text-gray-500 text-sm line-clamp-2 mb-6 flex-1">{event.shortDescription || event.fullDescription}</p>
+                  <div className="p-4 md:p-6 flex flex-col flex-1">
+                    <p className="text-gray-500 text-xs md:text-sm line-clamp-2 mb-3 md:mb-6 flex-1">{event.shortDescription || event.fullDescription}</p>
                     
-                    <div className="space-y-3 mb-6 bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                      <div className="flex items-center gap-3 text-sm text-gray-700 font-medium">
-                        <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm text-gray-400"><FaMapMarkerAlt /></div>
+                    <div className="flex flex-row items-center justify-between gap-2 mb-3 md:mb-6 bg-gray-50 p-3 md:p-4 rounded-xl md:rounded-2xl border border-gray-100 overflow-hidden">
+                      <div className="flex items-center gap-1.5 md:gap-2 text-[10px] md:text-sm text-gray-700 font-medium overflow-hidden">
+                        <div className="w-5 h-5 md:w-8 md:h-8 rounded-full bg-white flex items-center justify-center shadow-sm text-gray-400 text-[10px] md:text-xs shrink-0"><FaMapMarkerAlt /></div>
                         <span className="truncate">{event.location}</span>
                       </div>
-                      <div className="flex items-center gap-3 text-sm text-gray-700 font-medium">
-                        <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm text-gray-400"><FaClock /></div>
+                      <div className="flex items-center gap-1.5 md:gap-2 text-[10px] md:text-sm text-gray-700 font-medium shrink-0">
+                        <div className="w-5 h-5 md:w-8 md:h-8 rounded-full bg-white flex items-center justify-center shadow-sm text-gray-400 text-[10px] md:text-xs shrink-0"><FaClock /></div>
                         <span>{event.eventTime}</span>
                       </div>
                     </div>
 
-                    <div className="flex gap-2 pt-4 border-t border-gray-100">
+                    <div className="flex flex-col sm:flex-row gap-2 pt-3 md:pt-4 border-t border-gray-100">
                       {hasManage ? (
                         <>
-                          <button onClick={() => togglePublish(event._id)} className={`flex-[1.5] py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors text-sm ${event.isPublished ? 'bg-[#10B981] hover:bg-[#059669] text-white shadow-sm' : 'bg-gray-500 hover:bg-gray-600 text-white shadow-sm'}`}>
+                          <button onClick={() => togglePublish(event._id)} className={`flex-1 sm:flex-[1.5] py-2 md:py-3 rounded-xl font-bold flex items-center justify-center gap-1.5 md:gap-2 transition-colors text-xs md:text-sm ${event.isPublished ? 'bg-[#10B981] hover:bg-[#059669] text-white shadow-sm' : 'bg-gray-500 hover:bg-gray-600 text-white shadow-sm'}`}>
                             {event.isPublished ? 'Live on User Side' : 'Draft (Hidden)'}
                           </button>
-                          <button onClick={() => openModal(event)} className="flex-1 py-3 bg-[#2E90FA] hover:bg-[#1570EF] text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-colors text-sm shadow-sm"><FaEdit /> Edit</button>
-                          <button onClick={() => deleteEvent(event._id)} className="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-colors text-sm shadow-sm"><FaTrash /> Del</button>
+                          <div className="flex gap-2 flex-1">
+                            <button onClick={() => openModal(event)} className="flex-1 py-2 md:py-3 bg-[#2E90FA] hover:bg-[#1570EF] text-white rounded-xl font-bold flex items-center justify-center gap-1.5 md:gap-2 transition-colors text-xs md:text-sm shadow-sm"><FaEdit /> Edit</button>
+                            <button onClick={() => deleteEvent(event._id)} className="flex-1 py-2 md:py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl font-bold flex items-center justify-center gap-1.5 md:gap-2 transition-colors text-xs md:text-sm shadow-sm"><FaTrash /> Del</button>
+                          </div>
                         </>
                       ) : (
                         <div className="w-full text-center text-xs text-gray-400 py-2">Action buttons disabled</div>
@@ -397,11 +401,11 @@ const AdminEvents = () => {
                 <label className="block text-sm font-bold text-gray-700 mb-1">YouTube Live URL / ID</label>
                 <input type="text" required value={liveFormData.streamUrl || liveStream?.streamUrl || ''} onChange={(e) => setLiveFormData({...liveFormData, streamUrl: e.target.value})} disabled={!hasManage} className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-red-500 disabled:bg-gray-50" placeholder="https://youtube.com/..." />
               </div>
-              <div className="flex gap-4">
+              <div className="flex flex-col sm:flex-row gap-4">
                 {hasManage && (
                   <>
                     <button type="submit" className="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-red-500/30 text-lg flex items-center justify-center gap-2">
-                      <span className="w-2.5 h-2.5 rounded-full bg-white animate-pulse"></span> START LIVE STREAM
+                      <span className="w-2.5 h-2.5 rounded-full bg-white animate-pulse shrink-0"></span> START LIVE STREAM
                     </button>
                     {liveStream && liveStream.isLive && (
                       <button type="button" onClick={handleStopLive} className="flex-1 bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 rounded-xl transition-colors shadow-lg flex items-center justify-center gap-2">
@@ -500,7 +504,7 @@ const AdminEvents = () => {
                 <button onClick={closeModal} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 hover:bg-red-500 hover:text-white transition-colors">✕</button>
               </div>
 
-              <div className="p-6 overflow-y-auto">
+              <div className="p-6 overflow-y-auto custom-scrollbar">
                 <form id="event-form" onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="md:col-span-2">
                     <label className="block text-sm font-bold text-gray-700 mb-1">Event Title</label>
@@ -589,16 +593,16 @@ const AdminEvents = () => {
                     {editingEvent?.videoFile && <p className="text-xs text-green-600 mt-1">Video currently uploaded: Yes</p>}
                   </div>
 
-                  <div className="md:col-span-2">
+                  <div className="md:col-span-2 mb-4">
                     <label className="block text-sm font-bold text-gray-700 mb-1">Description</label>
                     <textarea name="description" rows="4" required value={formData.description} onChange={handleInputChange} className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 outline-none focus:border-saffron-500 focus:ring-1 focus:ring-saffron-500"></textarea>
                   </div>
                 </form>
               </div>
               
-              <div className="p-8 border-t border-gray-100 bg-gray-50 flex justify-end gap-4 rounded-b-3xl">
-                <button type="button" onClick={closeModal} className="px-6 py-3 bg-white border border-gray-200 rounded-xl font-bold text-gray-700 hover:bg-gray-50 transition-colors shadow-sm">Cancel</button>
-                <button type="submit" form="event-form" disabled={formLoading} className="px-8 py-3 bg-blue-900 hover:bg-blue-800 text-white rounded-xl font-bold shadow-[0_4px_14px_0_rgba(255,122,47,0.39)] transition-colors flex items-center gap-2">
+              <div className="p-6 md:p-8 border-t border-gray-100 bg-white sticky bottom-0 flex flex-col md:flex-row justify-end gap-4 rounded-b-2xl z-10 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+                <button type="button" onClick={closeModal} className="w-full md:w-auto px-6 py-3 bg-white border border-gray-200 rounded-xl font-bold text-gray-700 hover:bg-gray-50 transition-colors shadow-sm order-2 md:order-1">Cancel</button>
+                <button type="submit" form="event-form" disabled={formLoading} className="w-full md:w-auto px-8 py-3 bg-blue-900 hover:bg-blue-800 text-white rounded-xl font-bold shadow-[0_4px_14px_0_rgba(255,122,47,0.39)] transition-colors flex items-center justify-center gap-2 order-1 md:order-2">
                   {formLoading ? <FaSpinner className="animate-spin" /> : <FaPlus />} {editingEvent ? "Save Changes" : "Create Event"}
                 </button>
               </div>

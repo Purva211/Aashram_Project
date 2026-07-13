@@ -61,3 +61,7 @@ export const downloadDonationReceipt = async (id) => {
 export const downloadAnnadaanReceipt = async (id) => {
   return await api.get(`/user/my-annadaan/${id}/receipt?t=${Date.now()}`, { responseType: 'blob' });
 };
+
+export const cancelAnnadaan = async (id) => {
+  return await api.delete(`/user/my-annadaan/${id}`);
+};

@@ -198,7 +198,7 @@ const AdminProfile = () => {
     <div className="max-w-5xl mx-auto space-y-8 text-gray-800 pb-12">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2 text-slate-900">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold flex items-center gap-2 text-slate-900 tracking-tight">
             <FiUser className="text-sky-500" /> Admin Profile
           </h1>
           <p className="text-gray-500 text-sm mt-1">Manage your administrative identity and security preferences.</p>
@@ -317,11 +317,11 @@ const AdminProfile = () => {
                   </div>
 
                   {isEditing && (
-                    <div className="pt-6 border-t border-gray-100 flex justify-end gap-3">
-                      <button type="button" onClick={() => { setIsEditing(false); setSuccessMsg(''); setImagePreview(null); setProfileImage(null); }} className="px-5 py-2.5 rounded-xl font-bold text-gray-600 hover:bg-gray-100 transition-colors">
+                    <div className="pt-6 border-t border-gray-100 flex flex-col md:flex-row justify-end gap-3">
+                      <button type="button" onClick={() => { setIsEditing(false); setSuccessMsg(''); setImagePreview(null); setProfileImage(null); }} className="w-full md:w-auto px-5 py-2.5 rounded-xl font-bold text-gray-600 hover:bg-gray-100 transition-colors order-2 md:order-1">
                         Cancel
                       </button>
-                      <button type="submit" disabled={loading} className="px-6 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl font-bold shadow-lg transition-colors flex items-center gap-2 disabled:opacity-50">
+                      <button type="submit" disabled={loading} className="w-full md:w-auto justify-center px-6 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl font-bold shadow-lg transition-colors flex items-center gap-2 disabled:opacity-50 order-1 md:order-2">
                         {loading ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <><FiSave /> Save Changes</>}
                       </button>
                     </div>
@@ -367,14 +367,14 @@ const AdminProfile = () => {
             {/* Preferences Tab */}
             {activeTab === 'preferences' && (
               <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3 }} className="space-y-10">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-100 pb-6 mb-6 gap-4">
                   <div>
                     <h2 className="text-xl font-bold text-slate-900">System Preferences</h2>
                     <p className="text-gray-500 mt-1">Customize your admin dashboard experience.</p>
                   </div>
                   <button 
                     onClick={handleUpdatePreferences}
-                    className="bg-white border border-sky-500 text-sky-600 hover:bg-sky-50 px-6 py-2.5 rounded-xl font-medium shadow-sm transition-colors flex items-center gap-2">
+                    className="w-full md:w-auto justify-center bg-white border border-sky-500 text-sky-600 hover:bg-sky-50 px-6 py-2.5 rounded-xl font-medium shadow-sm transition-colors flex items-center gap-2">
                     <FiSave className="w-4 h-4"/> Save Preferences
                   </button>
                 </div>

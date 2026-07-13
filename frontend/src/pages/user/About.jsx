@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import ScrollReveal from '../../components/ScrollReveal';
 import { Link } from 'react-router-dom';
 import { Camera, Calendar, MapPin, ArrowRight, History, Users, ShieldCheck, BookOpen, Heart, Sun, Star, Leaf } from 'lucide-react';
 import { FaOm } from 'react-icons/fa';
@@ -38,9 +39,8 @@ const About = () => {
 
       {/* Standard Grounded Header */}
       <div className="text-center pt-8 pb-12">
-        <motion.div 
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
+        <ScrollReveal 
+          direction="up" duration={0.8} delay={0}
           className="container mx-auto px-6 max-w-4xl"
         >
           <div className="flex items-center justify-center gap-4 mb-4">
@@ -49,7 +49,7 @@ const About = () => {
              <span className="w-12 h-px bg-mahakal-saffron"></span>
           </div>
           
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-mahakal-burgundy mb-6 tracking-tight leading-tight">
+          <h1 className="font-serif font-bold text-mahakal-burgundy mb-6 tracking-tight leading-tight">
             Shri Rudrapashupati <br className="hidden md:block" /> 
             <span className="text-mahakal-saffron">Kolekar Maharaj</span>
           </h1>
@@ -66,16 +66,14 @@ const About = () => {
                <ShieldCheck size={16} className="text-mahakal-saffron" /> Social Reform
              </div>
           </div>
-        </motion.div>
+        </ScrollReveal>
       </div>
 
       {/* Clean Editorial Blocks: Vision & Mission */}
       <section className="relative z-20 max-w-7xl mx-auto px-6 w-full mb-20 mt-8">
         <div className="grid md:grid-cols-3 gap-8">
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+          <ScrollReveal 
+            direction="up" duration={0.8} delay={0}
             className="bg-white rounded-2xl p-10 border border-stone-200 shadow-sm hover:shadow-md transition-shadow flex flex-col text-center group"
           >
             <div className="w-16 h-16 bg-mahakal-saffron/10 rounded-full flex items-center justify-center mx-auto mb-6 text-mahakal-saffron group-hover:scale-110 transition-transform">
@@ -85,13 +83,10 @@ const About = () => {
             <p className="text-stone-600 font-medium leading-relaxed">
               To create a universal spiritual awakening where every soul recognizes the divine light of Lord Shiva within, completely dispelling blind faith and superstition to foster absolute social equality.
             </p>
-          </motion.div>
+          </ScrollReveal>
 
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
+          <ScrollReveal 
+            direction="up" duration={0.8} delay={0.1}
             className="bg-mahakal-burgundy rounded-2xl p-10 border border-stone-200 shadow-sm hover:shadow-md transition-shadow flex flex-col text-center group"
           >
             <div className="w-16 h-16 bg-mahakal-saffron/20 rounded-full border border-mahakal-saffron/30 flex items-center justify-center mx-auto mb-6 text-mahakal-saffron group-hover:scale-110 transition-transform">
@@ -101,13 +96,10 @@ const About = () => {
             <p className="text-stone-300 font-medium leading-relaxed">
               To preserve the sacred Guru-Shishya Parampara, uphold the ancient Vachana literature, and selflessly serve humanity through continuous Annadaan (Food Donation) and spiritual education.
             </p>
-          </motion.div>
+          </ScrollReveal>
 
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
+          <ScrollReveal 
+            direction="up" duration={0.8} delay={0.2}
             className="bg-white rounded-2xl p-10 border border-stone-200 shadow-sm hover:shadow-md transition-shadow flex flex-col text-center group"
           >
             <div className="w-16 h-16 bg-mahakal-saffron/10 rounded-full flex items-center justify-center mx-auto mb-6 text-mahakal-saffron group-hover:scale-110 transition-transform">
@@ -117,7 +109,7 @@ const About = () => {
             <p className="text-stone-600 font-medium leading-relaxed">
               Rooted in pure Devotion (Bhakti), Absolute Equality (Samanate), the philosophy that Work is Worship (Kayakave Kailasa), and unconditional Seva for all living beings.
             </p>
-          </motion.div>
+          </ScrollReveal>
         </div>
       </section>
 
@@ -125,43 +117,32 @@ const About = () => {
       <section className="py-24 relative flex flex-col items-center">
         <div className="max-w-7xl w-full mx-auto px-6 relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-20">
-            <motion.h2 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+            <ScrollReveal as="h2"
+              direction="up" duration={0.8} delay={0}
               className="text-mahakal-saffron font-bold uppercase tracking-[0.3em] text-xs mb-4 flex items-center justify-center gap-4"
             >
               <span className="w-8 h-px bg-mahakal-saffron"></span> Comprehensive Heritage <span className="w-8 h-px bg-mahakal-saffron"></span>
-            </motion.h2>
-            <motion.h3 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
+            </ScrollReveal>
+            <ScrollReveal as="h3"
+              direction="up" duration={0.8} delay={0.1}
               className="text-4xl md:text-5xl font-serif font-bold text-mahakal-burgundy mb-6 leading-tight tracking-tight"
             >
               Our Golden History
-            </motion.h3>
+            </ScrollReveal>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <motion.div 
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
+            <ScrollReveal 
+              direction="right" duration={0.8} delay={0}
               className="relative"
             >
               <div className="rounded-2xl overflow-hidden shadow-lg border border-stone-200 bg-white p-2">
-                <img src="/about_images/kolekar_real_2.jpg" alt="History" className="w-full h-[500px] object-cover object-top rounded-xl" />
+                <img src="/about_images/kolekar_real_2.jpg" alt="History" className="w-full h-64 md:h-[500px] object-cover object-top rounded-xl" />
               </div>
-            </motion.div>
+            </ScrollReveal>
 
-            <motion.div 
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+            <ScrollReveal 
+              direction="left" duration={0.8} delay={0.2}
               className="flex flex-col gap-12"
             >
               <div>
@@ -189,7 +170,7 @@ const About = () => {
                   Explore Philosophy <ArrowRight size={14} />
                 </Link>
               </div>
-            </motion.div>
+            </ScrollReveal>
           </div>
         </div>
       </section>
@@ -199,10 +180,8 @@ const About = () => {
         <div className="max-w-7xl mx-auto px-6 relative z-10 grid lg:grid-cols-3 md:grid-cols-2 gap-8 lg:gap-12">
           
           {/* Vanshavali Parampara (Lineage) */}
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+          <ScrollReveal 
+            direction="up" duration={0.8} delay={0}
             className="bg-[#FFFDF6] rounded-2xl p-8 lg:p-10 border border-stone-200 shadow-sm text-center flex flex-col items-center hover:shadow-md transition-shadow group"
           >
             <div className="w-16 h-16 bg-white border border-stone-200 shadow-sm rounded-2xl flex items-center justify-center mb-6 text-mahakal-saffron group-hover:bg-mahakal-saffron group-hover:text-white group-hover:border-mahakal-saffron transition-all">
@@ -215,14 +194,11 @@ const About = () => {
             <Link to="/lineage" className="mt-auto px-6 py-3 w-full bg-mahakal-saffron text-white font-bold rounded-xl hover:bg-amber-600 transition-colors flex justify-center items-center gap-3 uppercase tracking-widest text-xs">
               View Sacred Lineage <ArrowRight className="w-4 h-4" />
             </Link>
-          </motion.div>
+          </ScrollReveal>
 
           {/* Importance of Monastery */}
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
+          <ScrollReveal 
+            direction="up" duration={0.8} delay={0.1}
             className="bg-[#FFFDF6] rounded-2xl p-8 lg:p-10 border border-stone-200 shadow-sm text-center flex flex-col items-center hover:shadow-md transition-shadow group"
           >
             <div className="w-16 h-16 bg-white border border-stone-200 shadow-sm rounded-2xl flex items-center justify-center mb-6 text-mahakal-saffron group-hover:bg-mahakal-saffron group-hover:text-white group-hover:border-mahakal-saffron transition-all">
@@ -235,14 +211,11 @@ const About = () => {
             <Link to="/monastery-importance" className="mt-auto px-6 py-3 w-full bg-mahakal-saffron text-white font-bold rounded-xl hover:bg-amber-600 transition-colors flex justify-center items-center gap-3 uppercase tracking-widest text-xs">
               Read Monastery Importance <ArrowRight className="w-4 h-4" />
             </Link>
-          </motion.div>
+          </ScrollReveal>
 
           {/* The Management Trust */}
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
+          <ScrollReveal 
+            direction="up" duration={0.8} delay={0.2}
             className="bg-[#FFFDF6] rounded-2xl p-8 lg:p-10 border border-stone-200 shadow-sm text-center flex flex-col items-center hover:shadow-md transition-shadow group md:col-span-2 lg:col-span-1"
           >
             <div className="w-16 h-16 bg-white border border-stone-200 shadow-sm rounded-2xl flex items-center justify-center mb-6 text-mahakal-saffron group-hover:bg-mahakal-saffron group-hover:text-white group-hover:border-mahakal-saffron transition-all">
@@ -255,7 +228,7 @@ const About = () => {
             <Link to="/trustee-board" className="mt-auto px-6 py-3 w-full bg-mahakal-saffron text-white font-bold rounded-xl hover:bg-amber-600 transition-colors flex justify-center items-center gap-3 uppercase tracking-widest text-xs">
               Trustee Board <ArrowRight className="w-4 h-4" />
             </Link>
-          </motion.div>
+          </ScrollReveal>
           
         </div>
       </section>
@@ -277,7 +250,7 @@ const About = () => {
               { to: "/branches", img: "/about_images/kolekar_real_2.jpg", title: "Our Branches", desc: "Find affiliated centers worldwide actively extending our Annadaan services.", icon: MapPin, offset: "lg:-translate-y-4" }
             ].map((item, idx) => (
               <Link key={idx} to={item.to} className={`block relative rounded-2xl overflow-hidden group shadow-sm hover:shadow-lg border border-stone-200 bg-white flex flex-col transform ${item.offset} transition-all duration-300`}>
-                <div className="h-64 relative overflow-hidden bg-stone-100">
+                <div className="h-48 md:h-64 relative overflow-hidden bg-stone-100">
                    <div className="absolute inset-0 bg-cover bg-top opacity-90 group-hover:scale-105 transition-transform duration-700" style={{ backgroundImage: `url('${item.img}')` }}></div>
                 </div>
                 <div className="p-8 text-center bg-white relative flex-1">

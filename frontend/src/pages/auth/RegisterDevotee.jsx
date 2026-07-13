@@ -4,6 +4,7 @@ import { UserCircle, Mail, Phone, Lock, ArrowLeft, Loader2, Key, Eye, EyeOff } f
 import api from '../../utils/api';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import { validateName, validateMobile, getPasswordError, getMobileError } from '../../utils/validationUtils';
 
 const RegisterDevotee = () => {
   const navigate = useNavigate();
@@ -27,6 +28,17 @@ const RegisterDevotee = () => {
 
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
+    if (!validateName(formData.name)) {
+      return setError('Name must contain only alphabets and spaces.');
+    }
+    const mobileError = getMobileError(formData.mobile);
+    if (mobileError) {
+      return setError(mobileError);
+    }
+    const pwdError = getPasswordError(formData.password);
+    if (pwdError) {
+      return setError(pwdError);
+    }
     if (formData.password !== formData.confirmPassword) {
       return setError('Passwords do not match');
     }
@@ -80,7 +92,7 @@ const RegisterDevotee = () => {
             </button>
           )}
 
-          <div className="bg-white/90 backdrop-blur-2xl border border-white shadow-[0_20px_50px_-15px_rgba(0,0,0,0.05),0_0_30px_rgba(255,165,0,0.05)] p-8 md:p-12 rounded-[2.5rem] relative overflow-hidden group">
+          <div className="bg-white/90 backdrop-blur-2xl border border-white shadow-[0_20px_50px_-15px_rgba(0,0,0,0.05),0_0_30px_rgba(255,165,0,0.05)] p-6 sm:p-8 md:p-12 rounded-[2.5rem] relative overflow-hidden group">
             
             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-orange-200/40 to-transparent rounded-full blur-[20px] pointer-events-none transform translate-x-1/3 -translate-y-1/3"></div>
 
@@ -108,7 +120,7 @@ const RegisterDevotee = () => {
                   <label className="block text-slate-700 text-xs font-black mb-1.5 uppercase tracking-wider ml-1">Full Name</label>
                   <div className="relative">
                     <UserCircle className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                    <input required type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full bg-slate-50/50 backdrop-blur-sm border border-slate-200 text-slate-800 rounded-2xl pl-11 pr-4 py-4 outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-400/10 focus:bg-white transition-all placeholder:text-slate-400 font-bold shadow-sm" placeholder="Enter full name" />
+                    <input required type="text" pattern="[A-Za-z\s]+" title="Name must contain only alphabets and spaces" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value.replace(/[^A-Za-z\s]/g, '')})} className="w-full bg-slate-50/50 backdrop-blur-sm border border-slate-200 text-slate-800 rounded-2xl pl-11 pr-4 py-4 outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-400/10 focus:bg-white transition-all placeholder:text-slate-400 font-bold shadow-sm" placeholder="Enter full name" />
                   </div>
                 </div>
 
@@ -124,7 +136,7 @@ const RegisterDevotee = () => {
                   <label className="block text-slate-700 text-xs font-black mb-1.5 uppercase tracking-wider ml-1">Mobile Number</label>
                   <div className="relative">
                     <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                    <input required type="tel" value={formData.mobile} onChange={(e) => setFormData({...formData, mobile: e.target.value})} className="w-full bg-slate-50/50 backdrop-blur-sm border border-slate-200 text-slate-800 rounded-2xl pl-11 pr-4 py-4 outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-400/10 focus:bg-white transition-all placeholder:text-slate-400 font-bold shadow-sm" placeholder="Enter mobile number" />
+                    <input required type="tel" pattern="\d{10}" title="Mobile number must be exactly 10 digits" maxLength={10} value={formData.mobile} onChange={(e) => setFormData({...formData, mobile: e.target.value.replace(/\D/g, '')})} className="w-full bg-slate-50/50 backdrop-blur-sm border border-slate-200 text-slate-800 rounded-2xl pl-11 pr-4 py-4 outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-400/10 focus:bg-white transition-all placeholder:text-slate-400 font-bold shadow-sm" placeholder="Enter mobile number" />
                   </div>
                 </div>
 
@@ -132,7 +144,7 @@ const RegisterDevotee = () => {
                   <label className="block text-slate-700 text-xs font-black mb-1.5 uppercase tracking-wider ml-1">Password</label>
                   <div className="relative">
                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10" size={18} />
-                    <input required type={showPassword ? "text" : "password"} value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} className="w-full bg-slate-50/50 backdrop-blur-sm border border-slate-200 text-slate-800 rounded-2xl pl-11 pr-12 py-4 outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-400/10 focus:bg-white transition-all placeholder:text-slate-400 font-bold shadow-sm" placeholder="Create password" />
+                    <input required type={showPassword ? "text" : "password"} pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}" title="Password must be at least 8 chars long with 1 uppercase, 1 lowercase, 1 number, and 1 special character" value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} className="w-full bg-slate-50/50 backdrop-blur-sm border border-slate-200 text-slate-800 rounded-2xl pl-11 pr-12 py-4 outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-400/10 focus:bg-white transition-all placeholder:text-slate-400 font-bold shadow-sm" placeholder="Create password" />
                     <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-orange-500 transition-colors z-10 p-1">
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
