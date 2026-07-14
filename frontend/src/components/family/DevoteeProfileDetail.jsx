@@ -80,8 +80,6 @@ const DevoteeProfileDetail = ({ devoteeId, onClose, onSelectMember, onViewFamily
                 <span className="bg-saffron-50 border border-saffron-200 text-saffron-700 px-2 py-0.5 rounded text-[10px]">{relationships.relationToHead}</span>
               )}
             </p>
-<<<<<<< HEAD
-=======
             {devotee.familyRootId && onViewFamilyTree && (
               <button 
                 onClick={() => onViewFamilyTree(devotee.familyRootId)}
@@ -90,7 +88,6 @@ const DevoteeProfileDetail = ({ devoteeId, onClose, onSelectMember, onViewFamily
                 View Family Tree
               </button>
             )}
->>>>>>> dd24488bb42c583fa240e438fb8a642a59a7f693
           </div>
         </div>
         <button onClick={onClose} className="p-2 rounded-full bg-white hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors shadow-sm"><FiX size={18} /></button>
