@@ -45,7 +45,7 @@ const savePdfLocally = (pdfBuffer, fileName) => {
       }
       const filePath = path.join(uploadDir, `${fileName}.pdf`);
       fs.writeFileSync(filePath, pdfBuffer);
-      const baseUrl = process.env.BASE_URL || 'http://localhost:5000';
+      const baseUrl = process.env.BACKEND_URL || process.env.BASE_URL || 'https://aashram-project-1.onrender.com';
       resolve(`${baseUrl}/uploads/receipts/${fileName}.pdf`);
     } catch (err) {
       reject(err);
@@ -85,7 +85,7 @@ const generateReceiptPdf = async (templateName, data, receiptNumber) => {
   }
 
   // Add backend base URL for absolute image paths if needed
-  htmlContent = htmlContent.replace(/{{baseUrl}}/g, process.env.BASE_URL || 'http://localhost:5000');
+  htmlContent = htmlContent.replace(/{{baseUrl}}/g, process.env.BACKEND_URL || process.env.BASE_URL || 'https://aashram-project-1.onrender.com');
 
   const browser = await getBrowser();
   

@@ -15,7 +15,7 @@ exports.createBranch = async (req, res) => {
 
     let image = "";
     if (req.file) {
-      image = `${process.env.BACKEND_URL || 'http://localhost:5000'}/uploads/${req.file.filename}`;
+      image = `/uploads/${req.file.filename}`;
     }
 
     const branch = new Branch({ name, location, contact, description, image });
@@ -61,7 +61,7 @@ exports.updateBranch = async (req, res) => {
     }
 
     if (req.file) {
-      updateData.image = `${process.env.BACKEND_URL || 'http://localhost:5000'}/uploads/${req.file.filename}`;
+      updateData.image = `/uploads/${req.file.filename}`;
     }
 
     const branch = await Branch.findByIdAndUpdate(

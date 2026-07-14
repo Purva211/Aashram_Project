@@ -36,7 +36,7 @@ exports.createRecord = async (req, res) => {
         else if (file.mimetype.startsWith('video/')) type = 'video';
         
         return {
-          url: `${process.env.BACKEND_URL || 'http://localhost:5000'}/uploads/${file.filename}`,
+          url: `/uploads/${file.filename}`,
           type
         };
       });
@@ -74,7 +74,7 @@ exports.updateRecord = async (req, res) => {
         else if (file.mimetype.startsWith('video/')) type = 'video';
         
         return {
-          url: `${process.env.BACKEND_URL || 'http://localhost:5000'}/uploads/${file.filename}`,
+          url: `/uploads/${file.filename}`,
           type
         };
       });
