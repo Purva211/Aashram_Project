@@ -19,6 +19,7 @@ import TrusteeBoard from "./pages/user/TrusteeBoard";
 
 import MathHistory from "./pages/user/MathHistory";
 import Lineage from "./pages/user/Lineage";
+import LineageDetail from "./pages/user/LineageDetail";
 import TrusteeAudioTracks from './pages/trustee/AudioTracks';
 import ContactUs from "./pages/user/ContactUs";
 import VerifyReceipt from "./pages/public/VerifyReceipt";
@@ -45,6 +46,7 @@ import TrusteeAnnadaan from "./pages/trustee/Annadaan";
 import TrusteeGallery from "./pages/trustee/Gallery";
 import TrusteeDocuments from "./pages/trustee/Documents";
 import TrusteeBulletins from "./pages/trustee/Bulletins";
+import TrusteeContactEnquiries from "./pages/trustee/ContactEnquiries";
 import AccountantDonationVerification from "./pages/accountant/DonationVerification";
 import BranchDashboard from "./pages/branch/Dashboard";
 import BranchProfile from "./pages/branch/Profile";
@@ -92,6 +94,10 @@ import ManageLineage from "./pages/admin/ManageLineage";
 import ManageNews from "./pages/admin/ManageNews";
 import TrusteeManageNews from "./pages/trustee/ManageNews";
 import BranchManageNews from "./pages/branch/ManageNews";
+
+// Shared Pages
+import ReceiptHistory from "./pages/shared/ReceiptHistory";
+import NoticeGenerator from "./pages/admin/NoticeGenerator";
 
 // Vanshawal Family Tree Pages
 import DevoteeVanshawal from "./pages/family/DevoteeVanshawal";
@@ -183,6 +189,7 @@ function AppRoutes() {
 
           <Route path="/math-history" element={<MathHistory />} />
           <Route path="/lineage" element={<Lineage />} />
+          <Route path="/lineage/:id" element={<LineageDetail />} />
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/verify-receipt/:receiptNumber?" element={<VerifyReceipt />} />
           
@@ -232,6 +239,10 @@ function AppRoutes() {
           <Route path="/trustee/vanshawal" element={<RoleProtectedRoute allowedRoles={['Trustee']}><DevoteeVanshawal /></RoleProtectedRoute>} />
           <Route path="/trustee/vanshawal/dashboard" element={<RoleProtectedRoute allowedRoles={['Trustee']}><FamilyDashboard /></RoleProtectedRoute>} />
           <Route path="/trustee/vanshawal/reports" element={<RoleProtectedRoute allowedRoles={['Trustee']}><FamilyReports /></RoleProtectedRoute>} />
+<<<<<<< HEAD
+=======
+          <Route path="/trustee/contact-enquiries" element={<RoleProtectedRoute allowedRoles={['Trustee', 'Admin']}><TrusteeContactEnquiries /></RoleProtectedRoute>} />
+>>>>>>> dd24488bb42c583fa240e438fb8a642a59a7f693
 
           {/* Branch Manager Protected Routes */}
           <Route path="/branch/dashboard" element={<RoleProtectedRoute allowedRoles={['BranchManager']}><BranchDashboard /></RoleProtectedRoute>} />
@@ -242,6 +253,10 @@ function AppRoutes() {
           <Route path="/branch/announcements" element={<RoleProtectedRoute allowedRoles={['BranchManager']}><BranchAnnouncements /></RoleProtectedRoute>} />
           <Route path="/branch/branches" element={<RoleProtectedRoute allowedRoles={['BranchManager']}><BranchBranches /></RoleProtectedRoute>} />
           <Route path="/branch/documents" element={<RoleProtectedRoute allowedRoles={['BranchManager']}><BranchDocuments /></RoleProtectedRoute>} />
+<<<<<<< HEAD
+=======
+
+>>>>>>> dd24488bb42c583fa240e438fb8a642a59a7f693
           <Route path="/branch/news" element={<RoleProtectedRoute allowedRoles={['BranchManager']}><BranchManageNews /></RoleProtectedRoute>} />
           <Route path="/branch/vanshawal" element={<RoleProtectedRoute allowedRoles={['BranchManager']}><DevoteeVanshawal /></RoleProtectedRoute>} />
           <Route path="/branch/vanshawal/dashboard" element={<RoleProtectedRoute allowedRoles={['BranchManager']}><FamilyDashboard /></RoleProtectedRoute>} />
@@ -270,6 +285,10 @@ function AppRoutes() {
           <Route path="/document-handler/deletion-requests" element={<RoleProtectedRoute allowedRoles={['DocumentHandler', 'document_admin']}><DocumentAdminDeletionRequests /></RoleProtectedRoute>} />
           <Route path="/document-handler/documents" element={<RoleProtectedRoute allowedRoles={['DocumentHandler', 'document_admin']}><DocumentAdminDashboard /></RoleProtectedRoute>} />
           <Route path="/document-handler/announcements" element={<RoleProtectedRoute allowedRoles={['DocumentHandler', 'document_admin']}><DocumentAdminAnnouncements /></RoleProtectedRoute>} />
+<<<<<<< HEAD
+=======
+
+>>>>>>> dd24488bb42c583fa240e438fb8a642a59a7f693
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" />} />

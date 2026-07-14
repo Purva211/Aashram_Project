@@ -285,3 +285,32 @@ exports.downloadAnnadaanReceipt = async (req, res) => {
   }
 };
 
+// ─── DELETE /api/user/my-annadaan/:id ──────────────────────────────────────────
+
+exports.cancelAnnadaan = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const annadaan = await Annadaan.findById(id);
+
+    if (!annadaan) {
+      return res.status(404).json({ success: false, message: "Annadaan record not found." });
+    }
+
+    // Verify ownership
+    const isOwner = 
+      (annadaan.userId && annadaan.userId.toString() === req.user._id.toString()) ||
+      (annadaan.email && req.user.email && annadaan.email.toLowerCase() === req.user.email.toLowerCase()) ||
+      (annadaan.name && req.user.name && annadaan.name.toLowerCase() === req.user.name.toLowerCase());
+
+    if (!isOwner) {
+      return res.status(403).json({ success: false, message: "Unauthorized to cancel this seva." });
+    }
+
+    await Annadaan.findByIdAndDelete(id);
+
+    return res.status(200).json({ success: true, message: "Annadaan Seva cancelled and removed successfully." });
+  } catch (err) {
+    console.error("[userDashboard][ERROR] cancelAnnadaan:", err.message);
+    return res.status(500).json({ success: false, message: "Failed to cancel Annadaan Seva." });
+  }
+};

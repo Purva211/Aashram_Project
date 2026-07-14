@@ -174,7 +174,7 @@ const LoginSelection = () => {
       <div className="flex-1 relative flex items-center justify-center py-32 px-4 sm:px-6 z-10">
         <div className="w-full max-w-xl mx-auto">
           
-          <div className="bg-white/80 backdrop-blur-2xl rounded-[2.5rem] p-8 md:p-12 border border-white/60 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1),0_0_20px_rgba(255,165,0,0.1)] relative overflow-hidden group transition-all duration-500 hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1),0_0_40px_rgba(255,165,0,0.15)]">
+          <div className="bg-white/80 backdrop-blur-2xl rounded-[2.5rem] p-6 sm:p-8 md:p-12 border border-white/60 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1),0_0_20px_rgba(255,165,0,0.1)] relative overflow-hidden group transition-all duration-500 hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1),0_0_40px_rgba(255,165,0,0.15)]">
             
             <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-amber-200/40 to-transparent rounded-full blur-[30px] pointer-events-none transform translate-x-1/3 -translate-y-1/3 transition-colors duration-500"></div>
             <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-orange-200/40 to-transparent rounded-full blur-[20px] pointer-events-none transform -translate-x-1/4 translate-y-1/4"></div>

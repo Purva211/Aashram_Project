@@ -13,10 +13,44 @@ const VanshawalTree = ({ members, onSelectMember, selectedMemberId, onAddRelativ
   const [searchTerm, setSearchTerm] = useState("");
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [contextMenu, setContextMenu] = React.useState(null);
+  const [showTreeSuggestions, setShowTreeSuggestions] = useState(false);
   
   const treeContainerRef = useRef(null);
   const dragRef = useRef({ isDragging: false, startX: 0, startY: 0 });
 
+  const handleTreeSearch = (selectedId) => {
+    const newCollapsed = new Set(collapsed);
+    let curr = memberMap[selectedId];
+    while (curr) {
+      if (curr.fatherId && newCollapsed.has(curr.fatherId.toString())) {
+        newCollapsed.delete(curr.fatherId.toString());
+      }
+      if (curr.motherId && newCollapsed.has(curr.motherId.toString())) {
+        newCollapsed.delete(curr.motherId.toString());
+      }
+      curr = curr.fatherId ? memberMap[curr.fatherId.toString()] : (curr.motherId ? memberMap[curr.motherId.toString()] : null);
+    }
+    setCollapsed(newCollapsed);
+    onSelectMember(selectedId);
+
+    setTimeout(() => {
+      const cardEl = document.getElementById(`node-${selectedId}`);
+      const containerEl = treeContainerRef.current;
+      if (cardEl && containerEl) {
+        const cardRect = cardEl.getBoundingClientRect();
+        const containerRect = containerEl.getBoundingClientRect();
+        const dx = (containerRect.width / 2) - (cardRect.width / 2) - (cardRect.left - containerRect.left);
+        const dy = (containerRect.height / 2) - (cardRect.height / 2) - (cardRect.top - containerRect.top);
+        
+        setPosition(prev => ({
+          x: prev.x + dx,
+          y: prev.y + dy
+        }));
+      }
+    }, 150);
+  };
+
+>>>>>>> dd24488bb42c583fa240e438fb8a642a59a7f693
   React.useEffect(() => {
     const handleCloseContext = () => setContextMenu(null);
     window.addEventListener('click', handleCloseContext);
@@ -157,6 +191,10 @@ const VanshawalTree = ({ members, onSelectMember, selectedMemberId, onAddRelativ
           
           {/* Main Devotee Card */}
           <div 
+<<<<<<< HEAD
+=======
+            id={`node-${member._id}`}
+>>>>>>> dd24488bb42c583fa240e438fb8a642a59a7f693
             onClick={() => onSelectMember(member._id)}
             onContextMenu={(e) => {
               e.preventDefault();
@@ -207,6 +245,10 @@ const VanshawalTree = ({ members, onSelectMember, selectedMemberId, onAddRelativ
               <div className="w-4 border-t-2 border-dashed border-slate-300"></div>
               
               <div 
+<<<<<<< HEAD
+=======
+                id={`node-${spouse._id}`}
+>>>>>>> dd24488bb42c583fa240e438fb8a642a59a7f693
                 onClick={() => onSelectMember(spouse._id)}
                 onContextMenu={(e) => {
                   e.preventDefault();
@@ -324,9 +366,57 @@ const VanshawalTree = ({ members, onSelectMember, selectedMemberId, onAddRelativ
             type="text"
             placeholder="Search member in tree..."
             value={searchTerm}
+<<<<<<< HEAD
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-saffron-500/20 focus:border-saffron-500 transition-all text-slate-700"
           />
+=======
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setShowTreeSuggestions(true);
+            }}
+            onFocus={() => setShowTreeSuggestions(true)}
+            className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-saffron-500/20 focus:border-saffron-500 transition-all text-slate-700"
+          />
+          
+          {showTreeSuggestions && searchTerm && (
+            <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-150 rounded-xl shadow-xl z-50 max-h-48 overflow-y-auto divide-y divide-slate-100">
+              {members.filter(m => {
+                const term = searchTerm.toLowerCase();
+                return (
+                  m.name.toLowerCase().includes(term) ||
+                  (m.devoteeId && m.devoteeId.toLowerCase().includes(term)) ||
+                  (m.mobile && m.mobile.includes(term)) ||
+                  (m.gotra && m.gotra.toLowerCase().includes(term))
+                );
+              }).slice(0, 5).map(m => (
+                <div 
+                  key={m._id} 
+                  onClick={() => {
+                    handleTreeSearch(m._id);
+                    setSearchTerm("");
+                    setShowTreeSuggestions(false);
+                  }}
+                  className="px-4 py-2.5 hover:bg-saffron-50 cursor-pointer text-left text-xs font-bold text-slate-700 transition-colors"
+                >
+                  <p>{m.name}</p>
+                  <p className="text-[9px] text-slate-400 font-semibold">{m.devoteeId || 'N/A'}</p>
+                </div>
+              ))}
+              {members.filter(m => {
+                const term = searchTerm.toLowerCase();
+                return (
+                  m.name.toLowerCase().includes(term) ||
+                  (m.devoteeId && m.devoteeId.toLowerCase().includes(term)) ||
+                  (m.mobile && m.mobile.includes(term)) ||
+                  (m.gotra && m.gotra.toLowerCase().includes(term))
+                );
+              }).length === 0 && (
+                <div className="px-4 py-3 text-xs text-slate-400 font-medium text-center">No members found</div>
+              )}
+            </div>
+          )}
+>>>>>>> dd24488bb42c583fa240e438fb8a642a59a7f693
         </div>
 
         {/* View Zoom Control Action Bar */}

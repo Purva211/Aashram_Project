@@ -5,6 +5,7 @@ import { ProfileSkeleton } from '../../../components/dashboard/LoadingSkeleton';
 import { FaUser, FaEnvelope, FaPhoneAlt, FaCamera, FaShieldAlt, FaSave } from 'react-icons/fa';
 import { toast, Toaster } from 'react-hot-toast';
 import { motion } from 'framer-motion';
+import { validateName, getMobileError } from '../../../utils/validationUtils';
 
 export const Settings = () => {
   const { user, login } = useAuth();
@@ -48,7 +49,9 @@ export const Settings = () => {
   }, []);
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    let { name, value } = e.target;
+    if (name === 'name') value = value.replace(/[^A-Za-z\s]/g, '');
+    if (name === 'mobile') value = value.replace(/\D/g, '');
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
@@ -73,6 +76,17 @@ export const Settings = () => {
     if (!formData.email.trim()) {
       toast.error("Email is required.");
       return;
+    }
+    if (!validateName(formData.name.trim())) {
+      toast.error("Name must contain only alphabets and spaces.");
+      return;
+    }
+    if (formData.mobile) {
+      const mobileError = getMobileError(formData.mobile.trim());
+      if (mobileError) {
+        toast.error(mobileError);
+        return;
+      }
     }
 
     try {
@@ -159,6 +173,8 @@ export const Settings = () => {
                 <input
                   type="text"
                   name="name"
+                  pattern="[A-Za-z\s]+"
+                  title="Name must contain only alphabets and spaces"
                   value={formData.name}
                   onChange={handleInputChange}
                   placeholder="Enter your full name"
@@ -192,8 +208,11 @@ export const Settings = () => {
                   <FaPhoneAlt size={14} />
                 </span>
                 <input
-                  type="text"
+                  type="tel"
                   name="mobile"
+                  pattern="\d{10}"
+                  title="Mobile number must be exactly 10 digits"
+                  maxLength={10}
                   value={formData.mobile}
                   onChange={handleInputChange}
                   placeholder="Enter 10-digit mobile number"

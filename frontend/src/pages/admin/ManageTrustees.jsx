@@ -4,6 +4,7 @@ import { FiPlus, FiEdit2, FiTrash2, FiShield, FiX, FiCheck, FiSearch, FiChevronU
 import api from "../../utils/api";
 import { useTableFeatures } from '../../hooks/useTableFeatures';
 import TablePagination from '../../components/TablePagination';
+import { validateName, getMobileError, getPasswordError } from '../../utils/validationUtils';
 
 const availablePermissions = [
   'Dashboard', 'Devotees', 'Donations', 'Events', 
@@ -94,6 +95,18 @@ const ManageTrustees = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateName(formData.name)) {
+      return alert("Name must contain only alphabets and spaces.");
+    }
+    const mobileError = getMobileError(formData.mobile);
+    if (mobileError) {
+      return alert(mobileError);
+    }
+    if (formData.password) {
+      const pwdError = getPasswordError(formData.password);
+      if (pwdError) return alert(pwdError);
+    }
+    
     try {
       const dataToSubmit = new FormData();
       Object.keys(formData).forEach(key => {
@@ -197,7 +210,7 @@ const ManageTrustees = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold flex flex-wrap items-center gap-2 text-slate-900"><FiShield className="text-saffron-500" /> Trust Members Management</h1>
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold flex items-center gap-2 text-slate-900 tracking-tight"><FiShield className="text-saffron-500" /> Trust Members Management</h1>
           <p className="text-gray-500 text-sm mt-1">Manage hierarchy, roles, and system access permissions.</p>
         </div>
         <div className="flex flex-col sm:flex-row items-center gap-4">
@@ -241,10 +254,10 @@ const ManageTrustees = () => {
       </div>
 
       {/* List */}
-      <div className="bg-white border border-gray-100 shadow-sm rounded-2xl overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
+      <div className="md:bg-white md:border md:border-gray-100 md:shadow-sm md:rounded-2xl overflow-hidden">
+        <div className="table-responsive-wrapper">
+          <table className="w-full text-left border-collapse block md:table">
+            <thead className="hidden md:table-header-group">
               <tr className="bg-gray-50 border-b border-gray-100 text-xs uppercase tracking-wider text-gray-500">
                 <th className="p-4 font-bold cursor-pointer hover:bg-gray-200 transition-colors" onClick={() => handleSort('name')}>
                   <div className="flex items-center gap-1">Member {sortConfig.key === 'name' && (sortConfig.direction === 'asc' ? <FiChevronUp/> : <FiChevronDown/>)}</div>
@@ -261,11 +274,32 @@ const ManageTrustees = () => {
                 <th className="p-4 font-bold text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 text-sm">
+            <tbody className="block md:table-row-group w-full divide-y divide-gray-100 text-sm">
               {paginatedData.map(t => (
-                <tr key={t._id} className="hover:bg-gray-50 transition-colors">
-                  <td className="p-4">
-                    <div className="font-bold text-slate-900">{t.name}</div>
+                <tr key={t._id} className="flex flex-col md:table-row w-full bg-white md:bg-transparent border border-gray-100 md:border-b md:border-x-0 md:border-t-0 md:border-gray-50 rounded-xl md:rounded-none mb-4 md:mb-0 shadow-sm md:shadow-none hover:bg-gray-50/50">
+                  <td className="p-3 md:p-4 flex flex-col md:table-cell w-full border-b border-gray-50 md:border-none">
+                    {/* Mobile Only Content */}
+                    <div className="flex md:hidden justify-between items-start mb-2">
+                      <div className="text-slate-800 font-bold text-[11px] uppercase tracking-wider bg-gray-100 px-2 py-0.5 rounded">{t.systemRole || 'Trust Member'}</div>
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${t.status === 'Active' ? 'bg-green-50 text-green-600 border-green-200' : 'bg-red-50 text-red-600 border-red-200'}`}>
+                        {t.status || 'Active'}
+                      </span>
+                    </div>
+                    <div className="md:hidden mb-2">
+                      <div className="font-bold text-slate-900 text-lg">{t.name}</div>
+                      <div className="text-xs text-gray-500">{t.designation}</div>
+                    </div>
+                    <div className="md:hidden text-gray-600 mb-3 space-y-1">
+                      <div className="text-sm font-medium">{t.email}</div>
+                      <div className="text-xs text-gray-400">{t.mobile}</div>
+                    </div>
+                    {t.audioTrack && (
+                      <div className="md:hidden mt-2 mb-3">
+                        <audio controls src={`${import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/api$/, '') : 'http://localhost:5000'}${t.audioTrack}`} className="h-8 w-full max-w-[200px]" />
+                      </div>
+                    )}
+                    {/* Shared Desktop/Mobile Name and Permissions */}
+                    <div className="hidden md:block font-bold text-slate-900 mb-1">{t.name}</div>
                     <div className="text-xs text-gray-500 mt-1 flex flex-wrap gap-1">
                       {t.permissions?.slice(0, 3).map((p, idx) => (
                         <span key={idx} className="px-1.5 py-0.5 bg-saffron-50 text-saffron-700 border border-saffron-100 rounded text-[10px] font-semibold">{p.module || p}</span>
@@ -273,15 +307,15 @@ const ManageTrustees = () => {
                       {t.permissions?.length > 3 && <span className="text-[10px] text-gray-500 font-semibold">+{t.permissions.length - 3}</span>}
                     </div>
                   </td>
-                  <td className="p-4">
+                  <td className="hidden md:table-cell p-4">
                     <div className="text-slate-800 font-semibold">{t.systemRole || 'Trust Member'}</div>
                     <div className="text-xs text-gray-500 mt-0.5">{t.designation}</div>
                   </td>
-                  <td className="p-4 text-gray-600">
+                  <td className="hidden md:table-cell p-4 text-gray-600">
                     <div className="font-medium">{t.email}</div>
                     <div className="text-xs text-gray-400 mt-0.5">{t.mobile}</div>
                   </td>
-                  <td className="p-4">
+                  <td className="hidden md:table-cell p-4">
                     <span className={`px-2.5 py-1 rounded-full text-xs font-bold border mb-2 inline-block ${t.status === 'Active' ? 'bg-green-50 text-green-600 border-green-200' : 'bg-red-50 text-red-600 border-red-200'}`}>
                       {t.status || 'Active'}
                     </span>
@@ -291,10 +325,13 @@ const ManageTrustees = () => {
                       </div>
                     )}
                   </td>
-                  <td className="p-4 text-right">
-                    <div className="flex justify-end gap-2">
-                      <button onClick={() => openEdit(t)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"><FiEdit2 /></button>
-                      <button onClick={() => handleDelete(t._id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"><FiTrash2 /></button>
+                  <td className="p-3 md:p-4 md:text-right flex flex-col md:table-cell w-full bg-gray-50 md:bg-transparent rounded-b-xl md:rounded-none">
+                    <div className="flex justify-between items-center w-full">
+                      <span className="md:hidden text-xs text-gray-500 uppercase tracking-wider font-semibold px-1">Actions</span>
+                      <div className="flex flex-wrap md:justify-end gap-2 w-full md:w-auto justify-end">
+                        <button onClick={() => openEdit(t)} className="p-2 w-10 h-10 md:w-auto md:h-auto flex-1 md:flex-none flex items-center justify-center bg-white md:bg-transparent border border-gray-200 md:border-none text-blue-600 hover:bg-blue-50 rounded-lg transition-colors shadow-sm md:shadow-none"><FiEdit2 /></button>
+                        <button onClick={() => handleDelete(t._id)} className="p-2 w-10 h-10 md:w-auto md:h-auto flex-1 md:flex-none flex items-center justify-center bg-white md:bg-transparent border border-gray-200 md:border-none text-red-500 hover:bg-red-50 rounded-lg transition-colors shadow-sm md:shadow-none"><FiTrash2 /></button>
+                      </div>
                     </div>
                   </td>
                 </tr>
@@ -328,7 +365,7 @@ const ManageTrustees = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Full Name</label>
-                    <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-gray-800 focus:outline-none focus:border-saffron-500 focus:bg-white focus:ring-1 focus:ring-saffron-500 transition-all" />
+                    <input required type="text" pattern="[A-Za-z\s]+" title="Name must contain only alphabets and spaces" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value.replace(/[^A-Za-z\s]/g, '')})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-gray-800 focus:outline-none focus:border-saffron-500 focus:bg-white focus:ring-1 focus:ring-saffron-500 transition-all" />
                   </div>
                   <div className="md:col-span-2">
                     <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Email Address</label>
@@ -380,7 +417,7 @@ const ManageTrustees = () => {
 
                   <div>
                     <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Mobile Number</label>
-                    <input required type="text" value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-gray-800 focus:outline-none focus:border-saffron-500 focus:bg-white focus:ring-1 focus:ring-saffron-500 transition-all" />
+                    <input required type="tel" pattern="\d{10}" title="Mobile number must be exactly 10 digits" maxLength={10} value={formData.mobile} onChange={e => setFormData({...formData, mobile: e.target.value.replace(/\D/g, '')})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-gray-800 focus:outline-none focus:border-saffron-500 focus:bg-white focus:ring-1 focus:ring-saffron-500 transition-all" />
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Public Designation</label>
@@ -404,7 +441,7 @@ const ManageTrustees = () => {
                       {editingId ? 'New Password (Optional)' : 'Password'}
                     </label>
                     <div className="relative">
-                      <input required={!editingId} type={showPassword ? "text" : "password"} value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-4 pr-10 py-2.5 text-gray-800 focus:outline-none focus:border-saffron-500 focus:bg-white focus:ring-1 focus:ring-saffron-500 transition-all" />
+                      <input required={!editingId} type={showPassword ? "text" : "password"} pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}" title="Password must be at least 8 chars long with 1 uppercase, 1 lowercase, 1 number, and 1 special character" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-4 pr-10 py-2.5 text-gray-800 focus:outline-none focus:border-saffron-500 focus:bg-white focus:ring-1 focus:ring-saffron-500 transition-all" />
                       <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                         {showPassword ? <FiEyeOff /> : <FiEye />}
                       </button>
@@ -470,9 +507,9 @@ const ManageTrustees = () => {
                   </div>
                 </div>
 
-                <div className="pt-6 flex justify-end gap-3 border-t border-gray-100">
-                  <button type="button" onClick={() => setIsModalOpen(false)} className="px-5 py-2.5 rounded-xl text-gray-600 hover:bg-gray-100 font-bold transition-colors">Cancel</button>
-                  <button type="submit" className="bg-blue-900 hover:bg-slate-900 hover:bg-black w-full md:w-auto justify-center text-white px-8 py-2.5 rounded-xl font-black transition-colors shadow-lg">
+                <div className="pt-6 flex flex-col md:flex-row justify-end gap-3 border-t border-gray-100">
+                  <button type="button" onClick={() => setIsModalOpen(false)} className="w-full md:w-auto px-5 py-2.5 rounded-xl text-gray-600 hover:bg-gray-100 font-bold transition-colors order-2 md:order-1">Cancel</button>
+                  <button type="submit" className="order-1 md:order-2 bg-blue-900 hover:bg-slate-900 w-full md:w-auto justify-center text-white px-8 py-2.5 rounded-xl font-black transition-colors shadow-lg">
                     {editingId ? 'Save Changes' : 'Create Trust Member'}
                   </button>
                 </div>
@@ -487,3 +524,7 @@ const ManageTrustees = () => {
 };
 
 export default ManageTrustees;
+
+
+
+

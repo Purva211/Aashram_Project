@@ -252,13 +252,13 @@ export const MyDonations = () => {
           {/* Approved Section */}
           <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
             <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
-              <h3 className="text-slate-900 font-black flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-black">✓</div>
-                Approved Donations
+              <h3 className="text-sm sm:text-base text-slate-900 font-black flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-black shrink-0">✓</div>
+                <span>Approved Donations</span>
               </h3>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-left">
+              <table className="w-full min-w-max border-collapse text-left">
                 <thead>
                   <tr className="bg-slate-100 border-b border-slate-200 text-xs font-black uppercase tracking-wider text-slate-700">
                     <th className="px-6 py-4">Reference ID</th>
@@ -287,13 +287,13 @@ export const MyDonations = () => {
           {/* Pending Section */}
           <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
             <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
-              <h3 className="text-slate-900 font-black flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600"><FaInfoCircle size={12}/></div>
-                Pending Verification
+              <h3 className="text-sm sm:text-base text-slate-900 font-black flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600 shrink-0"><FaInfoCircle size={12}/></div>
+                <span>Pending Verification</span>
               </h3>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-left">
+              <table className="w-full min-w-max border-collapse text-left">
                 <thead>
                   <tr className="bg-slate-100 border-b border-slate-200 text-xs font-black uppercase tracking-wider text-slate-700">
                     <th className="px-6 py-4">Reference ID</th>
@@ -322,13 +322,13 @@ export const MyDonations = () => {
           {/* Rejected Section */}
           <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
             <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
-              <h3 className="text-slate-900 font-black flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-black">✕</div>
-                Rejected Transactions
+              <h3 className="text-sm sm:text-base text-slate-900 font-black flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-black shrink-0">✕</div>
+                <span>Rejected Transactions</span>
               </h3>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-left">
+              <table className="w-full min-w-max border-collapse text-left">
                 <thead>
                   <tr className="bg-slate-100 border-b border-slate-200 text-xs font-black uppercase tracking-wider text-slate-700">
                     <th className="px-6 py-4">Reference ID</th>
@@ -362,4 +362,5 @@ export const MyDonations = () => {
 };
 
 export default MyDonations;
+
 

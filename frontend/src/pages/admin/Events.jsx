@@ -79,7 +79,7 @@ const AdminEvents = () => {
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold flex flex-wrap items-center gap-2 text-slate-900"><FiCalendar className="text-saffron-500" /> Event Management</h1>
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold flex items-center gap-2 text-gray-900 tracking-tight"><FiCalendar className="text-saffron-500" /> Event Management</h1>
           <p className="text-gray-500 text-sm mt-1">Manage spiritual events, schedules, and publications.</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
@@ -136,7 +136,7 @@ const AdminEvents = () => {
           {paginatedData.map((event, index) => (
             <motion.div key={event._id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: index * 0.05 }} className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-all group flex flex-col relative">
               
-              <div className="relative h-48 overflow-hidden shrink-0 bg-gray-100 flex items-center justify-center">
+              <div className="relative h-32 md:h-48 overflow-hidden shrink-0 bg-gray-100 flex items-center justify-center">
                 <img src={getImageUrl(event.featuredImage)} alt={event.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent pointer-events-none"></div>
                 
@@ -152,22 +152,22 @@ const AdminEvents = () => {
                 </div>
               </div>
 
-              <div className="p-5 flex flex-col flex-1 z-10 relative">
-                <p className="text-saffron-600 text-[10px] font-bold uppercase tracking-[0.2em] mb-1">{event.branch?.name || "Global"}</p>
-                <h2 className="text-slate-900 text-lg font-bold line-clamp-1 mb-2">{event.title}</h2>
-                <p className="text-gray-500 text-sm line-clamp-2 mb-4 flex-1">{event.shortDescription || event.fullDescription}</p>
+              <div className="p-3 md:p-5 flex flex-col flex-1 z-10 relative">
+                <p className="text-saffron-600 text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] mb-1">{event.branch?.name || "Global"}</p>
+                <h2 className="text-slate-900 text-base md:text-lg font-bold line-clamp-1 mb-1 md:mb-2">{event.title}</h2>
+                <p className="text-gray-500 text-xs md:text-sm line-clamp-2 mb-3 md:mb-4 flex-1">{event.shortDescription || event.fullDescription}</p>
                 
-                <div className="space-y-1.5 mb-5">
-                  <div className="flex items-center gap-2 text-xs text-gray-600 font-medium">
-                    <FiMapPin className="text-saffron-500" /> <span className="truncate">{event.location}</span>
+                <div className="space-y-1 md:space-y-1.5 mb-3 md:mb-5">
+                  <div className="flex items-center gap-2 text-[10px] md:text-xs text-gray-600 font-medium">
+                    <FiMapPin className="text-saffron-500 shrink-0" /> <span className="truncate">{event.location}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-gray-600 font-medium">
-                    <FiClock className="text-saffron-500" /> <span>{event.eventTime}</span>
+                  <div className="flex items-center gap-2 text-[10px] md:text-xs text-gray-600 font-medium">
+                    <FiClock className="text-saffron-500 shrink-0" /> <span>{event.eventTime}</span>
                   </div>
                 </div>
 
                 <div className="pt-2 border-t border-gray-100 flex items-center justify-between">
-                  <span className={`px-2 py-1 rounded text-xs font-bold ${event.isPublished ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-500'}`}>
+                  <span className={`px-2 py-0.5 md:py-1 rounded text-[10px] md:text-xs font-bold ${event.isPublished ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-500'}`}>
                     {event.isPublished ? 'Published' : 'Draft'}
                   </span>
                 </div>

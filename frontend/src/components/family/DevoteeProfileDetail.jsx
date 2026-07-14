@@ -7,7 +7,7 @@ import {
 import { FaUserFriends, FaBaby, FaHeartbeat } from 'react-icons/fa';
 import api from "../../utils/api";
 
-const DevoteeProfileDetail = ({ devoteeId, onClose, onSelectMember }) => {
+const DevoteeProfileDetail = ({ devoteeId, onClose, onSelectMember, onViewFamilyTree }) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -80,6 +80,17 @@ const DevoteeProfileDetail = ({ devoteeId, onClose, onSelectMember }) => {
                 <span className="bg-saffron-50 border border-saffron-200 text-saffron-700 px-2 py-0.5 rounded text-[10px]">{relationships.relationToHead}</span>
               )}
             </p>
+<<<<<<< HEAD
+=======
+            {devotee.familyRootId && onViewFamilyTree && (
+              <button 
+                onClick={() => onViewFamilyTree(devotee.familyRootId)}
+                className="mt-2 px-3 py-1 bg-saffron-500 hover:bg-saffron-600 text-white rounded text-[10px] font-black uppercase tracking-wider shadow-sm transition-colors"
+              >
+                View Family Tree
+              </button>
+            )}
+>>>>>>> dd24488bb42c583fa240e438fb8a642a59a7f693
           </div>
         </div>
         <button onClick={onClose} className="p-2 rounded-full bg-white hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors shadow-sm"><FiX size={18} /></button>

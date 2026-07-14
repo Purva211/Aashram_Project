@@ -375,14 +375,14 @@ const DocumentAdminProfile = () => {
             {/* Preferences Tab */}
             {activeTab === 'preferences' && (
               <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3 }} className="space-y-10">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-100 pb-6 mb-6 gap-4">
                   <div>
                     <h2 className="text-xl font-bold text-slate-900">System Preferences</h2>
                     <p className="text-gray-500 mt-1">Customize your document handler dashboard experience.</p>
                   </div>
                   <button 
                     onClick={handleUpdatePreferences}
-                    className="bg-white border border-sky-500 text-sky-600 hover:bg-sky-50 px-6 py-2.5 rounded-xl font-medium shadow-sm transition-colors flex items-center gap-2">
+                    className="w-full md:w-auto justify-center bg-white border border-sky-500 text-sky-600 hover:bg-sky-50 px-6 py-2.5 rounded-xl font-medium shadow-sm transition-colors flex items-center gap-2">
                     <FiSave className="w-4 h-4"/> Save Preferences
                   </button>
                 </div>

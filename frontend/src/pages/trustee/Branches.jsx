@@ -103,7 +103,7 @@ const ManageBranches = () => {
     <div className="h-full flex flex-col relative z-10">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-deepblue-900 mb-2 font-serif">Trust Branches
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-deepblue-900 mb-2 font-serif flex items-center tracking-tight">Trust Branches
             {!hasManage && <span className="bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full shadow-sm ml-4 font-sans inline-block align-middle">View Only Access</span>}
           </h1>
           <p className="text-gray-500">Manage all spiritual centers and ashrams.</p>
@@ -136,57 +136,71 @@ const ManageBranches = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-xl border border-gray-100 flex-1 overflow-hidden flex flex-col relative z-20">
-        <div className="overflow-x-auto flex-1">
-          <table className="w-full text-left">
-            <thead>
+      <div className="md:bg-white md:rounded-2xl md:shadow-xl md:border md:border-gray-100 flex-1 overflow-hidden flex flex-col relative z-20">
+        <div className="w-full flex-1">
+          <table className="w-full text-left block md:table">
+            <thead className="hidden md:table-header-group">
               <tr className="bg-gray-50 border-b border-gray-100 text-gray-500 text-sm uppercase tracking-wider">
-                <th className="p-6 font-semibold">Branch Name</th>
-                <th className="p-6 font-semibold">Location</th>
-                <th className="p-6 font-semibold">Contact Info</th>
-                <th className="p-6 font-semibold text-right">Actions</th>
+                <th className="p-4 md:p-6 font-semibold">Branch Name</th>
+                <th className="p-4 md:p-6 font-semibold">Location</th>
+                <th className="p-4 md:p-6 font-semibold">Contact Info</th>
+                <th className="p-4 md:p-6 font-semibold text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="block md:table-row-group w-full divide-y divide-gray-50">
               {loading ? (
                 <tr>
-                  <td colSpan="4" className="text-center py-12 text-gray-500">Loading branches...</td>
+                  <td colSpan="4" className="text-center py-12 text-gray-500 block md:table-cell">Loading branches...</td>
                 </tr>
               ) : filteredBranches.length === 0 ? (
                 <tr>
-                  <td colSpan="4" className="text-center py-12 text-gray-500">No branches found.</td>
+                  <td colSpan="4" className="text-center py-12 text-gray-500 block md:table-cell">No branches found.</td>
                 </tr>
               ) : (
                 filteredBranches.map((branch) => (
-                  <tr key={branch._id} className="hover:bg-gray-50 transition-colors">
-                    <td className="p-6">
-                      <div className="font-bold text-deepblue-900">{branch.name}</div>
-                    </td>
-                    <td className="p-6 text-gray-600">
-                      <div className="flex items-center gap-2">
-                        <FaMapMarkerAlt className="text-saffron-500" /> {branch.location}
+                  <tr key={branch._id} className="flex flex-col md:table-row w-full bg-white md:bg-transparent border border-gray-100 md:border-b md:border-x-0 md:border-t-0 md:border-gray-50 rounded-xl md:rounded-none mb-4 md:mb-0 shadow-sm md:shadow-none hover:bg-gray-50/50">
+                    <td className="p-3 md:p-6 flex flex-col md:table-cell w-full border-b border-gray-50 md:border-none">
+                      <div className="flex md:hidden justify-between items-start mb-3">
+                        <span className="text-[11px] font-bold text-gray-600 uppercase tracking-wider bg-gray-100 px-2 py-0.5 rounded">Branch</span>
+                      </div>
+                      <div>
+                        <div className="font-bold text-deepblue-900 text-lg md:text-base break-words whitespace-normal">{branch.name}</div>
+                        <div className="md:hidden mt-2 text-sm text-gray-600 flex flex-col gap-1">
+                          <div className="flex items-center gap-2"><FaMapMarkerAlt className="text-saffron-500 shrink-0" /> <span className="break-words">{branch.location}</span></div>
+                          <div className="text-gray-500 text-xs mt-1 break-words">Contact: {branch.contact || 'N/A'}</div>
+                        </div>
                       </div>
                     </td>
-                    <td className="p-6 text-gray-600">{branch.contact || 'N/A'}</td>
-                    <td className="p-6 text-right">
-                      {hasManage ? (
-                        <div className="flex justify-end gap-3">
-                          <button
-                            onClick={() => handleOpenModal(branch)}
-                            className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors"
-                          >
-                            <FaEdit />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(branch._id)}
-                            className="w-10 h-10 rounded-lg bg-red-50 text-red-600 flex items-center justify-center hover:bg-red-600 hover:text-white transition-colors"
-                          >
-                            <FaTrash />
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="text-xs text-gray-400">View Only</div>
-                      )}
+                    <td className="hidden md:table-cell p-4 md:p-6 text-gray-600">
+                      <div className="flex items-center gap-2">
+                        <FaMapMarkerAlt className="text-saffron-500 shrink-0" /> {branch.location}
+                      </div>
+                    </td>
+                    <td className="hidden md:table-cell p-4 md:p-6 text-gray-600">
+                      {branch.contact || 'N/A'}
+                    </td>
+                    <td className="p-3 md:p-6 md:text-right flex flex-col md:table-cell w-full bg-gray-50 md:bg-transparent rounded-b-xl md:rounded-none">
+                      <div className="flex justify-between items-center w-full">
+                        <span className="md:hidden text-xs text-gray-500 uppercase tracking-wider font-semibold px-1">Actions</span>
+                        {hasManage ? (
+                          <div className="flex flex-wrap justify-end gap-2 w-full md:w-auto">
+                            <button
+                              onClick={() => handleOpenModal(branch)}
+                              className="p-2 w-10 h-10 md:w-10 md:h-10 flex-1 md:flex-none flex items-center justify-center bg-white md:bg-blue-50 border border-gray-200 md:border-none text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg transition-colors shadow-sm md:shadow-none"
+                            >
+                              <FaEdit />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(branch._id)}
+                              className="p-2 w-10 h-10 md:w-10 md:h-10 flex-1 md:flex-none flex items-center justify-center bg-white md:bg-red-50 border border-gray-200 md:border-none text-red-600 hover:bg-red-600 hover:text-white rounded-lg transition-colors shadow-sm md:shadow-none"
+                            >
+                              <FaTrash />
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="text-xs text-gray-400 font-bold inline-block w-full text-right md:w-auto">View Only</div>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -291,18 +305,18 @@ const ManageBranches = () => {
                   )}
                 </div>
                 
-                <div className="mt-6 pt-4 flex justify-end gap-3 sticky bottom-[-24px] bg-white border-t border-gray-100 z-10 pb-6 -mx-6 px-6">
+                <div className="mt-6 pt-4 flex flex-col md:flex-row justify-end gap-3 sticky bottom-[-24px] bg-white border-t border-gray-100 z-10 pb-6 -mx-6 px-6">
                   <button
                     type="button"
                     onClick={handleCloseModal}
-                    className="px-6 py-3 rounded-xl font-semibold text-gray-600 hover:bg-gray-100 transition-colors"
+                    className="w-full md:w-auto px-6 py-3 rounded-xl font-semibold text-gray-600 hover:bg-gray-100 transition-colors order-2 md:order-1"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="px-6 py-3 rounded-xl bg-blue-900 hover:bg-blue-800 text-white font-black hover:bg-blue-900 hover:bg-blue-800 transition-all shadow-lg shadow-gray-900/30 hover:-translate-y-0.5 disabled:opacity-50 flex items-center gap-2"
+                    className="w-full md:w-auto px-6 py-3 rounded-xl bg-blue-900 hover:bg-blue-800 text-white font-black transition-all shadow-lg shadow-gray-900/30 hover:-translate-y-0.5 disabled:opacity-50 flex items-center justify-center gap-2 order-1 md:order-2"
                   >
                     <FaSave /> {submitting ? 'Saving...' : 'Save Branch'}
                   </button>
@@ -317,3 +331,7 @@ const ManageBranches = () => {
 };
 
 export default ManageBranches;
+
+
+
+

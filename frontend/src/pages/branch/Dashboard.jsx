@@ -76,23 +76,23 @@ const BranchDashboard = () => {
   }
 
   return (
-    <div className="space-y-6 md:space-y-8 p-4 sm:p-6 lg:p-8 pb-12 w-full font-sans w-full">
+    <div className="space-y-6 md:space-y-8 p-4 md:p-6 lg:p-8 pb-12 w-full font-sans overflow-hidden">
       
       {/* Profile Card & Welcome Section */}
       <div 
-        className="bg-white rounded-xl p-8 md:p-10 border border-gray-100 shadow-sm relative overflow-hidden flex flex-col md:flex-row items-center gap-8"
+        className="bg-white rounded-xl p-6 md:p-10 border border-gray-100 shadow-sm relative overflow-hidden flex flex-col md:flex-row items-center gap-6 md:gap-8"
       >
         <div className="relative z-10 shrink-0">
-          <div className="w-24 h-24 rounded-full border-4 border-slate-50 p-1 shadow-md bg-white">
-            <div className="w-full h-full bg-slate-800 rounded-full flex items-center justify-center text-4xl font-bold text-white">
+          <div className="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-slate-50 p-1 shadow-md bg-white">
+            <div className="w-full h-full bg-slate-800 rounded-full flex items-center justify-center text-3xl md:text-4xl font-bold text-white">
                {user?.name ? user.name.charAt(0).toUpperCase() : 'B'}
             </div>
           </div>
         </div>
 
         <div className="relative z-10 flex-1 text-center md:text-left">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome back, {user?.name || 'Branch Manager'}</h1>
-          <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-sm text-gray-500">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-2 flex items-center tracking-tight">Welcome back, {user?.name || 'Branch Manager'}</h1>
+          <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 md:gap-4 text-xs md:text-sm text-gray-500">
             <span className="flex items-center gap-1.5 bg-slate-50 px-4 py-1.5 rounded-full border border-slate-200 font-bold text-slate-700">
               <FiShield className="text-emerald-500" />
               {user?.role || 'Branch Manager'}
@@ -107,10 +107,10 @@ const BranchDashboard = () => {
 
       {/* Stats Grid */}
       <div>
-        <h2 className="text-lg font-bold text-gray-700 mb-6 flex items-center gap-2 border-b border-gray-100 pb-2 uppercase tracking-wide">
+        <h2 className="text-base md:text-lg font-bold text-gray-700 mb-4 md:mb-6 flex items-center gap-2 border-b border-gray-100 pb-2 uppercase tracking-wide">
           <FiCalendar className="text-emerald-500" /> Branch Metrics Overview
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {preferences.showDonations && <StatCard 
             title="Branch Donations" 
             value={<AnimatedCounter value={stats?.totalDonations || 0} prefix="₹ " />} 
@@ -144,12 +144,12 @@ const BranchDashboard = () => {
 
       {/* Recent Activity Section */}
       {preferences.showActivities && activities.length > 0 && (
-        <div className="mt-10">
-          <h2 className="text-lg font-bold text-gray-700 mb-6 flex items-center gap-2 border-b border-gray-100 pb-2 uppercase tracking-wide">
+        <div className="mt-8 md:mt-10">
+          <h2 className="text-base md:text-lg font-bold text-gray-700 mb-4 md:mb-6 flex items-center gap-2 border-b border-gray-100 pb-2 uppercase tracking-wide">
             <FiActivity className="text-emerald-500" /> My Recent Activity (Last 3 Hours)
           </h2>
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="divide-y divide-gray-100 max-h-96 overflow-y-auto">
+            <div className="divide-y divide-gray-100 max-h-64 md:max-h-96 overflow-y-auto">
               {activities.map((log, idx) => (
                 <div key={idx} className="p-4 sm:px-6 hover:bg-gray-50 transition-colors flex flex-col sm:flex-row sm:items-center gap-4">
                   <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
@@ -172,11 +172,11 @@ const BranchDashboard = () => {
       )}
 
       {preferences.showActivities && activities.length === 0 && (
-        <div className="mt-10">
-          <h2 className="text-lg font-bold text-gray-700 mb-6 flex items-center gap-2 border-b border-gray-100 pb-2 uppercase tracking-wide">
+        <div className="mt-8 md:mt-10">
+          <h2 className="text-base md:text-lg font-bold text-gray-700 mb-4 md:mb-6 flex items-center gap-2 border-b border-gray-100 pb-2 uppercase tracking-wide">
             <FiActivity className="text-emerald-500" /> My Recent Activity (Last 3 Hours)
           </h2>
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center text-gray-500 font-medium">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 md:p-8 text-center text-gray-500 font-medium">
             You have no activity in the last 3 hours.
           </div>
         </div>

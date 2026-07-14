@@ -144,24 +144,24 @@ const AudioTracks = () => {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-deepblue-800">Audio & Lyrics Manager</h1>
+      <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-deepblue-800 flex items-center tracking-tight">Audio & Lyrics Manager</h1>
       
       {/* Upload Section */}
       <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
         <h2 className="text-xl font-semibold mb-4">Add New Audio Track</h2>
         
-        <div className="flex gap-4 mb-6">
+        <div className="flex flex-row gap-2 md:gap-4 mb-6 w-full">
           <button 
             onClick={() => setUploadType('youtube')}
-            className={`flex items-center px-4 py-2 rounded-lg font-medium transition-colors ${uploadType === 'youtube' ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+            className={`flex-1 md:flex-none flex items-center justify-center px-2 py-2 md:px-4 md:py-2 rounded-lg font-medium text-[10px] md:text-base transition-colors text-center ${uploadType === 'youtube' ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
           >
-            <FaYoutube className="mr-2" /> YouTube Import (Auto-Lyrics)
+            <FaYoutube className="mr-1 md:mr-2 shrink-0 text-sm md:text-base" /> YouTube (Auto-Lyrics)
           </button>
           <button 
             onClick={() => setUploadType('direct')}
-            className={`flex items-center px-4 py-2 rounded-lg font-medium transition-colors ${uploadType === 'direct' ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+            className={`flex-1 md:flex-none flex items-center justify-center px-2 py-2 md:px-4 md:py-2 rounded-lg font-medium text-[10px] md:text-base transition-colors text-center ${uploadType === 'direct' ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
           >
-            <FaFileAudio className="mr-2" /> Direct MP3 Upload
+            <FaFileAudio className="mr-1 md:mr-2 shrink-0 text-sm md:text-base" /> Direct MP3
           </button>
         </div>
 
@@ -241,11 +241,11 @@ const AudioTracks = () => {
       </div>
 
       {/* Tracks List */}
-      <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+      <div className="md:bg-white md:rounded-xl md:shadow-md md:border md:border-gray-100 overflow-hidden relative z-10">
         <h2 className="text-xl font-semibold p-6 border-b">Manage Audio Tracks</h2>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead className="bg-gray-50 text-gray-600 text-sm">
+        <div className="w-full overflow-hidden">
+          <table className="w-full text-left block md:table">
+            <thead className="bg-gray-50 text-gray-600 text-sm hidden md:table-header-group">
               <tr>
                 <th className="p-4 font-medium">Title</th>
                 <th className="p-4 font-medium">Source</th>
@@ -255,30 +255,60 @@ const AudioTracks = () => {
                 <th className="p-4 font-medium">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="block md:table-row-group w-full divide-y divide-gray-100">
               {loading ? (
                 <tr><td colSpan="6" className="p-8 text-center text-gray-500">Loading tracks...</td></tr>
               ) : tracks.length === 0 ? (
                 <tr><td colSpan="6" className="p-8 text-center text-gray-500">No audio tracks uploaded yet.</td></tr>
               ) : tracks.map(track => (
-                <tr key={track._id} className="hover:bg-gray-50/50">
-                  <td className="p-4 font-medium text-gray-800">{track.title}</td>
-                  <td className="p-4">
+                <tr key={track._id} className="flex flex-col md:table-row w-full bg-white md:bg-transparent border border-gray-100 md:border-b md:border-x-0 md:border-t-0 md:border-gray-50 rounded-xl md:rounded-none mb-4 md:mb-0 shadow-sm md:shadow-none hover:bg-gray-50/50">
+                  <td className="p-3 md:p-4 flex flex-col md:table-cell w-full border-b border-gray-50 md:border-none">
+                    <div className="flex md:hidden justify-between items-start mb-3">
+                      <span className="text-[11px] font-bold text-gray-600 uppercase tracking-wider bg-gray-100 px-2 py-0.5 rounded">{track.language}</span>
+                      {track.isActive ? (
+                        <span className="inline-flex items-center text-[10px] text-green-700 font-bold bg-green-100 px-2 py-1 rounded-full border border-green-200">
+                          Active
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 text-[10px] font-bold bg-gray-100 px-2 py-1 rounded-full border border-gray-200">Inactive</span>
+                      )}
+                    </div>
+                    <div>
+                      <div className="font-bold text-gray-900 text-lg md:text-base break-words whitespace-normal">{track.title}</div>
+                      <div className="md:hidden mt-2 text-sm text-gray-600 flex flex-col gap-1">
+                        <div className="flex items-center gap-2">
+                          {track.sourceType === 'youtube' ? (
+                            <span className="inline-flex items-center text-xs text-red-600 bg-red-50 px-2 py-1 rounded"><FaYoutube className="mr-1"/> YouTube</span>
+                          ) : (
+                            <span className="inline-flex items-center text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded"><FaFileAudio className="mr-1"/> Direct</span>
+                          )}
+                          {track.lyricsDataUrl ? (
+                            <span className="text-green-600 text-xs font-medium ml-2">Has Lyrics</span>
+                          ) : (
+                            <span className="text-gray-400 text-xs ml-2">No Lyrics</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="hidden md:table-cell p-4">
                     {track.sourceType === 'youtube' ? (
                       <span className="inline-flex items-center text-xs text-red-600 bg-red-50 px-2 py-1 rounded"><FaYoutube className="mr-1"/> YouTube</span>
                     ) : (
                       <span className="inline-flex items-center text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded"><FaFileAudio className="mr-1"/> Direct</span>
                     )}
                   </td>
-                  <td className="p-4 text-gray-600">{track.language}</td>
-                  <td className="p-4">
+                  <td className="hidden md:table-cell p-4 text-gray-600">
+                    {track.language}
+                  </td>
+                  <td className="hidden md:table-cell p-4">
                     {track.lyricsDataUrl ? (
                       <span className="text-green-600 text-sm font-medium">Yes</span>
                     ) : (
                       <span className="text-gray-400 text-sm">No</span>
                     )}
                   </td>
-                  <td className="p-4">
+                  <td className="hidden md:table-cell p-4">
                     {track.isActive ? (
                       <span className="inline-flex items-center text-sm text-green-600 font-bold bg-green-50 px-2 py-1 rounded">
                         <FaCheckCircle className="mr-1" /> Active on Home
@@ -287,37 +317,40 @@ const AudioTracks = () => {
                       <span className="text-gray-400 text-sm">Inactive</span>
                     )}
                   </td>
-                  <td className="p-4">
-                    <div className="flex gap-2">
-                      {track.isActive ? (
+                  <td className="p-3 md:p-4 md:text-right flex flex-col md:table-cell w-full bg-gray-50 md:bg-transparent rounded-b-xl md:rounded-none">
+                    <div className="flex justify-between items-center w-full">
+                      <span className="md:hidden text-xs text-gray-500 uppercase tracking-wider font-semibold px-1">Actions</span>
+                      <div className="flex items-center justify-end gap-2 w-full md:w-auto">
+                        {track.isActive ? (
+                          <button 
+                            onClick={() => setActive(track._id)}
+                            className="text-xs bg-red-100 text-red-700 px-3 py-2 md:py-1 rounded-lg hover:bg-red-200 transition-colors font-medium flex-1 md:flex-none h-10 md:h-auto"
+                          >
+                            Deactivate
+                          </button>
+                        ) : (
+                          <button 
+                            onClick={() => setActive(track._id)}
+                            className="text-xs bg-orange-100 text-orange-700 px-3 py-2 md:py-1 rounded-lg hover:bg-orange-200 transition-colors font-medium flex-1 md:flex-none h-10 md:h-auto"
+                          >
+                            Set Active
+                          </button>
+                        )}
                         <button 
-                          onClick={() => setActive(track._id)}
-                          className="text-xs bg-red-100 text-red-700 px-3 py-1 rounded hover:bg-red-200 transition-colors font-medium"
+                          onClick={() => openEditModal(track)}
+                          className="w-10 h-10 md:w-auto md:h-auto md:p-1 flex items-center justify-center text-blue-500 hover:text-blue-700 bg-white md:bg-transparent border border-gray-200 md:border-none rounded-lg"
+                          title="Edit Track"
                         >
-                          Deactivate
+                          <FaEdit />
                         </button>
-                      ) : (
                         <button 
-                          onClick={() => setActive(track._id)}
-                          className="text-xs bg-orange-100 text-orange-700 px-3 py-1 rounded hover:bg-orange-200 transition-colors font-medium"
+                          onClick={() => deleteTrack(track._id)}
+                          className="w-10 h-10 md:w-auto md:h-auto md:p-1 flex items-center justify-center text-red-400 hover:text-red-600 bg-white md:bg-transparent border border-gray-200 md:border-none rounded-lg"
+                          title="Delete Track"
                         >
-                          Set Active
+                          <FaTrash />
                         </button>
-                      )}
-                      <button 
-                        onClick={() => openEditModal(track)}
-                        className="text-blue-500 hover:text-blue-700 p-1"
-                        title="Edit Track"
-                      >
-                        <FaEdit />
-                      </button>
-                      <button 
-                        onClick={() => deleteTrack(track._id)}
-                        className="text-red-400 hover:text-red-600 p-1"
-                        title="Delete Track"
-                      >
-                        <FaTrash />
-                      </button>
+                      </div>
                     </div>
                   </td>
                 </tr>
@@ -371,18 +404,18 @@ const AudioTracks = () => {
                 <p className="text-xs text-gray-500 mt-1">Leave blank to keep the existing thumbnail.</p>
               </div>
               
-              <div className="pt-4 flex justify-end gap-3">
+              <div className="pt-4 flex flex-col md:flex-row justify-end gap-3">
                 <button 
                   type="button" 
                   onClick={closeEditModal}
-                  className="px-4 py-2 rounded-lg font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors"
+                  className="w-full md:w-auto px-4 py-2 rounded-lg font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors order-2 md:order-1"
                 >
                   Cancel
                 </button>
                 <button 
                   type="submit" 
                   disabled={savingEdit}
-                  className={`px-4 py-2 rounded-lg font-medium text-white transition-colors ${savingEdit ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
+                  className={`w-full md:w-auto px-4 py-2 rounded-lg font-medium text-white transition-colors order-1 md:order-2 ${savingEdit ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
                 >
                   {savingEdit ? 'Saving...' : 'Save Changes'}
                 </button>
@@ -396,3 +429,7 @@ const AudioTracks = () => {
 };
 
 export default AudioTracks;
+
+
+
+

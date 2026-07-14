@@ -71,15 +71,15 @@ const TrusteeDashboard = () => {
   if (loading) return <div className="h-full flex items-center justify-center py-20"><FaSpinner className="text-5xl text-saffron-500 animate-spin" /></div>;
 
   return (
-    <div className="space-y-6 md:space-y-8 p-4 sm:p-6 lg:p-8 pb-12 w-full bg-transparent text-gray-900 font-sans w-full">
+    <div className="space-y-6 md:space-y-8 p-4 md:p-6 lg:p-8 pb-12 w-full bg-transparent text-gray-900 font-sans overflow-hidden">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-3 tracking-tight">
           <FaUserShield className="text-gray-700" /> Trustee Dashboard
         </h1>
         <p className="text-sm text-gray-500 mt-2">Overview of trust activities and performance.</p>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         <StatCard title="Total Devotees" value={<AnimatedCounter value={stats.totalDevotees || 0} />} icon={<FaUsers />} colorClass="bg-blue-50 text-blue-500" delay={0.1} />
         {preferences.showDonations && <StatCard title="Total Donations" value={<AnimatedCounter value={stats.totalDonations || 0} prefix="₹ " />} icon={<FaRupeeSign />} colorClass="bg-green-50 text-green-500" delay={0.2} />}
         {preferences.showEvents && <StatCard title="Total Events" value={<AnimatedCounter value={stats.totalEvents || 0} />} icon={<FaCalendarAlt />} colorClass="bg-purple-50 text-purple-500" delay={0.3} />}
@@ -92,12 +92,12 @@ const TrusteeDashboard = () => {
 
       {/* Recent Activity Section */}
       {preferences.showActivities && activities.length > 0 && (
-        <div className="mt-10">
-          <h2 className="text-lg font-bold text-gray-700 mb-6 flex items-center gap-2 border-b border-gray-100 pb-2 uppercase tracking-wide">
+        <div className="mt-8 md:mt-10">
+          <h2 className="text-base md:text-lg font-bold text-gray-700 mb-4 md:mb-6 flex items-center gap-2 border-b border-gray-100 pb-2 uppercase tracking-wide">
             <FiActivity className="text-emerald-500" /> My Recent Activity (Last 3 Hours)
           </h2>
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="divide-y divide-gray-100 max-h-96 overflow-y-auto">
+            <div className="divide-y divide-gray-100 max-h-64 md:max-h-96 overflow-y-auto">
               {activities.map((log, idx) => (
                 <div key={idx} className="p-4 sm:px-6 hover:bg-gray-50 transition-colors flex flex-col sm:flex-row sm:items-center gap-4">
                   <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
@@ -120,11 +120,11 @@ const TrusteeDashboard = () => {
       )}
 
       {preferences.showActivities && activities.length === 0 && (
-        <div className="mt-10">
-          <h2 className="text-lg font-bold text-gray-700 mb-6 flex items-center gap-2 border-b border-gray-100 pb-2 uppercase tracking-wide">
+        <div className="mt-8 md:mt-10">
+          <h2 className="text-base md:text-lg font-bold text-gray-700 mb-4 md:mb-6 flex items-center gap-2 border-b border-gray-100 pb-2 uppercase tracking-wide">
             <FiActivity className="text-emerald-500" /> My Recent Activity (Last 3 Hours)
           </h2>
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center text-gray-500 font-medium">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 md:p-8 text-center text-gray-500 font-medium">
             You have no activity in the last 3 hours.
           </div>
         </div>

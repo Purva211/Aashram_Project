@@ -157,7 +157,7 @@ const Services = () => {
           <motion.div 
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: false, amount: 0.1 }}
             transition={{ duration: 0.8 }}
             className="relative h-[500px] md:h-[600px] rounded-[3rem] overflow-hidden shadow-2xl border border-white"
           >
@@ -168,7 +168,7 @@ const Services = () => {
           <motion.div 
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: false, amount: 0.1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             className="flex flex-col justify-center"
           >
@@ -201,7 +201,7 @@ const Services = () => {
           <motion.div 
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: false, amount: 0.1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             className="flex flex-col justify-center order-2 lg:order-1"
           >
@@ -225,7 +225,7 @@ const Services = () => {
           <motion.div 
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: false, amount: 0.1 }}
             transition={{ duration: 0.8 }}
             className="relative h-[500px] md:h-[600px] rounded-[3rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.4)] border border-gold/20 order-1 lg:order-2"
           >
@@ -245,7 +245,7 @@ const Services = () => {
           <motion.div 
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: false, amount: 0.1 }}
             transition={{ duration: 0.8 }}
             className="lg:col-span-7 grid sm:grid-cols-2 gap-6"
           >
@@ -272,7 +272,7 @@ const Services = () => {
           <motion.div 
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: false, amount: 0.1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             className="lg:col-span-5 flex flex-col justify-center"
           >
@@ -294,7 +294,7 @@ const Services = () => {
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
+          viewport={{ once: false, amount: 0.1 }}
           transition={{ duration: 1 }}
           className="max-w-4xl mx-auto px-6 text-center"
         >

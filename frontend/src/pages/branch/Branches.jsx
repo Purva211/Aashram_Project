@@ -105,7 +105,7 @@ const ManageBranches = () => {
     <div className="h-full flex flex-col relative z-10">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-deepblue-900 mb-2 font-serif">Branch Details</h1>
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-deepblue-900 mb-2 font-serif flex items-center tracking-tight">Branch Details</h1>
           <p className="text-gray-500">View branches and update your assigned branch.</p>
         </div>
         
@@ -128,55 +128,72 @@ const ManageBranches = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-xl border border-gray-100 flex-1 overflow-hidden flex flex-col relative z-20">
+      <div className="bg-transparent md:bg-white rounded-2xl md:shadow-xl border-0 md:border border-gray-100 flex-1 md:overflow-hidden flex flex-col relative z-20">
         <div className="overflow-x-auto flex-1">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="bg-gray-50 border-b border-gray-100 text-gray-500 text-sm uppercase tracking-wider">
-                <th className="p-6 font-semibold">Branch Name</th>
-                <th className="p-6 font-semibold">Location</th>
-                <th className="p-6 font-semibold">Contact Info</th>
-                <th className="p-6 font-semibold text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
+          <table className="w-full text-left block md:table">
+              <thead className="hidden md:table-header-group">
+                <tr className="bg-gray-50 border-b border-gray-100 text-gray-500 text-sm uppercase tracking-wider">
+                  <th className="p-6 font-semibold">Branch Name</th>
+                  <th className="p-6 font-semibold">Location</th>
+                  <th className="p-6 font-semibold">Contact Info</th>
+                  <th className="p-6 font-semibold text-right">Actions</th>
+                </tr>
+              </thead>
+            <tbody className="block md:table-row-group w-full divide-y divide-gray-50">
               {loading ? (
                 <tr>
-                  <td colSpan="4" className="text-center py-12 text-gray-500">Loading branches...</td>
+                  <td colSpan="4" className="text-center py-12 text-gray-500 block md:table-cell">Loading branches...</td>
                 </tr>
               ) : filteredBranches.length === 0 ? (
                 <tr>
-                  <td colSpan="4" className="text-center py-12 text-gray-500">No branches found.</td>
+                  <td colSpan="4" className="text-center py-12 text-gray-500 block md:table-cell">No branches found.</td>
                 </tr>
               ) : (
                 filteredBranches.map((branch) => (
-                  <tr key={branch._id} className="hover:bg-gray-50 transition-colors">
-                    <td className="p-6">
-                      <div className="font-bold text-deepblue-900">{branch.name}</div>
-                      {user?.branch === branch._id && (
-                        <span className="inline-block mt-1 bg-saffron-100 text-saffron-700 text-xs px-2 py-0.5 rounded-md font-bold">Assigned to You</span>
-                      )}
-                    </td>
-                    <td className="p-6 text-gray-600">
-                      <div className="flex items-center gap-2">
-                        <FaMapMarkerAlt className="text-saffron-500" /> {branch.location}
+                  <tr key={branch._id} className="flex flex-col md:table-row w-full bg-white md:bg-transparent border border-gray-100 md:border-b md:border-x-0 md:border-t-0 md:border-gray-50 rounded-xl md:rounded-none mb-4 md:mb-0 shadow-sm md:shadow-none hover:bg-gray-50 transition-colors">
+                    <td className="p-3 md:p-6 flex flex-col md:table-cell w-full border-b border-gray-50 md:border-none">
+                      <div className="flex justify-between items-start md:hidden mb-2">
+                        <span className="text-[11px] text-gray-500 uppercase font-bold tracking-wider bg-gray-100 px-2 py-0.5 rounded">Branch Name</span>
+                        {user?.branch === branch._id && (
+                          <span className="bg-saffron-100 text-saffron-700 text-[10px] px-2 py-1 rounded-md font-bold uppercase tracking-wider border border-saffron-200">Assigned to You</span>
+                        )}
+                      </div>
+                      <div className="font-bold text-deepblue-900 text-lg md:text-base">{branch.name}</div>
+                      <div className="hidden md:block">
+                        {user?.branch === branch._id && (
+                          <span className="inline-block mt-1 bg-saffron-100 text-saffron-700 text-xs px-2 py-0.5 rounded-md font-bold">Assigned to You</span>
+                        )}
+                      </div>
+                      <div className="md:hidden mt-3 flex flex-col gap-1.5 text-sm text-gray-600">
+                        <div className="flex items-center gap-2"><FaMapMarkerAlt className="text-saffron-500 shrink-0" /> <span className="truncate">{branch.location}</span></div>
+                        <div className="text-gray-500 mt-1">Contact: <span className="text-gray-800 font-medium">{branch.contact || 'N/A'}</span></div>
                       </div>
                     </td>
-                    <td className="p-6 text-gray-600">{branch.contact || 'N/A'}</td>
-                    <td className="p-6 text-right">
-                      {user?.branch === branch._id ? (
-                        <div className="flex justify-end gap-3">
-                          <button
-                            onClick={() => handleOpenModal(branch)}
-                            className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors"
-                            title="Edit Assigned Branch"
-                          >
-                            <FaEdit />
-                          </button>
+                    <td className="hidden md:table-cell p-6 text-gray-600">
+                      <div className="flex items-center gap-2">
+                        <FaMapMarkerAlt className="text-saffron-500 shrink-0" /> {branch.location}
+                      </div>
+                    </td>
+                    <td className="hidden md:table-cell p-6 text-gray-600">
+                      {branch.contact || 'N/A'}
+                    </td>
+                    <td className="p-3 md:p-6 md:text-right flex flex-col md:table-cell w-full bg-gray-50 md:bg-transparent rounded-b-xl md:rounded-none">
+                      <div className="flex justify-between items-center w-full">
+                        <span className="md:hidden text-xs text-gray-500 uppercase font-semibold px-1">Actions</span>
+                        <div className="flex w-full md:w-auto md:justify-end gap-3">
+                          {user?.branch === branch._id ? (
+                            <button
+                              onClick={() => handleOpenModal(branch)}
+                              className="p-2 w-full md:w-10 h-10 rounded-lg bg-white md:bg-blue-50 border border-gray-200 md:border-none text-blue-600 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors shadow-sm md:shadow-none font-bold md:font-normal gap-2"
+                              title="Edit Assigned Branch"
+                            >
+                              <FaEdit /> <span className="md:hidden">Edit Branch</span>
+                            </button>
+                          ) : (
+                            <div className="w-full text-right md:text-left"><span className="text-gray-400 text-sm italic">Read-only</span></div>
+                          )}
                         </div>
-                      ) : (
-                        <span className="text-gray-400 text-sm italic">Read-only</span>
-                      )}
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -189,22 +206,16 @@ const ManageBranches = () => {
       {/* Modal for Edit */}
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center px-4 py-8">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-deepblue-900/60 backdrop-blur-sm"
-              onClick={handleCloseModal}
-            ></motion.div>
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={handleCloseModal} />
             
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl relative z-10 overflow-hidden flex flex-col max-h-full"
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0 }} 
+              animate={{ scale: 1, opacity: 1 }} 
+              exit={{ scale: 0.95, opacity: 0 }} 
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative z-10 custom-scrollbar border border-gray-100"
             >
-              <div className="bg-white px-8 py-6 border-b border-gray-100 flex justify-between items-center shrink-0 sticky top-0 z-50">
+              <div className="sticky top-0 bg-white p-6 border-b border-gray-100 flex justify-between items-center z-20">
                 <div>
                   <h3 className="text-2xl font-black text-deepblue-900 tracking-tight">Edit Your Branch</h3>
                   <p className="text-sm text-gray-500 font-medium mt-1">Update branch details and contact information.</p>
@@ -214,8 +225,7 @@ const ManageBranches = () => {
                 </button>
               </div>
               
-              <div className="overflow-y-auto p-6">
-                <form id="branch-form" onSubmit={handleSubmit} className="space-y-6">
+              <form id="branch-form" onSubmit={handleSubmit} className="p-6 space-y-6">
                   {/* Branch Details */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div className="sm:col-span-2">
@@ -331,28 +341,23 @@ const ManageBranches = () => {
                       </div>
                     )}
                   </div>
+                  <div className="pt-6 flex flex-col md:flex-row justify-end gap-3 border-t border-gray-100 mt-4">
+                    <button 
+                      type="button" 
+                      onClick={handleCloseModal}
+                      className="w-full md:w-auto px-5 py-2.5 rounded-xl text-gray-600 hover:bg-gray-100 font-bold transition-colors order-2 md:order-1"
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      disabled={submitting} 
+                      type="submit" 
+                      className="order-1 md:order-2 bg-blue-900 hover:bg-slate-900 w-full md:w-auto justify-center text-white px-8 py-2.5 rounded-xl font-black transition-colors shadow-lg disabled:opacity-50"
+                    >
+                      {submitting ? 'Saving...' : 'Save Changes'}
+                    </button>
+                  </div>
                 </form>
-              </div>
-
-              <div className="p-6 bg-white border-t border-gray-100 shrink-0 flex justify-end gap-3 rounded-b-2xl sticky bottom-0 z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-                <div className="flex justify-end gap-3 w-full">
-                  <button 
-                    type="button" 
-                    onClick={handleCloseModal}
-                    className="w-1/3 py-3.5 bg-gray-100 text-gray-600 font-bold rounded-xl hover:bg-gray-200 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button 
-                    disabled={submitting} 
-                    type="submit" 
-                    form="branch-form"
-                    className="w-2/3 flex justify-center items-center gap-2 py-3.5 bg-black hover:bg-gray-900 text-white font-black rounded-xl hover:bg-gray-900 transition-all shadow-lg shadow-black/30 hover:-translate-y-0.5 disabled:opacity-50"
-                  >
-                    {submitting ? 'Saving...' : 'Save Branch Details'}
-                  </button>
-                </div>
-              </div>
 
             </motion.div>
           </div>
@@ -363,3 +368,5 @@ const ManageBranches = () => {
 };
 
 export default ManageBranches;
+
+

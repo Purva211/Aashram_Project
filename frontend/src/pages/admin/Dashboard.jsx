@@ -8,16 +8,16 @@ import AnimatedCounter from '../../components/dashboard/AnimatedCounter';
 
 const StatCard = ({ title, value, icon, gradient, delay }) => (
   <div 
-    className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-all duration-300"
+    className="bg-white p-4 md:p-6 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-all duration-300 flex items-center gap-4 md:gap-5"
   >
     <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${gradient} rounded-bl-full opacity-10 group-hover:opacity-20 transition-opacity duration-300 blur-xl`}></div>
-    <div className="flex items-center justify-between mb-4 relative z-10">
-      <h3 className="text-slate-700 font-bold text-sm tracking-wide uppercase">{title}</h3>
-      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-md text-white text-xl transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-300`}>
-        {icon}
-      </div>
+    <div className={`w-12 h-12 md:w-14 md:h-14 shrink-0 rounded-xl md:rounded-2xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-md text-white text-xl md:text-2xl transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 relative z-10`}>
+      {icon}
     </div>
-    <p className="text-3xl font-bold tracking-tight text-slate-900 relative z-10">{value}</p>
+    <div className="relative z-10 flex-1">
+      <h3 className="text-slate-500 font-semibold text-xs md:text-sm tracking-wide uppercase mb-1">{title}</h3>
+      <p className="text-xl md:text-3xl font-bold tracking-tight text-slate-900 leading-none">{value}</p>
+    </div>
   </div>
 );
 
@@ -76,23 +76,23 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="space-y-6 md:space-y-8 p-4 sm:p-6 lg:p-8 pb-12 w-full font-sans w-full">
+    <div className="space-y-6 md:space-y-8 p-4 md:p-6 lg:p-8 pb-12 w-full font-sans overflow-hidden">
       
       {/* Profile Card & Welcome Section */}
       <div 
-        className="bg-white rounded-xl p-8 md:p-10 border border-gray-100 shadow-sm relative overflow-hidden flex flex-col md:flex-row items-center gap-8"
+        className="bg-white rounded-xl p-4 md:p-10 border border-gray-100 shadow-sm relative overflow-hidden flex flex-col md:flex-row items-center gap-4 md:gap-8"
       >
         <div className="relative z-10 shrink-0">
-          <div className="w-24 h-24 rounded-full border-4 border-slate-50 p-1 shadow-md bg-white">
-            <div className="w-full h-full bg-slate-800 rounded-full flex items-center justify-center text-4xl font-bold text-white">
+          <div className="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-slate-50 p-1 shadow-md bg-white">
+            <div className="w-full h-full bg-slate-800 rounded-full flex items-center justify-center text-3xl md:text-4xl font-bold text-white">
                {user?.name ? user.name.charAt(0).toUpperCase() : 'A'}
             </div>
           </div>
         </div>
 
         <div className="relative z-10 flex-1 text-center md:text-left">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome back, {user?.name || 'Administrator'}</h1>
-          <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-sm text-gray-500">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-2 flex items-center tracking-tight">Welcome back, {user?.name || 'Administrator'}</h1>
+          <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 md:gap-4 text-xs md:text-sm text-gray-500">
             <span className="flex items-center gap-1.5 bg-slate-50 px-4 py-1.5 rounded-full border border-slate-200 font-bold text-slate-700">
               <FiShield className="text-blue-500" />
               {user?.role || 'Super Admin'}
@@ -109,10 +109,10 @@ const AdminDashboard = () => {
 
       {/* Stats Grid */}
       <div>
-        <h2 className="text-lg font-bold text-gray-700 mb-6 flex items-center gap-2 border-b border-gray-100 pb-2 uppercase tracking-wide">
+        <h2 className="text-base md:text-lg font-bold text-gray-700 mb-4 md:mb-6 flex items-center gap-2 border-b border-gray-100 pb-2 uppercase tracking-wide">
           <FiCalendar className="text-blue-500" /> System Metrics Overview
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           <StatCard 
             title="Total Devotees" 
             value={<AnimatedCounter value={stats?.totalDevotees || 0} />} 
@@ -198,12 +198,12 @@ const AdminDashboard = () => {
 
       {/* Recent Activity Section */}
       {preferences.showActivities && activities.length > 0 && (
-        <div className="mt-10">
-          <h2 className="text-lg font-bold text-gray-700 mb-6 flex items-center gap-2 border-b border-gray-100 pb-2 uppercase tracking-wide">
+        <div className="mt-8 md:mt-10">
+          <h2 className="text-base md:text-lg font-bold text-gray-700 mb-4 md:mb-6 flex items-center gap-2 border-b border-gray-100 pb-2 uppercase tracking-wide">
             <FiActivity className="text-emerald-500" /> My Recent Activity (Last 3 Hours)
           </h2>
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="divide-y divide-gray-100 max-h-96 overflow-y-auto">
+            <div className="divide-y divide-gray-100 max-h-64 md:max-h-96 overflow-y-auto">
               {activities.map((log, idx) => (
                 <div key={idx} className="p-4 sm:px-6 hover:bg-gray-50 transition-colors flex flex-col sm:flex-row sm:items-center gap-4">
                   <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
@@ -226,11 +226,11 @@ const AdminDashboard = () => {
       )}
 
       {preferences.showActivities && activities.length === 0 && (
-        <div className="mt-10">
-          <h2 className="text-lg font-bold text-gray-700 mb-6 flex items-center gap-2 border-b border-gray-100 pb-2 uppercase tracking-wide">
+        <div className="mt-8 md:mt-10">
+          <h2 className="text-base md:text-lg font-bold text-gray-700 mb-4 md:mb-6 flex items-center gap-2 border-b border-gray-100 pb-2 uppercase tracking-wide">
             <FiActivity className="text-emerald-500" /> My Recent Activity (Last 3 Hours)
           </h2>
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center text-gray-500 font-medium">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 md:p-8 text-center text-gray-500 font-medium">
             You have no activity in the last 3 hours.
           </div>
         </div>

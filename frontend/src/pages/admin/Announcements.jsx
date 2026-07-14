@@ -329,9 +329,9 @@ const Announcements = () => {
     <div className="w-full space-y-6 text-gray-800 pb-12 relative">
       
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 md:mb-6">
         <div>
-          <h2 className="text-3xl font-black tracking-tight text-slate-900 flex items-center gap-3">
+          <h2 className="text-2xl md:text-3xl font-black tracking-tight text-slate-900 flex items-center gap-3">
             <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg text-white">
               <FiSend />
             </div>
@@ -347,10 +347,10 @@ const Announcements = () => {
               placeholder="Search announcements..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 w-full sm:w-full sm:w-64 shadow-sm transition-all"
+              className="pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 w-full sm:w-64 shadow-sm transition-all"
             />
           </div>
-          <button onClick={handleOpenNew} className="flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl shadow-lg transition-all whitespace-nowrap">
+          <button onClick={handleOpenNew} className="flex items-center justify-center gap-2 px-5 md:px-6 py-2.5 md:py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl shadow-lg transition-all w-full sm:w-auto">
             <FiPlus /> New Announcement
           </button>
         </div>
@@ -368,10 +368,10 @@ const Announcements = () => {
         </div>
         
         {activeTab === 'list' && (
-          <div className="flex bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
-            <button onClick={() => setOwnershipFilter('all')} className={`px-4 py-2 text-xs font-bold transition-colors ${ownershipFilter === 'all' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50'}`}>All</button>
-            <button onClick={() => setOwnershipFilter('mine')} className={`px-4 py-2 text-xs font-bold border-l border-gray-200 transition-colors ${ownershipFilter === 'mine' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50'}`}>Sent by Me</button>
-            <button onClick={() => setOwnershipFilter('others')} className={`px-4 py-2 text-xs font-bold border-l border-gray-200 transition-colors ${ownershipFilter === 'others' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50'}`}>Received by Me</button>
+          <div className="flex bg-white border border-gray-200 rounded-lg overflow-x-auto shadow-sm w-full md:w-auto">
+            <button onClick={() => setOwnershipFilter('all')} className={`flex-1 md:flex-none px-3 md:px-4 py-2 text-xs font-bold transition-colors whitespace-nowrap ${ownershipFilter === 'all' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50'}`}>All</button>
+            <button onClick={() => setOwnershipFilter('mine')} className={`flex-1 md:flex-none px-3 md:px-4 py-2 text-xs font-bold border-l border-gray-200 transition-colors whitespace-nowrap ${ownershipFilter === 'mine' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50'}`}>Sent by Me</button>
+            <button onClick={() => setOwnershipFilter('others')} className={`flex-1 md:flex-none px-3 md:px-4 py-2 text-xs font-bold border-l border-gray-200 transition-colors whitespace-nowrap ${ownershipFilter === 'others' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-50'}`}>Received by Me</button>
           </div>
         )}
       </div>
@@ -417,12 +417,12 @@ const Announcements = () => {
                       initial={isHighlighted ? { scale: 0.95, opacity: 0 } : {}}
                       animate={isHighlighted ? { scale: 1, opacity: 1 } : {}}
                       transition={{ duration: 0.4 }}
-                      className={`rounded-xl border ${isHighlighted ? 'border-saffron-300 shadow-saffron-100 bg-saffron-50/50 ring-2 ring-saffron-400' : 'bg-white border-slate-200'} p-5 flex flex-col shadow-sm hover:shadow-md transition-all relative group`}
+                      className={`rounded-xl border ${isHighlighted ? 'border-saffron-300 shadow-saffron-100 bg-saffron-50/50 ring-2 ring-saffron-400' : 'bg-white border-slate-200'} p-4 md:p-5 flex flex-col shadow-sm hover:shadow-md transition-all relative group`}
                     >
                       {/* Author Header */}
-                      <div className="flex justify-between items-start mb-3">
-                        <div className="flex gap-3 items-center">
-                          <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 font-bold overflow-hidden border border-slate-200 shrink-0">
+                      <div className="flex justify-between items-start mb-2 md:mb-3">
+                        <div className="flex gap-2 md:gap-3 items-center">
+                          <div className="w-10 h-10 md:w-12 md:h-12 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 font-bold overflow-hidden border border-slate-200 shrink-0">
                             {ann.createdBy?.profilePhoto ? (
                                <img src={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${ann.createdBy.profilePhoto}`} className="w-full h-full object-cover" />
                             ) : (
@@ -430,11 +430,11 @@ const Announcements = () => {
                             )}
                           </div>
                           <div>
-                            <h4 className="text-sm font-bold text-slate-900 leading-tight">
+                            <h4 className="text-sm md:text-base font-bold text-slate-900 leading-tight">
                               {ann.createdBy?.name || 'System Admin'}
-                              {ann.createdBy?.role && <span className="text-slate-500 font-normal ml-1">• {ann.createdBy.role}</span>}
+                              {ann.createdBy?.role && <span className="text-slate-500 font-normal ml-1 text-xs md:text-sm">• {ann.createdBy.role}</span>}
                             </h4>
-                            <div className="text-xs text-slate-500 mt-1 flex flex-wrap items-center gap-1.5">
+                            <div className="text-[10px] md:text-xs text-slate-500 mt-0.5 md:mt-1 flex flex-wrap items-center gap-1.5">
                                <span>{timeAgo(ann.publishDate || ann.createdAt)}</span>
                                •
                                <span className="flex items-center gap-1"><FiUsers size={10} /> {ann.audienceType}</span>
@@ -453,19 +453,19 @@ const Announcements = () => {
                       </div>
 
                       {/* Content Body */}
-                      <div className="pl-1 md:pl-[60px] mb-2">
-                        <h3 className="text-base font-bold text-slate-900 mb-1">{ann.title}</h3>
-                        {ann.subject && <p className="text-sm text-slate-600 font-semibold mb-2">{ann.subject}</p>}
+                      <div className="pl-0 md:pl-[60px] mb-2 mt-2 md:mt-0">
+                        <h3 className="text-sm md:text-base font-bold text-slate-900 mb-1 leading-snug">{ann.title}</h3>
+                        {ann.subject && <p className="text-xs md:text-sm text-slate-600 font-semibold mb-2">{ann.subject}</p>}
                         
-                        <div className="text-sm text-slate-800 whitespace-pre-wrap leading-relaxed mt-2">
+                        <div className="text-xs md:text-sm text-slate-800 whitespace-pre-wrap leading-relaxed mt-2">
                           {ann.message}
                         </div>
                       </div>
 
                       {/* Footer Stats & Tags */}
-                      <div className="mt-3 pt-3 pl-1 md:pl-[60px] border-t border-slate-100 flex flex-wrap items-center justify-between gap-4">
-                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
-                          <div className="text-[11px] font-bold text-slate-500 flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded-md border border-slate-100">
+                      <div className="mt-2 md:mt-3 pt-2 md:pt-3 pl-0 md:pl-[60px] border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 md:gap-4">
+                        <div className="flex flex-row items-center gap-2 md:gap-3 w-full md:w-auto mt-2 md:mt-0">
+                          <div className="text-[10px] md:text-[11px] font-bold text-slate-500 flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded-md border border-slate-100">
                             <FiEye /> {ann.totalRead || 0} views
                           </div>
                           <div className={`text-[10px] font-bold uppercase px-2 py-1 rounded-md border flex items-center gap-1 ${
@@ -478,15 +478,15 @@ const Announcements = () => {
                           </div>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
+                        <div className="flex flex-wrap md:flex-nowrap items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
                            <div className="flex gap-1.5">
-                              {ann.dashboardNotification && <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] bg-slate-100 text-slate-500 hover:bg-blue-50 hover:text-blue-500 transition-colors" title="Dashboard"><FiBell /></div>}
-                              {ann.emailIntegration && <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] bg-slate-100 text-slate-500 hover:bg-indigo-50 hover:text-indigo-500 transition-colors" title="Email"><FiMail /></div>}
-                              {ann.smsIntegration && <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] bg-slate-100 text-slate-500 hover:bg-orange-50 hover:text-orange-500 transition-colors" title="SMS"><FiSmartphone /></div>}
+                              {ann.dashboardNotification && <div className="w-7 h-7 md:w-6 md:h-6 rounded-full flex items-center justify-center text-[11px] md:text-[10px] bg-slate-100 text-slate-500 hover:bg-blue-50 hover:text-blue-500 transition-colors" title="Dashboard"><FiBell /></div>}
+                              {ann.emailIntegration && <div className="w-7 h-7 md:w-6 md:h-6 rounded-full flex items-center justify-center text-[11px] md:text-[10px] bg-slate-100 text-slate-500 hover:bg-indigo-50 hover:text-indigo-500 transition-colors" title="Email"><FiMail /></div>}
+                              {ann.smsIntegration && <div className="w-7 h-7 md:w-6 md:h-6 rounded-full flex items-center justify-center text-[11px] md:text-[10px] bg-slate-100 text-slate-500 hover:bg-orange-50 hover:text-orange-500 transition-colors" title="SMS"><FiSmartphone /></div>}
                            </div>
                            
                            {(ann.targetBranches?.length > 0 || ann.targetRoles?.length > 0 || ann.targetUsers?.length > 0) && (
-                              <div className="flex gap-1.5 border-l border-slate-200 pl-3">
+                              <div className="flex flex-wrap gap-1.5 border-l border-slate-200 pl-3">
                                 {ann.targetBranches?.length > 0 && <span className="text-[10px] font-medium text-slate-500 bg-slate-50 px-1.5 py-0.5 rounded">{ann.targetBranches.length} Branches</span>}
                                 {ann.targetRoles?.length > 0 && <span className="text-[10px] font-medium text-slate-500 bg-slate-50 px-1.5 py-0.5 rounded">{ann.targetRoles.length} Roles</span>}
                                 {ann.targetUsers?.length > 0 && <span className="text-[10px] font-medium text-slate-500 bg-slate-50 px-1.5 py-0.5 rounded">{ann.targetUsers.length} Users</span>}
@@ -755,14 +755,14 @@ const Announcements = () => {
                     </div>
                   </div>
                 </form>
-              </div>
 
-              {/* Modal Footer */}
-              <div className="p-6 border-t border-slate-100 bg-white shrink-0 flex justify-end gap-4">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="px-6 py-2.5 rounded-xl text-slate-500 hover:bg-slate-50 font-bold transition-colors">Cancel</button>
-                <button form="announcementForm" disabled={submitting || !formData.title || !formData.message} type="submit" className="flex items-center gap-2 px-8 py-2.5 bg-blue-900 hover:bg-blue-800 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 transition-all disabled:opacity-50">
-                  {submitting ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <><FiSend /> {editingId ? 'Update Broadcast' : 'Dispatch Broadcast'}</>}
-                </button>
+                {/* Modal Footer inside scrollable area */}
+                <div className="mt-8 pt-6 border-t border-slate-100 bg-white shrink-0 flex flex-col md:flex-row justify-end gap-4">
+                  <button type="button" onClick={() => setIsModalOpen(false)} className="w-full md:w-auto px-6 py-2.5 rounded-xl text-slate-500 hover:bg-slate-50 font-bold transition-colors order-2 md:order-1 border border-slate-200">Cancel</button>
+                  <button form="announcementForm" disabled={submitting || !formData.title || !formData.message} type="submit" className="w-full md:w-auto flex justify-center items-center gap-2 px-8 py-2.5 bg-blue-900 hover:bg-blue-800 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 transition-all disabled:opacity-50 order-1 md:order-2">
+                    {submitting ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <><FiSend /> {editingId ? 'Update Broadcast' : 'Dispatch Broadcast'}</>}
+                  </button>
+                </div>
               </div>
             </motion.div>
           </div>

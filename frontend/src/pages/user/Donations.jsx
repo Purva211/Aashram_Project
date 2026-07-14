@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../utils/api';
 import { useNavigate } from 'react-router-dom';
+import { validateName, getMobileError } from '../../utils/validationUtils';
 
 const Donation = () => {
   const { t } = useTranslation();
@@ -84,6 +85,13 @@ const Donation = () => {
     if (!name || !email || !phone || !address || !selectedBranchId) {
       return toast.error("Please fill in all required details.");
     }
+    if (!validateName(name)) {
+      return toast.error("Name must contain only alphabets and spaces.");
+    }
+    const mobileError = getMobileError(phone);
+    if (mobileError) {
+      return toast.error(mobileError);
+    }
 
     // Generate a temporary reference for QR Code
     if (!donationReference) {
@@ -151,7 +159,7 @@ const Donation = () => {
       <Toaster position="top-center" />
       
       <div className="text-center pt-8 pb-4">
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="container mx-auto px-6 max-w-4xl">
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="w-full px-4 sm:px-6 max-w-4xl mx-auto">
           <div className="flex items-center justify-center gap-4 mb-4">
              <span className="w-12 h-px bg-mahakal-saffron"></span>
              <h4 className="text-mahakal-saffron font-bold tracking-[0.2em] uppercase text-xs md:text-sm">Contribute to the Divine</h4>
@@ -163,11 +171,11 @@ const Donation = () => {
         </motion.div>
       </div>
 
-      <div className="flex-grow container mx-auto px-4 mt-4 relative z-20 pb-24">
+      <div className="flex-grow w-full px-0 sm:px-4 mt-4 relative z-20 pb-24">
         <div className="max-w-4xl mx-auto">
           
           {(!user || user.role !== 'Devotee') ? (
-               <div className="bg-white rounded-2xl shadow-sm p-8 md:p-12 border border-stone-200 text-center py-16">
+               <div className="bg-white sm:rounded-2xl shadow-sm p-5 sm:p-8 md:p-12 border-y sm:border border-stone-200 text-center py-16">
                  <FaUserCircle className="text-6xl text-mahakal-saffron mx-auto mb-4 opacity-50" />
                  <h2 className="text-2xl font-bold text-mahakal-burgundy font-serif mb-2">Login Required</h2>
                  <p className="text-stone-500 mb-6 font-medium">Please login or register as a Devotee to make an online donation.</p>
@@ -201,7 +209,7 @@ const Donation = () => {
             })}
           </div>
 
-          <div className="bg-white rounded-2xl shadow-sm p-6 md:p-10 border border-stone-200">
+          <div className="bg-white sm:rounded-2xl shadow-sm p-4 sm:p-6 md:p-10 border-y sm:border border-stone-200">
             <AnimatePresence mode="wait">
               
               {/* STEP 1: Details Form */}
@@ -292,7 +300,7 @@ const Donation = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-bold text-mahakal-burgundy uppercase tracking-widest mb-3">Full Name</label>
-                      <input type="text" required value={name} onChange={(e) => setName(e.target.value)} className="w-full px-6 py-4 rounded-xl border-2 border-stone-200 focus:ring-2 focus:ring-mahakal-saffron focus:border-mahakal-saffron outline-none bg-white" />
+                      <input type="text" required pattern="[A-Za-z\s]+" title="Name must contain only alphabets and spaces" value={name} onChange={(e) => setName(e.target.value.replace(/[^A-Za-z\s]/g, ''))} className="w-full px-6 py-4 rounded-xl border-2 border-stone-200 focus:ring-2 focus:ring-mahakal-saffron focus:border-mahakal-saffron outline-none bg-white" />
                     </div>
                     <div>
                       <label className="block text-sm font-bold text-mahakal-burgundy uppercase tracking-widest mb-3">Email</label>
@@ -300,7 +308,7 @@ const Donation = () => {
                     </div>
                     <div>
                       <label className="block text-sm font-bold text-mahakal-burgundy uppercase tracking-widest mb-3">Mobile Number</label>
-                      <input type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full px-6 py-4 rounded-xl border-2 border-stone-200 focus:ring-2 focus:ring-mahakal-saffron focus:border-mahakal-saffron outline-none bg-white" />
+                      <input type="tel" required pattern="\d{10}" title="Mobile number must be exactly 10 digits" maxLength={10} value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))} className="w-full px-6 py-4 rounded-xl border-2 border-stone-200 focus:ring-2 focus:ring-mahakal-saffron focus:border-mahakal-saffron outline-none bg-white" />
                     </div>
                     <div>
                       <label className="block text-sm font-bold text-mahakal-burgundy uppercase tracking-widest mb-3">City/Address</label>
