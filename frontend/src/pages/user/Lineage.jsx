@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import api from '../../utils/api';
-import defaultMahadevPic from '../../assets/shivling.jpeg';
+import defaultMahadevPic from '../../assets/kolekar1.jpeg';
 
 const getImageUrl = (url) => {
   if (!url) return '';
