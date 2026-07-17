@@ -41,6 +41,11 @@ const getTransporter = () => {
       user: emailUser,
       pass: emailPass,
     },
+    // Force Node.js to use IPv4 only, preventing ENETUNREACH on Render's IPv6 interfaces
+    family: 4,
+    // Fix for Render/Node 20+: Nodemailer ignores loopback IPv4 interfaces by default and uses IPv6, causing ENETUNREACH.
+    // Setting this to true forces Nodemailer to resolve IPv4 addresses.
+    allowInternalNetworkInterfaces: true,
     // Increased timeouts for Render cloud environment (cold starts and network latency)
     connectionTimeout: 60_000, // 60 seconds
     greetingTimeout:   30_000, // 30 seconds
