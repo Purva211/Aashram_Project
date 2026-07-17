@@ -35,16 +35,16 @@ const getTransporter = () => {
     maxConnections: 5,
     maxMessages: 100,
     host:   process.env.EMAIL_HOST || "smtp.gmail.com",
-    port:   parseInt(process.env.EMAIL_PORT, 10) || 587,
-    secure: process.env.EMAIL_SECURE === "true", // true → port 465, false → STARTTLS
+    port:   parseInt(process.env.EMAIL_PORT, 10) || 465, // Changed default to 465
+    secure: process.env.EMAIL_SECURE ? process.env.EMAIL_SECURE === "true" : true, // Changed default to true
     auth: {
       user: emailUser,
       pass: emailPass,
     },
-    // Prevent the connection from hanging indefinitely
-    connectionTimeout: 10_000,
-    greetingTimeout:   10_000,
-    socketTimeout:     15_000,
+    // Increased timeouts for Render cloud environment (cold starts and network latency)
+    connectionTimeout: 60_000, // 60 seconds
+    greetingTimeout:   30_000, // 30 seconds
+    socketTimeout:     60_000, // 60 seconds
   });
 
   return _transporter;
