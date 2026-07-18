@@ -20,7 +20,6 @@ const VanshawalPrompt = ({ user, onSetupComplete }) => {
   const [relationshipType, setRelationshipType] = useState('Son');
 
   // New family state
-  const [gotra, setGotra] = useState('');
   const [kuldevta, setKuldevta] = useState('');
   const [addressFields, setAddressFields] = useState({
     village: '',
@@ -37,7 +36,6 @@ const VanshawalPrompt = ({ user, onSetupComplete }) => {
     try {
       // Devotee creating a new family tree for themselves makes them the head
       const res = await api.post('/family/create-self-root', {
-        gotra,
         kuldevta,
         ...addressFields
       });
@@ -173,16 +171,6 @@ const VanshawalPrompt = ({ user, onSetupComplete }) => {
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-slate-600 text-[10px] font-black uppercase tracking-wider mb-1">Gotra (Optional)</label>
-                  <input 
-                    type="text" 
-                    value={gotra} 
-                    onChange={(e) => setGotra(e.target.value)}
-                    placeholder="e.g. Shiva" 
-                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold focus:outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-400/5"
-                  />
-                </div>
-                <div>
                   <label className="block text-slate-600 text-[10px] font-black uppercase tracking-wider mb-1">Kuldevta (Optional)</label>
                   <input 
                     type="text" 
@@ -310,7 +298,7 @@ const VanshawalPrompt = ({ user, onSetupComplete }) => {
                           <p className="text-xs font-black text-slate-700 uppercase">{fam.name}</p>
                           {fam.isFamilyHead && <FaCrown className="text-amber-500 text-[10px]" />}
                         </div>
-                        <p className="text-[10px] text-slate-400 font-semibold mt-0.5">Gotra: {fam.gotra || 'Not Provided'} • Devotee ID: {fam.devoteeId}</p>
+                        <p className="text-[10px] text-slate-400 font-semibold mt-0.5">Devotee ID: {fam.devoteeId}</p>
                       </div>
                       <FiChevronRight className="text-slate-400" />
                     </div>

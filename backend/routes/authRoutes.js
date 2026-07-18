@@ -9,9 +9,10 @@ router.post("/google-login", authController.googleLogin);
 router.post("/verify-pin", authController.verifyAdminPin);
 
 // Registration endpoints
-router.post("/register", authController.registerDevotee);
-router.post("/register-trustee", authController.registerTrustee);
-router.post("/verify-otp", authController.verifyOTP);
+router.post("/register/start", authController.registerStart);
+router.post("/register/verify-email", authController.registerVerifyEmail);
+router.post("/register/complete", authController.registerComplete);
+router.post("/check-duplicate", authController.checkDuplicate);
 
 // Password Reset endpoints
 router.post("/forgot-password", authController.forgotPassword);

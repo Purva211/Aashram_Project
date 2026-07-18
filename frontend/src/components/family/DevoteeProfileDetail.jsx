@@ -128,10 +128,7 @@ const DevoteeProfileDetail = ({ devoteeId, onClose, onSelectMember, onViewFamily
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Email</p>
                 <p className="text-sm font-bold text-slate-800 flex items-center gap-1.5 truncate" title={devotee.email}><FiMail size={12} className="text-slate-400" /> {devotee.email || "Not Provided"}</p>
               </div>
-              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Gotra</p>
-                <p className="text-sm font-bold text-slate-800">{devotee.gotra || "Not Provided"}</p>
-              </div>
+
               <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Kuldevta</p>
                 <p className="text-sm font-bold text-slate-800">{devotee.kuldevta || "Not Provided"}</p>

@@ -24,7 +24,6 @@ const devoteeSchema = new mongoose.Schema({
   gender: { type: String, enum: ["Male", "Female", "Other"], default: "Male" },
   dob: { type: Date },
   aadhaar: { type: String },
-  gotra: { type: String },
   kuldevta: { type: String },
   bloodGroup: { type: String },
   maritalStatus: { type: String, enum: ["Single", "Married", "Divorced", "Widowed", "Separated"], default: "Single" },
@@ -81,7 +80,7 @@ devoteeSchema.pre("validate", async function() {
 });
 
 devoteeSchema.pre("save", async function() {
-  if (this.isModified("password")) {
+  if (this.isModified("password") && !this.password.startsWith("$2a$") && !this.password.startsWith("$2b$")) {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
   }
@@ -129,7 +128,6 @@ devoteeSchema.pre("save", async function() {
   if (this.taluka) rawWords.push(this.taluka.toLowerCase());
   if (this.district) rawWords.push(this.district.toLowerCase());
   if (this.state) rawWords.push(this.state.toLowerCase());
-  if (this.gotra) rawWords.push(this.gotra.toLowerCase());
 
   rawWords.forEach(word => {
     if (!word) return;

@@ -219,7 +219,7 @@ const FamilyDashboard = () => {
               <div key={idx} className="py-3 flex justify-between items-center gap-4 text-xs">
                 <div>
                   <p className="font-bold text-slate-800">{fam.headName}</p>
-                  <p className="text-[10px] text-slate-400 font-semibold mt-0.5">Gotra: {fam.gotra} • {fam.branch}</p>
+                  <p className="text-[10px] text-slate-400 font-semibold mt-0.5">{fam.branch}</p>
                 </div>
                 <span className="bg-saffron-50 text-saffron-600 border border-saffron-100 px-3 py-1.5 rounded-full font-black">
                   {fam.size} Members

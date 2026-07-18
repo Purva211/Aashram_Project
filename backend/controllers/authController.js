@@ -1,9 +1,14 @@
+const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 const Admin = require("../models/Admin");
 const Trustee = require("../models/Trustee");
 const Devotee = require("../models/Devotee");
 const BranchManager = require("../models/BranchManager");
 const OTPVerification = require("../models/OTPVerification");
 const Accountant = require("../models/Accountant");
+const User = require("../models/User");
+const Volunteer = require("../models/Volunteer");
+const PendingRegistration = require("../models/PendingRegistration");
 const generateToken = require("../utils/generateToken");
 const generateOTP = require("../utils/otpGenerator");
 const sendEmail = require("../utils/sendEmail");
@@ -255,117 +260,218 @@ exports.verifyAdminPin = async (req, res) => {
   }
 };
 
-// Devotee Registration (Sends OTP)
-exports.registerDevotee = async (req, res) => {
+exports.registerStart = async (req, res) => {
   try {
-    const { name, email, mobile, password, address } = req.body;
-
-    let userExists = await Devotee.findOne({ email });
-    if (userExists) {
-      return res.status(400).json({ success: false, message: "User already exists with this email" });
+    const { name, email, mobile, password, role } = req.body;
+    
+    // Allowed roles for public registration
+    if (!['Devotee', 'Volunteer'].includes(role)) {
+      return res.status(400).json({ success: false, message: "Invalid role for public registration." });
     }
 
-    const devotee = await Devotee.create({
-      name,
+    // Check duplicate in User collection
+    const existingUser = await User.findOne({ $or: [{ email }, { mobile }] });
+    if (existingUser) return res.status(400).json({ success: false, message: "User already exists with this email or mobile." });
+    
+    // Check in Devotee/Volunteer explicitly
+    const existingDevotee = await Devotee.findOne({ $or: [{ email }, { mobile }] });
+    if (existingDevotee) return res.status(400).json({ success: false, message: "User already exists with this email or mobile." });
+    
+    const existingVolunteer = await Volunteer.findOne({ $or: [{ email }, { mobile }] });
+    if (existingVolunteer) return res.status(400).json({ success: false, message: "User already exists with this email or mobile." });
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const otp = generateOTP();
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+
+    await PendingRegistration.deleteMany({ email });
+    
+    // Parse name for pending schema
+    const nameParts = name.split(' ');
+    const firstName = nameParts[0];
+    const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : 'Unknown';
+
+    await PendingRegistration.create({
+      firstName,
+      lastName,
       email,
       mobile,
-      password,
-      address,
-      isVerified: false
-    });
-
-    // Generate and send OTP
-    const otp = generateOTP();
-    await OTPVerification.create({
-      email,
+      hashedPassword,
+      role,
       otp,
-      expiresAt: new Date(Date.now() + 10 * 60 * 1000) // 10 mins expiry
+      otpExpiry
     });
 
-    const message = `Dear ${name},\n\nYour OTP for registration at Kolekar Maha Swamiji Monastery, Kole is: ${otp}\n\nThis OTP is valid for 10 minutes.\n\nJai Kolekar Maha Swamiji!`;
+    const message = `Dear ${firstName},\n\nYour OTP for registration at Kolekar Maha Swamiji Monastery, Kole is: ${otp}\n\nThis OTP is valid for 10 minutes.\n\nJai Kolekar Maha Swamiji!`;
+    
+    await sendEmail({ email, subject: "Registration OTP - Kolekar Maha Swamiji Monastery", message });
 
-    await sendEmail({
-      email,
-      subject: "Registration OTP - Kolekar Maha Swamiji Monastery",
-      message,
-    });
-
-    res.status(201).json({
-      success: true,
-      message: "Registration successful. Please check your email for the OTP.",
-      email: devotee.email
-    });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(200).json({ success: true, message: "OTP sent successfully.", email });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
-// Basic Trustee Registration
-exports.registerTrustee = async (req, res) => {
-  try {
-    const { email, password, verifiedToken } = req.body;
-
-    // Verify Token
-    try {
-      const decoded = jwt.verify(verifiedToken, process.env.JWT_SECRET || "default_secret_key");
-      if (decoded.email !== email || !decoded.verified) {
-        return res.status(400).json({ success: false, message: "Email verification failed or token mismatch" });
-      }
-    } catch (err) {
-      return res.status(400).json({ success: false, message: "Invalid or expired verification token" });
-    }
-
-    let userExists = await Trustee.findOne({ email });
-    if (userExists) {
-      return res.status(400).json({ success: false, message: "Trustee already exists with this email" });
-    }
-    const trustee = await Trustee.create({
-      name: email.split('@')[0],
-      email,
-      password,
-      mobile: "0000000000",
-      designation: "New Trustee",
-      address: "Not Provided",
-      role: 'Trustee'
-    });
-    res.status(201).json({
-      success: true,
-      message: "Trustee registered successfully. You can now login.",
-      user: { name: trustee.name, email: trustee.email }
-    });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
-
-// Verify OTP
-exports.verifyOTP = async (req, res) => {
+exports.registerVerifyEmail = async (req, res) => {
   try {
     const { email, otp } = req.body;
-
-    const otpRecord = await OTPVerification.findOne({ email }).sort({ createdAt: -1 });
-
-    if (!otpRecord) {
-      return res.status(400).json({ success: false, message: "Invalid or expired OTP" });
-    }
-
-    if (otpRecord.expiresAt < new Date()) {
-      return res.status(400).json({ success: false, message: "OTP has expired. Please request a new one." });
-    }
-
-    if (otpRecord.otp !== otp) {
-      return res.status(400).json({ success: false, message: "Incorrect OTP" });
-    }
-
-    // Mark devotee as verified
-    await Devotee.findOneAndUpdate({ email }, { isVerified: true });
+    const pending = await PendingRegistration.findOne({ email });
     
-    // Delete OTP record
-    await OTPVerification.deleteMany({ email });
+    if (!pending) return res.status(400).json({ success: false, message: "Registration session not found or expired." });
+    if (pending.otp !== otp) return res.status(400).json({ success: false, message: "Incorrect OTP." });
+    if (pending.otpExpiry < new Date()) return res.status(400).json({ success: false, message: "OTP has expired." });
+    
+    pending.otpVerified = true;
+    await pending.save();
+    
+    res.status(200).json({ success: true, message: "Email verified successfully." });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
 
-    res.status(200).json({ success: true, message: "Email verified successfully. You can now login." });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+exports.registerComplete = async (req, res) => {
+  let session = null;
+  try {
+    const { email, profileData, registerOption, relativeId, relationshipType } = req.body;
+    
+    const pending = await PendingRegistration.findOne({ email });
+    if (!pending || !pending.otpVerified) {
+      return res.status(400).json({ success: false, message: "Invalid or unverified registration session." });
+    }
+    
+    const fullName = [pending.firstName, pending.lastName].filter(Boolean).join(" ");
+    
+    const userPayload = {
+      name: fullName,
+      email: pending.email,
+      mobile: pending.mobile,
+      password: pending.hashedPassword,
+      role: pending.role,
+      isVerified: true
+    };
+    
+    const rolePayload = {
+      name: fullName,
+      email: pending.email,
+      mobile: pending.mobile,
+      password: pending.hashedPassword,
+      ...profileData,
+      isVerified: true,
+      isFamilyHead: registerOption === 'newFamily' ? true : false
+    };
+
+    const isStandalone = !mongoose.connection.client.topology.s.replicaSet && !mongoose.connection.client.topology.s.clusterTime;
+
+    if (!isStandalone) {
+      session = await mongoose.startSession();
+      session.startTransaction();
+    }
+    
+    let createdRoleDoc;
+    let createdUser;
+
+    try {
+      if (pending.role === 'Devotee') {
+        const newDevotee = new Devotee(rolePayload);
+        
+        // Handle family logic for joining an existing family
+        if (registerOption === 'joinFamily' && relativeId) {
+           const relative = await Devotee.findById(relativeId);
+           if (relative) {
+             newDevotee.familyId = relative.familyId;
+             newDevotee.familyRootId = relative.familyRootId;
+             
+             const relLevel = relative.generationLevel || 1;
+             if (relationshipType === "Son" || relationshipType === "Daughter") {
+               newDevotee.generationLevel = relLevel + 1;
+               if (relative.gender === "Male") {
+                 newDevotee.fatherId = relative._id;
+                 if (relative.spouseId) newDevotee.motherId = relative.spouseId;
+               } else {
+                 newDevotee.motherId = relative._id;
+                 if (relative.spouseId) newDevotee.fatherId = relative.spouseId;
+               }
+             } else if (relationshipType === "Spouse") {
+               newDevotee.generationLevel = relLevel;
+               newDevotee.spouseId = relative._id;
+               relative.spouseId = newDevotee._id;
+               if (!isStandalone) await relative.save({ session });
+               else await relative.save();
+             } else if (relationshipType === "Father") {
+               newDevotee.generationLevel = Math.max(1, relLevel - 1);
+               relative.fatherId = newDevotee._id;
+               if (!isStandalone) await relative.save({ session });
+               else await relative.save();
+             } else if (relationshipType === "Mother") {
+               newDevotee.generationLevel = Math.max(1, relLevel - 1);
+               relative.motherId = newDevotee._id;
+               if (!isStandalone) await relative.save({ session });
+               else await relative.save();
+             } else if (relationshipType === "Brother" || relationshipType === "Sister") {
+               newDevotee.generationLevel = relLevel;
+               newDevotee.fatherId = relative.fatherId;
+               newDevotee.motherId = relative.motherId;
+             }
+           }
+        }
+
+        createdRoleDoc = await newDevotee.save(session ? { session } : undefined);
+      } else if (pending.role === 'Volunteer') {
+        const newVolunteer = new Volunteer(rolePayload);
+        createdRoleDoc = await newVolunteer.save(session ? { session } : undefined);
+      }
+      
+      userPayload.refId = createdRoleDoc._id;
+      createdUser = await User.create([userPayload], session ? { session } : undefined);
+      
+      if (session) await session.commitTransaction();
+      
+      await PendingRegistration.deleteOne({ email });
+      
+      const token = generateToken(createdRoleDoc._id, pending.role);
+      
+      const userResponse = createdRoleDoc.toObject();
+      delete userResponse.password;
+      
+      res.status(200).json({ success: true, message: "Registration complete.", token, user: userResponse, role: pending.role });
+    } catch (transactionError) {
+      if (session) await session.abortTransaction();
+      throw transactionError;
+    } finally {
+      if (session) session.endSession();
+    }
+  } catch (err) {
+    if (session && session.inTransaction()) {
+      await session.abortTransaction();
+      session.endSession();
+    }
+    console.error("Registration Completion Error:", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+exports.checkDuplicate = async (req, res) => {
+  try {
+    const { email, mobile } = req.body;
+    let query = { $or: [] };
+    if (email) query.$or.push({ email });
+    if (mobile) query.$or.push({ mobile });
+    
+    if (query.$or.length === 0) return res.status(200).json({ isDuplicate: false });
+    
+    const isUser = await User.exists(query);
+    const isDevotee = await Devotee.exists(query);
+    const isVol = await Volunteer.exists(query);
+    
+    if (isUser || isDevotee || isVol) {
+      return res.status(200).json({ isDuplicate: true });
+    }
+    return res.status(200).json({ isDuplicate: false });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
