@@ -1,7 +1,27 @@
 const Event = require("../models/Event");
 // Removed Cloudinary as per strict requirement for physical uploads
 
-// Status is now manually managed by Admin, no dynamic override needed.
+// Helper to automatically update past event status to 'completed'
+const autoUpdateEventStatuses = async () => {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    await Event.updateMany(
+      {
+        $or: [
+          { eventEndDate: { $lt: today } },
+          { eventDate: { $lt: today }, eventEndDate: { $exists: false } },
+          { eventDate: { $lt: today }, eventEndDate: null }
+        ],
+        status: 'upcoming'
+      },
+      { $set: { status: 'completed' } }
+    );
+  } catch (err) {
+    console.error("Error auto-updating event statuses:", err);
+  }
+};
 
 const processEvents = (events) => {
   return events.map(e => e.toObject ? e.toObject() : e);
@@ -15,6 +35,7 @@ const processSingleEvent = (event) => {
 // ADMIN: Get all events (with filters)
 exports.getAllEventsAdmin = async (req, res) => {
   try {
+    await autoUpdateEventStatuses();
     const { search } = req.query;
     
     let query = {};
@@ -180,6 +201,7 @@ exports.toggleFeatured = async (req, res) => {
 // USER: Get Published Events (with optional filters)
 exports.getPublishedEvents = async (req, res) => {
   try {
+    await autoUpdateEventStatuses();
     const { search, limit = 10, page = 1, branchId, filterStatus } = req.query;
     let query = { isPublished: true };
     

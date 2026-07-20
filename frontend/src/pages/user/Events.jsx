@@ -116,9 +116,17 @@ const UserEvents = () => {
       }
       const res = await api.get(url);
       
-      // Sort upcoming ascending, past descending
+      // Sort upcoming ascending, past descending & filter past events from upcoming
       let fetchedEvents = res.data.data || [];
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
       if (tab === 'upcoming') {
+        fetchedEvents = fetchedEvents.filter(e => {
+          const eDate = new Date(e.eventEndDate || e.eventDate);
+          eDate.setHours(0, 0, 0, 0);
+          return eDate >= today && e.status !== 'completed';
+        });
         fetchedEvents.sort((a, b) => new Date(a.eventDate) - new Date(b.eventDate));
       } else {
         fetchedEvents.sort((a, b) => new Date(b.eventDate) - new Date(a.eventDate));

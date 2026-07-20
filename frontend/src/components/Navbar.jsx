@@ -506,8 +506,14 @@ const Navbar = () => {
                 <Link to="/devotee/donations" onClick={() => setIsDevoteeMenuOpen(false)} className="flex items-center gap-4 px-4 py-3.5 rounded-xl text-[#8D5B2F] hover:bg-orange-50 hover:text-orange-600 transition-all font-semibold shadow-sm border border-transparent hover:border-orange-100">
                   <span className="text-lg text-yellow-500">💝</span> My Donations
                 </Link>
+                <Link to="/devotee/receipts" onClick={() => setIsDevoteeMenuOpen(false)} className="flex items-center gap-4 px-4 py-3.5 rounded-xl text-[#8D5B2F] hover:bg-orange-50 hover:text-orange-600 transition-all font-semibold shadow-sm border border-transparent hover:border-orange-100">
+                  <span className="text-lg text-indigo-500">📜</span> My Receipts
+                </Link>
                 <Link to="/devotee/annadaan" onClick={() => setIsDevoteeMenuOpen(false)} className="flex items-center gap-4 px-4 py-3.5 rounded-xl text-[#8D5B2F] hover:bg-orange-50 hover:text-orange-600 transition-all font-semibold shadow-sm border border-transparent hover:border-orange-100">
                   <span className="text-lg text-red-400">🍚</span> Annadaan Seva
+                </Link>
+                <Link to="/devotee/requests" onClick={() => setIsDevoteeMenuOpen(false)} className="flex items-center gap-4 px-4 py-3.5 rounded-xl text-[#8D5B2F] hover:bg-orange-50 hover:text-orange-600 transition-all font-semibold shadow-sm border border-transparent hover:border-orange-100">
+                  <span className="text-lg text-emerald-500">📋</span> My Requests
                 </Link>
                 <Link to="/devotee/settings" onClick={() => setIsDevoteeMenuOpen(false)} className="flex items-center gap-4 px-4 py-3.5 rounded-xl text-[#8D5B2F] hover:bg-orange-50 hover:text-orange-600 transition-all font-semibold shadow-sm border border-transparent hover:border-orange-100">
                   <span className="text-lg text-stone-500">⚙️</span> Profile Settings

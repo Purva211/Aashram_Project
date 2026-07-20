@@ -266,7 +266,9 @@ function AppRoutes() {
           <Route path="/devotee/dashboard" element={<DevoteeLayout allowedRoles={['Devotee']}><DevoteeDashboardHome /></DevoteeLayout>} />
           <Route path="/devotee/orders" element={<DevoteeLayout allowedRoles={['Devotee']}><DevoteeOrders /></DevoteeLayout>} />
           <Route path="/devotee/donations" element={<DevoteeLayout allowedRoles={['Devotee']}><DevoteeDonations /></DevoteeLayout>} />
+          <Route path="/devotee/receipts" element={<DevoteeLayout allowedRoles={['Devotee']}><DevoteeDonations /></DevoteeLayout>} />
           <Route path="/devotee/annadaan" element={<DevoteeLayout allowedRoles={['Devotee']}><DevoteeAnnadaan /></DevoteeLayout>} />
+          <Route path="/devotee/requests" element={<DevoteeLayout allowedRoles={['Devotee']}><DevoteeAnnadaan /></DevoteeLayout>} />
           <Route path="/devotee/settings" element={<DevoteeLayout allowedRoles={['Devotee']}><DevoteeSettings /></DevoteeLayout>} />
           <Route path="/devotee/vanshawal" element={<DevoteeLayout allowedRoles={['Devotee']}><DevoteeVanshawal /></DevoteeLayout>} />
 

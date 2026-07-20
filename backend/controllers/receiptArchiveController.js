@@ -200,3 +200,26 @@ exports.getReceipts = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+// Delete a receipt/notice (Owner or Admin authorization required)
+exports.deleteReceipt = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const archive = await ReceiptArchive.findById(id);
+    if (!archive) {
+      return res.status(404).json({ success: false, message: "Notice/Receipt not found." });
+    }
+
+    const isCreator = String(archive.generatedBy) === String(req.user._id);
+    const isAdmin = req.user.role === "Admin";
+
+    if (!isCreator && !isAdmin) {
+      return res.status(403).json({ success: false, message: "Unauthorized: Only the original creator can delete this notice." });
+    }
+
+    await ReceiptArchive.findByIdAndDelete(id);
+    res.status(200).json({ success: true, message: "Notice deleted successfully." });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

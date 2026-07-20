@@ -27,12 +27,24 @@ import {
   getPasswordError,
   getMobileError,
 } from "../../utils/validationUtils";
-import { INDIA_STATES_CITIES } from "../../utils/indiaStatesCities";
+import { useAuth } from "../../context/AuthContext";
 
 const RegisterDevotee = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const returnUrl = location.state?.returnUrl;
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      if (user.role === 'Admin') navigate('/admin/dashboard', { replace: true });
+      else if (user.role === 'Trustee') navigate('/trustee/dashboard', { replace: true });
+      else if (user.role === 'BranchManager') navigate('/branch/dashboard', { replace: true });
+      else if (user.role === 'Accountant') navigate('/accountant/dashboard', { replace: true });
+      else if (user.role === 'DocumentHandler' || user.role === 'document_admin') navigate('/document-handler/dashboard', { replace: true });
+      else navigate(returnUrl || '/devotee/dashboard', { replace: true });
+    }
+  }, [user, navigate, returnUrl]);
 
   const [step, setStep] = useState(1); // 1 = Account Info, 2 = Verify Email, 3 = Complete Profile
   const [loading, setLoading] = useState(false);

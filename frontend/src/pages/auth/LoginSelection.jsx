@@ -24,7 +24,18 @@ const LoginSelection = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const returnUrl = location.state?.returnUrl;
-  const { login } = useAuth();
+  const { user, login } = useAuth();
+  
+  useEffect(() => {
+    if (user) {
+      if (user.role === 'Admin') navigate('/admin/dashboard', { replace: true });
+      else if (user.role === 'Trustee') navigate('/trustee/dashboard', { replace: true });
+      else if (user.role === 'BranchManager') navigate('/branch/dashboard', { replace: true });
+      else if (user.role === 'Accountant') navigate('/accountant/dashboard', { replace: true });
+      else if (user.role === 'DocumentHandler' || user.role === 'document_admin') navigate('/document-handler/dashboard', { replace: true });
+      else navigate(returnUrl || '/devotee/dashboard', { replace: true });
+    }
+  }, [user, navigate, returnUrl]);
   
   const [selectedRole, setSelectedRole] = useState('Devotee');
   const [isAdminUnlocked, setIsAdminUnlocked] = useState(false);
