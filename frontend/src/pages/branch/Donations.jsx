@@ -244,30 +244,36 @@ const Donations = () => {
                   className="flex flex-col md:table-row w-full bg-white md:bg-transparent border border-gray-100 md:border-b md:border-x-0 md:border-t-0 md:border-gray-50 rounded-xl md:rounded-none mb-4 md:mb-0 shadow-sm md:shadow-none hover:bg-gray-50 transition-colors"
                   key={donation._id}
                 >
-                  <td className="p-3 md:p-4 flex flex-col md:table-cell w-full border-b border-gray-50 md:border-none">
-                    <div className="flex md:hidden justify-between items-start mb-3">
-                      <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Ref: {donation.donationReference || 'N/A'}</span>
-                      <span className={`px-2.5 py-1 text-[11px] font-bold rounded-lg border ${
-                        donation.status === 'APPROVED' ? 'text-green-700 bg-green-50 border-green-200' :
-                        donation.status === 'REJECTED' ? 'text-red-700 bg-red-50 border-red-200' :
-                        'text-amber-700 bg-amber-50 border-amber-200'
-                      }`}>
-                        {donation.status || 'PENDING'}
-                      </span>
-                    </div>
-                    <div className="md:hidden flex justify-between items-end mb-2">
-                      <div>
-                        <span className="text-[10px] text-gray-500 uppercase tracking-wider block mb-0.5">Donor Name</span>
-                        <span className="font-bold text-gray-900 text-base">{donation.donorName}</span>
+                  <td className="p-4 flex flex-col md:table-cell w-full border-b border-gray-100 md:border-none">
+                    {/* Mobile View Card */}
+                    <div className="md:hidden flex flex-col gap-3">
+                      <div className="flex justify-between items-center pb-2 border-b border-gray-100">
+                        <span className="text-xs font-bold text-gray-500 font-mono tracking-wider">Ref: {donation.donationReference || 'N/A'}</span>
+                        <span className={`px-2.5 py-1 text-[11px] font-bold rounded-lg border ${
+                          donation.status === 'APPROVED' ? 'text-green-700 bg-green-50 border-green-200' :
+                          donation.status === 'REJECTED' ? 'text-red-700 bg-red-50 border-red-200' :
+                          'text-amber-700 bg-amber-50 border-amber-200'
+                        }`}>
+                          {donation.status || 'PENDING'}
+                        </span>
                       </div>
-                      <div className="text-right">
-                        <span className="text-[10px] text-gray-500 uppercase tracking-wider block mb-0.5">Amount</span>
-                        <span className="font-bold text-emerald-600 text-lg">₹ {donation.amount.toLocaleString()}</span>
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-0.5">Donated By</span>
+                          <h3 className="font-bold text-slate-900 text-lg leading-tight">{donation.donorName}</h3>
+                          {donation.phone && <p className="text-xs text-gray-500 font-semibold mt-0.5">📱 {donation.phone}</p>}
+                        </div>
+                        <div className="text-right shrink-0">
+                          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-0.5">Amount</span>
+                          <span className="inline-block px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 font-black rounded-xl text-base">
+                            ₹ {donation.amount?.toLocaleString()}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                    <div className="md:hidden text-xs text-gray-500 font-medium bg-gray-50 -mx-4 -mb-4 p-3 px-4 border-t border-gray-100 flex justify-between items-center rounded-b-xl">
-                      <span className="flex items-center gap-1.5">{donation.branchId?.name || "Main Trust"}</span>
-                      <span className="flex items-center gap-1.5 text-gray-400">{new Date(donation.date).toLocaleDateString()}</span>
+                      <div className="flex flex-wrap items-center justify-between gap-2 pt-2 text-xs font-medium text-gray-500 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                        <span className="font-bold text-slate-700">🏛️ {donation.branchId?.name || "Main Trust"}</span>
+                        <span className="text-gray-400">📅 {new Date(donation.date).toLocaleDateString()}</span>
+                      </div>
                     </div>
                     {/* Desktop Content */}
                     <span className="hidden md:inline font-bold text-slate-900">{donation.donorName}</span>

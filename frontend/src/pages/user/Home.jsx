@@ -545,10 +545,23 @@ const Home = () => {
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-gray-900">News & Announcements</h2>
           </div>
 
-          {sliderNews.length > 0 ? (
+          {sliderNews.length === 1 ? (
+            <div className="max-w-md mx-auto px-4 py-4">
+              <div 
+                className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 h-[280px] sm:h-[350px] relative group/card border border-stone-100 cursor-pointer"
+                onClick={() => setSelectedNewsImageIndex(0)}
+              >
+                <img 
+                  src={getImageUrl(sliderNews[0].coverImage)} 
+                  alt={sliderNews[0].title || 'News image'} 
+                  onError={(e) => { e.target.src = "/about_images/kolekar_real_1.jpg"; }}
+                  className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700"
+                />
+              </div>
+            </div>
+          ) : sliderNews.length > 1 ? (
             <div className="relative w-full overflow-hidden flex flex-col group py-4">
               <div className="flex w-max animate-marquee group-hover:[animation-play-state:paused]">
-                {/* Render the array twice for seamless looping */}
                 {[...sliderNews, ...sliderNews].map((news, idx) => (
                   <div 
                     key={idx}
