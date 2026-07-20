@@ -126,7 +126,7 @@ export const DashboardHome = () => {
       icon: <FaDonate className="text-2xl text-amber-500" />,
       bg: "bg-amber-50",
       border: "border-amber-100",
-      link: null
+      link: "/devotee/donations"
     },
     {
       title: "Annadaan Participation",
@@ -157,13 +157,27 @@ export const DashboardHome = () => {
           <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-1">
             Welcome back, {user?.name || 'Devotee'} 🙏
           </h1>
-          <p className="text-sm font-medium text-slate-600">
+          <p className="text-sm font-medium text-slate-600 mb-3">
             Manage your annadaan registrations and track your generous contributions.
           </p>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => navigate('/devotee/annadaan')}
+              className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold text-xs shadow transition-all flex items-center gap-1.5"
+            >
+              <FaUtensils /> My Annadan Seva
+            </button>
+            <button
+              onClick={() => navigate('/devotee/donations')}
+              className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-bold text-xs shadow transition-all flex items-center gap-1.5"
+            >
+              <FaDonate /> My Donations
+            </button>
+          </div>
         </div>
         <button
           onClick={() => navigate('/devotee/settings')}
-          className="px-5 py-2.5 bg-slate-900 text-white border border-transparent rounded-lg font-black shadow-md hover:bg-slate-800 transition-all duration-300"
+          className="px-5 py-2.5 bg-slate-900 text-white border border-transparent rounded-lg font-black shadow-md hover:bg-slate-800 transition-all duration-300 w-full md:w-auto text-center"
         >
           View Profile
         </button>

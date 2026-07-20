@@ -4,10 +4,8 @@ const getStaticAssetPath = (path) => {
   if (!path) return '';
   if (path.startsWith('http://') || path.startsWith('https://')) return path;
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
-  if (typeof window !== 'undefined' && window.location && window.location.origin) {
-    return `${window.location.origin}${cleanPath}`;
-  }
-  return cleanPath;
+  const baseUrl = import.meta.env.VITE_ASSETS_URL || (typeof window !== 'undefined' && window.location ? window.location.origin : '');
+  return `${baseUrl}${cleanPath}`;
 };
 
 // Helper to convert number to Marathi words

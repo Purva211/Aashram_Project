@@ -6,7 +6,12 @@ import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import ReceiptHistory from '../shared/ReceiptHistory';
 
+import { useAuth } from '../../context/AuthContext';
+
 const NoticeGenerator = () => {
+  const { user } = useAuth();
+  const isAuthorized = user?.role === 'Admin' || user?.role === 'Trustee';
+
   const [activeTab, setActiveTab] = useState('create'); // 'create' or 'history'
   
   const [formData, setFormData] = useState({
@@ -14,7 +19,9 @@ const NoticeGenerator = () => {
     subject: '',
     noticeContent: '',
     outwardNo: '',
-    date: new Date().toISOString().split('T')[0]
+    date: new Date().toISOString().split('T')[0],
+    signatoryTitle: 'सचिव',
+    customSignatoryTitle: ''
   });
   
   const [generating, setGenerating] = useState(false);
@@ -132,7 +139,30 @@ const NoticeGenerator = () => {
 
                 <div className="shrink-0">
                   <label className="block text-sm font-bold text-gray-700 mb-1">Subject (विषय)</label>
-                  <input type="text" required value={formData.subject} onChange={(e) => setFormData({...formData, subject: e.target.value})} className="w-full border border-gray-200 rounded-lg p-2.5 focus:ring-2 focus:ring-[#be1e4d] focus:outline-none" placeholder="Enter notice subject" />
+                  <input type="text" required value={formData.subject} onChange={(e) => setFormData({...formData, subject: e.target.value})} className="w-full border border-gray-200 rounded-lg p-2.5 focus:ring-2 focus:ring-[#be1e4d] focus:outline-none text-sm" placeholder="Enter notice subject" />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 shrink-0">
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-1">Signatory Title (सही पद)</label>
+                    <select 
+                      value={formData.signatoryTitle} 
+                      onChange={(e) => setFormData({...formData, signatoryTitle: e.target.value})}
+                      className="w-full border border-gray-200 rounded-lg p-2.5 focus:ring-2 focus:ring-[#be1e4d] focus:outline-none text-sm bg-white font-semibold"
+                    >
+                      <option value="सचिव">सचिव (Secretary)</option>
+                      <option value="अध्यक्ष">अध्यक्ष (President)</option>
+                      <option value="विश्वस्त">विश्वस्त (Trustee)</option>
+                      <option value="मुख्य व्यवस्थापक">मुख्य व्यवस्थापक (Chief Manager)</option>
+                      <option value="Custom">इतर (Custom Title)</option>
+                    </select>
+                  </div>
+                  {formData.signatoryTitle === 'Custom' && (
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 mb-1">Custom Title (इतर पद)</label>
+                      <input type="text" required value={formData.customSignatoryTitle} onChange={(e) => setFormData({...formData, customSignatoryTitle: e.target.value})} className="w-full border border-gray-200 rounded-lg p-2.5 focus:ring-2 focus:ring-[#be1e4d] focus:outline-none text-sm" placeholder="e.g. सह-सचिव" />
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex flex-col">
@@ -226,7 +256,7 @@ const NoticeGenerator = () => {
                     <div className="text-[13pt] text-gray-900 leading-relaxed text-justify flex-1 prose min-h-[300px]" dangerouslySetInnerHTML={{ __html: formData.noticeContent }} />
 
                     <div className="absolute bottom-10 right-10 text-center text-[#002366] text-[12pt] font-bold leading-snug">
-                      <div>सचिव</div>
+                      <div>{formData.signatoryTitle === 'Custom' ? (formData.customSignatoryTitle || 'सचिव') : formData.signatoryTitle}</div>
                       <div>श्री गुरुमुर्ती रुद्रपशुपती</div>
                       <div>लिंगायत मठ</div>
                     </div>

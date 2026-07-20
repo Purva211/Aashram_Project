@@ -32,10 +32,8 @@ const ReceiptHistory = ({ defaultCategory = 'All', hideTitle = false, hideCatego
 
   const [showFilters, setShowFilters] = useState(false);
 
-  let categories = ['All', 'Notice', 'Jama Pavti', 'Branch Pavti', 'Dengi Pavti', 'Donation', 'Branch Donation', 'Annadan', 'Prasad', 'Payment', 'Expense'];
-  if (user?.role === 'Accountant') {
-    categories = ['All', 'Jama Pavti', 'Branch Pavti', 'Dengi Pavti'];
-  } else if (user?.role === 'BranchManager') {
+  let categories = ['All', 'Jama Pavti', 'Branch Pavti', 'Dengi Pavti', 'Notice'];
+  if (user?.role === 'BranchManager') {
     categories = ['All', 'Branch Donation', 'Annadan', 'Prasad'];
   }
   
