@@ -30,43 +30,74 @@ exports.login = async (req, res) => {
       return res.status(400).json({ success: false, message: "Role and password are required" });
     }
 
+    const inputStr = (email || username || managerId || "").trim();
+    const inputRegex = inputStr ? new RegExp(`^${inputStr.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') : null;
+
     switch (role) {
       case "Admin":
-        user = await Admin.findOne({ email });
+        user = await Admin.findOne({
+          $or: [{ email: inputRegex }, { name: inputRegex }, { mobile: inputStr }]
+        });
         break;
       case "Trustee":
-        user = await Trustee.findOne({ email });
+        user = await Trustee.findOne({
+          $or: [{ email: inputRegex }, { name: inputRegex }, { mobile: inputStr }]
+        });
         break;
       case "Devotee":
-        user = await Devotee.findOne({ email });
+        user = await Devotee.findOne({
+          $or: [{ email: inputRegex }, { mobile: inputStr }]
+        });
         if (user && !user.isVerified) {
           return res.status(401).json({ success: false, message: "Please verify your email first", isVerified: false });
         }
         break;
       case "BranchManager":
-        user = await BranchManager.findOne({ managerId, branch: branchId }); // BM uses managerId + branchId
+        if (managerId && branchId) {
+          user = await BranchManager.findOne({ managerId: managerId.trim(), branch: branchId });
+        }
+        if (!user && inputStr) {
+          user = await BranchManager.findOne({
+            $or: [{ email: inputRegex }, { managerId: inputStr }, { name: inputRegex }, { mobile: inputStr }]
+          });
+        }
         break;
       case "Accountant":
-        user = await Accountant.findOne({ email });
+        user = await Accountant.findOne({
+          $or: [{ email: inputRegex }, { phone: inputStr }, { fullName: inputRegex }]
+        });
         if (user && user.accountStatus !== "active") {
           return res.status(401).json({ success: false, message: "Account is inactive" });
         }
         break;
       case "DocumentHandler":
       case "document_admin":
-        user = await DocumentAdmin.findOne({ email });
+        user = await DocumentAdmin.findOne({
+          $or: [{ email: inputRegex }, { name: inputRegex }, { contactNo: inputStr }]
+        });
         break;
       default:
         return res.status(400).json({ success: false, message: "Invalid role specified" });
     }
 
     if (!user) {
-      return res.status(401).json({ success: false, message: "Invalid credentials" });
+      return res.status(401).json({ success: false, message: "Invalid email or password" });
     }
 
-    const isMatch = await user.matchPassword(password);
+    let isMatch = false;
+    if (typeof user.matchPassword === 'function') {
+      isMatch = await user.matchPassword(password);
+    }
+
+    // Self-healing migration fallback for legacy unhashed plain-text passwords stored via findByIdAndUpdate
+    if (!isMatch && user.password === password) {
+      isMatch = true;
+      user.password = password; // Triggers Mongoose pre-save hook to hash password
+      await user.save();
+    }
+
     if (!isMatch) {
-      return res.status(401).json({ success: false, message: "Invalid credentials" });
+      return res.status(401).json({ success: false, message: "Invalid email or password" });
     }
 
     token = generateToken(user._id, role);

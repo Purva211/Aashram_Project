@@ -94,27 +94,21 @@ exports.updateDocument = async (req, res) => {
 
     const { title, description, category } = req.body;
 
-    if (title) document.title = title;
-    if (description) document.description = description;
-    if (category) document.category = category;
-    // We no longer allow changing the branch during update
-    // document.branch is strictly bound to req.user.branch
+    const pending = {
+      title: title || document.title,
+      description: description || document.description,
+      category: category || document.category,
+      pdfName: req.file ? req.file.originalname : document.pdfName,
+      pdfUrl: req.file ? req.file.path : document.pdfUrl,
+      fileSize: req.file ? req.file.size : document.fileSize,
+      updatedAt: new Date()
+    };
 
-    if (req.file) {
-      // Delete old file if it was a local file
-      const oldFilePath = path.join(__dirname, "..", document.pdfUrl);
-      if (fs.existsSync(oldFilePath)) {
-        fs.unlinkSync(oldFilePath);
-      }
-
-      // Update with new file
-      document.pdfName = req.file.originalname;
-      document.pdfUrl = req.file.path;
-      document.fileSize = req.file.size;
-    }
-
+    document.pendingUpdates = pending;
+    document.status = "Pending";
     await document.save();
-    res.json({ success: true, document });
+
+    res.json({ success: true, message: "Update request submitted to Trust panel for approval.", document });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

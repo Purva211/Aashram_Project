@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
 
+const getStaticAssetPath = (path) => {
+  if (!path) return '';
+  if (path.startsWith('http://') || path.startsWith('https://')) return path;
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  if (typeof window !== 'undefined' && window.location && window.location.origin) {
+    return `${window.location.origin}${cleanPath}`;
+  }
+  return cleanPath;
+};
+
 // Helper to convert number to Marathi words
 function convertNumberToMarathiWords(amount) {
   if (amount === 0) return "शून्य";
@@ -483,7 +493,7 @@ const Receipt = ({ donation, isUserSide = true }) => {
           <div style={{ padding: '8px 14px 0 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', boxSizing: 'border-box' }}>
             {/* Left Swamiji */}
             <div className="swamiji-photo-frame">
-              <img src="/guru_swamiji.png" alt="Guru Swamiji" className="swamiji-photo" />
+              <img src={getStaticAssetPath("/guru_swamiji.png")} alt="Guru Swamiji" className="swamiji-photo" onError={(e) => { e.target.onerror = null; e.target.src = "/guru_swamiji.png"; }} />
             </div>
 
             {/* Middle Header Text */}
@@ -517,7 +527,7 @@ const Receipt = ({ donation, isUserSide = true }) => {
 
             {/* Right Swamiji */}
             <div className="swamiji-photo-frame">
-              <img src="/current_swamiji.png" alt="Current Swamiji" className="swamiji-photo" />
+              <img src={getStaticAssetPath("/current_swamiji.png")} alt="Current Swamiji" className="swamiji-photo" onError={(e) => { e.target.onerror = null; e.target.src = "/current_swamiji.png"; }} />
             </div>
           </div>
 
@@ -593,7 +603,7 @@ const Receipt = ({ donation, isUserSide = true }) => {
             
             {/* Thank You Logo & Text */}
             <div className="thankyou-container">
-              <img src="/shiva_linga_logo.png" alt="Shiva Linga" className="thankyou-logo" />
+              <img src={getStaticAssetPath("/shiva_linga_logo.png")} alt="Shiva Linga" className="thankyou-logo" onError={(e) => { e.target.onerror = null; e.target.src = "/shiva_linga_logo.png"; }} />
               <span className="thankyou-text">{t.thankYou}</span>
             </div>
 
@@ -613,7 +623,7 @@ const Receipt = ({ donation, isUserSide = true }) => {
         <div className="receipt-container">
           <div className="receipt-inner">
             {/* Watermark Logo */}
-            <img src="/logo.png" alt="watermark" className="watermark-logo" />
+            <img src={getStaticAssetPath("/logo.png")} alt="watermark" className="watermark-logo" onError={(e) => { e.target.onerror = null; e.target.src = "/logo.png"; }} />
 
             <div className="header">
               <div className="title-main">{t.title}</div>

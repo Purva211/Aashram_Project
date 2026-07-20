@@ -149,14 +149,25 @@ exports.updateTrustee = async (req, res) => {
     if (permissions && typeof permissions === 'string') {
       try { permissions = JSON.parse(permissions); } catch(e){}
     }
-    
-    const updateData = { name, email, mobile, designation, address, systemRole, permissions, status };
-    if (password) {
-      updateData.password = password; // In a real app this should be hashed if handled here, but Schema usually handles it
+
+    const trustee = await Trustee.findById(req.params.id);
+    if (!trustee) return res.status(404).json({ success: false, message: "Trustee not found" });
+
+    if (name) trustee.name = name;
+    if (email) trustee.email = email;
+    if (mobile) trustee.mobile = mobile;
+    if (designation) trustee.designation = designation;
+    if (address) trustee.address = address;
+    if (systemRole) trustee.systemRole = systemRole;
+    if (permissions) trustee.permissions = permissions;
+    if (status) trustee.status = status;
+    if (req.file) trustee.profilePhoto = `/uploads/${req.file.filename}`;
+
+    if (password && password.trim() !== "") {
+      trustee.password = password; // Triggers pre-save hook to hash password
     }
 
-    const trustee = await Trustee.findByIdAndUpdate(req.params.id, updateData, { returnDocument: 'after' });
-    if (!trustee) return res.status(404).json({ success: false, message: "Trustee not found" });
+    await trustee.save();
 
     const response = trustee.toObject();
     delete response.password;

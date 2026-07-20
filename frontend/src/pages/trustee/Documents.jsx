@@ -34,6 +34,8 @@ const Documents = () => {
   const categories = [...new Set(documents.map(d => d.category))].filter(Boolean);
   const branches = [...new Set(documents.map(d => d.branch?.name))].filter(Boolean);
 
+  const [pendingDocs, setPendingDocs] = useState([]);
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -41,16 +43,28 @@ const Documents = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [docsRes, reqsRes] = await Promise.all([
+      const [docsRes, reqsRes, pendingRes] = await Promise.all([
         api.get('/trustees/documents'),
-        api.get('/trustees/documents/deletion-requests')
+        api.get('/trustees/documents/deletion-requests'),
+        api.get('/trustees/documents/pending')
       ]);
       setDocuments(docsRes.data.documents || docsRes.data.data || []);
       setDeletionRequests(reqsRes.data.data || []);
+      setPendingDocs(pendingRes.data.data || pendingRes.data.documents || []);
     } catch (error) {
       console.error("Failed to fetch documents data", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleReviewDoc = async (id, status) => {
+    if (!window.confirm(`Are you sure you want to ${status.toLowerCase()} this document request?`)) return;
+    try {
+      await api.put(`/trustees/documents/${id}/review`, { status });
+      fetchData();
+    } catch (error) {
+      alert("Error reviewing document.");
     }
   };
 
@@ -75,19 +89,30 @@ const Documents = () => {
             <FiFileText className="text-saffron-500" /> Document Management
             {!hasManage && <span className="bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full shadow-sm ml-4 font-sans inline-block align-middle">View Only Access</span>}
           </h1>
-          <p className="text-gray-500 mt-1">View documents and manage deletion requests.</p>
+          <p className="text-gray-500 mt-1">View documents, review pending additions/edits, and manage deletion requests.</p>
         </div>
         
         <div className="flex bg-gray-100 p-1 rounded-lg w-full sm:w-auto">
           <button 
             onClick={() => setActiveTab('all')} 
-            className={`flex-1 sm:flex-none px-6 py-2 rounded-md font-bold text-sm transition-all ${activeTab === 'all' ? 'bg-white shadow-sm text-deepblue-900' : 'text-gray-500 hover:text-gray-700'}`}
+            className={`flex-1 sm:flex-none px-4 py-2 rounded-md font-bold text-sm transition-all ${activeTab === 'all' ? 'bg-white shadow-sm text-deepblue-900' : 'text-gray-500 hover:text-gray-700'}`}
           >
             All Documents
           </button>
           <button 
+            onClick={() => setActiveTab('pending')} 
+            className={`flex-1 sm:flex-none px-4 py-2 rounded-md font-bold text-sm transition-all relative ${activeTab === 'pending' ? 'bg-white shadow-sm text-deepblue-900' : 'text-gray-500 hover:text-gray-700'}`}
+          >
+            Pending Approvals
+            {pendingDocs.length > 0 && (
+              <span className="absolute -top-2 -right-2 bg-amber-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold shadow-sm">
+                {pendingDocs.length}
+              </span>
+            )}
+          </button>
+          <button 
             onClick={() => setActiveTab('requests')} 
-            className={`flex-1 sm:flex-none px-6 py-2 rounded-md font-bold text-sm transition-all relative ${activeTab === 'requests' ? 'bg-white shadow-sm text-deepblue-900' : 'text-gray-500 hover:text-gray-700'}`}
+            className={`flex-1 sm:flex-none px-4 py-2 rounded-md font-bold text-sm transition-all relative ${activeTab === 'requests' ? 'bg-white shadow-sm text-deepblue-900' : 'text-gray-500 hover:text-gray-700'}`}
           >
             Deletion Requests
             {deletionRequests.length > 0 && (
@@ -202,6 +227,61 @@ const Documents = () => {
                 <p className="text-gray-500 font-medium">No documents found matching your criteria.</p>
               </div>
             )}
+          </div>
+        )}
+
+        {activeTab === 'pending' && (
+          <div className="md:bg-white md:rounded-2xl md:shadow-sm md:border border-gray-100 overflow-hidden relative z-10">
+            <div className="w-full overflow-hidden">
+              <table className="w-full text-left text-sm text-gray-500 block md:table">
+                <thead className="text-xs text-gray-400 uppercase bg-gray-50 hidden md:table-header-group border-b border-gray-100">
+                  <tr>
+                    <th className="p-4 md:p-6 font-semibold">Document Title</th>
+                    <th className="p-4 md:p-6 font-semibold">Category / Branch</th>
+                    <th className="p-4 md:p-6 font-semibold">Uploaded By</th>
+                    <th className="p-4 md:p-6 font-semibold text-center">Status</th>
+                    <th className="p-4 md:p-6 font-semibold text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="block md:table-row-group w-full divide-y divide-gray-100">
+                  {pendingDocs.map((doc) => (
+                    <tr className="flex flex-col md:table-row w-full bg-white md:bg-transparent border border-gray-100 md:border-b md:border-x-0 md:border-t-0 md:border-gray-50 rounded-xl md:rounded-none mb-4 md:mb-0 shadow-sm md:shadow-none hover:bg-gray-50/50" key={doc._id}>
+                      <td className="p-3 md:p-6 flex flex-col md:table-cell w-full border-b border-gray-50 md:border-none">
+                        <div className="font-bold text-gray-800 text-lg md:text-base flex items-center gap-3">
+                          <FiFileText className="text-amber-500 shrink-0" /> <span className="break-words whitespace-normal">{doc.pendingUpdates?.title || doc.title}</span>
+                        </div>
+                        {doc.pendingUpdates && <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold mt-1 inline-block">Update Request</span>}
+                      </td>
+                      <td className="hidden md:table-cell p-4 md:p-6">
+                        <span className="font-semibold text-gray-700 block">{doc.pendingUpdates?.category || doc.category}</span>
+                        <span className="text-xs text-gray-400">{doc.branch?.name || 'Main Math'}</span>
+                      </td>
+                      <td className="hidden md:table-cell p-4 md:p-6">
+                        <span className="font-semibold text-gray-700">{doc.uploadedBy?.username || 'Document Handler'}</span>
+                      </td>
+                      <td className="hidden md:table-cell p-4 md:p-6 md:text-center">
+                        <span className="px-2 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded-md uppercase tracking-wider">{doc.status}</span>
+                      </td>
+                      <td className="p-3 md:p-6 md:text-right flex flex-col md:table-cell w-full bg-gray-50 md:bg-transparent rounded-b-xl md:rounded-none">
+                        <div className="flex justify-between items-center w-full">
+                          <span className="md:hidden text-xs text-gray-500 uppercase tracking-wider font-semibold px-1">Actions</span>
+                          <div className="flex flex-wrap items-center md:justify-end gap-2 w-full md:w-auto">
+                            <a href={`${import.meta.env.VITE_ASSETS_URL || 'http://localhost:5000'}${doc.pendingUpdates?.pdfUrl || doc.pdfUrl}`} target="_blank" rel="noopener noreferrer" className="p-2 w-10 h-10 md:w-auto md:h-auto flex items-center justify-center text-gray-500 bg-white md:bg-gray-100 border border-gray-200 md:border-none hover:bg-gray-200 rounded-lg transition-colors flex-1 md:flex-none shadow-sm md:shadow-none" title="View Document"><FiEye /></a>
+                            {hasManage && (
+                              <>
+                                <button onClick={() => handleReviewDoc(doc._id, 'Approved')} className="px-3 py-2 md:py-1.5 bg-white md:bg-green-500 border border-gray-200 md:border-none hover:bg-green-50 hover:border-green-200 md:hover:bg-green-600 text-green-600 md:text-white rounded-lg transition-colors flex items-center justify-center gap-1 font-bold text-xs flex-1 md:flex-none shadow-sm md:shadow-none h-10 md:h-auto"><FiCheck /> Approve</button>
+                                <button onClick={() => handleReviewDoc(doc._id, 'Rejected')} className="px-3 py-2 md:py-1.5 bg-white md:bg-red-500 border border-gray-200 md:border-none hover:bg-red-50 hover:border-red-200 md:hover:bg-red-600 text-red-600 md:text-white rounded-lg transition-colors flex items-center justify-center gap-1 font-bold text-xs flex-1 md:flex-none shadow-sm md:shadow-none h-10 md:h-auto"><FiX /> Reject</button>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  {pendingDocs.length === 0 && <tr><td colSpan="5" className="text-center py-10 text-gray-500 block md:table-cell">No pending document requests.</td></tr>}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 
