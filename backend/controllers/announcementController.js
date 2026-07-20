@@ -16,7 +16,8 @@ exports.getAllAnnouncements = async (req, res) => {
     let query = {};
 
     if (user.role === 'Admin') {
-      // Admin sees all
+      // Admin sees all created or targeted
+      query = {};
     } else {
       let targetConditions = [];
 
@@ -59,9 +60,20 @@ exports.getAllAnnouncements = async (req, res) => {
     }
 
     const announcements = await Announcement.find(query).sort({ createdAt: -1 }).lean();
-    
-    // Attach read counts
     const announcementIds = announcements.map(a => a._id);
+
+    // Fetch user-specific recipient receipts to filter out dismissed items
+    const userReceipts = await AnnouncementRecipient.find({
+      userId: user._id,
+      announcementId: { $in: announcementIds }
+    });
+
+    const dismissedSet = new Set();
+    userReceipts.forEach(r => {
+      if (r.isDismissed) dismissedSet.add(r.announcementId.toString());
+    });
+
+    // Attach read counts
     const readReceipts = await AnnouncementRecipient.find({
       announcementId: { $in: announcementIds },
       readStatus: true
@@ -72,10 +84,13 @@ exports.getAllAnnouncements = async (req, res) => {
       readCounts[r.announcementId] = (readCounts[r.announcementId] || 0) + 1;
     });
 
-    const data = announcements.map(a => ({
-      ...a,
-      totalRead: readCounts[a._id] || 0
-    }));
+    const data = announcements
+      .filter(a => !dismissedSet.has(a._id.toString()))
+      .map(a => ({
+        ...a,
+        totalRead: readCounts[a._id] || 0,
+        isCreator: String(a.createdBy) === String(user._id)
+      }));
     
     res.status(200).json({ success: true, data });
   } catch (error) {
@@ -170,8 +185,9 @@ exports.updateAnnouncement = async (req, res) => {
     const announcement = await Announcement.findById(req.params.id);
     if (!announcement) return res.status(404).json({ success: false, message: 'Announcement not found' });
 
-    if (req.user.role !== 'Admin' && String(announcement.createdBy) !== String(req.user._id)) {
-      return res.status(403).json({ success: false, message: 'Unauthorized to edit this announcement' });
+    // Strict ownership check: Only creator can permanently edit
+    if (String(announcement.createdBy) !== String(req.user._id)) {
+      return res.status(403).json({ success: false, message: 'Only the original creator of this announcement is allowed to permanently edit it.' });
     }
 
     Object.assign(announcement, req.body);
@@ -239,15 +255,22 @@ exports.deleteAnnouncement = async (req, res) => {
     const announcement = await Announcement.findById(req.params.id);
     if (!announcement) return res.status(404).json({ success: false, message: "Announcement not found" });
 
-    // Permissions check
-    if (req.user.role !== 'Admin' && String(announcement.createdBy) !== String(req.user._id)) {
-      return res.status(403).json({ success: false, message: "Unauthorized to delete this announcement" });
-    }
+    const isCreator = String(announcement.createdBy) === String(req.user._id);
 
-    await Announcement.findByIdAndDelete(req.params.id);
-    await AnnouncementRecipient.deleteMany({ announcementId: req.params.id });
-    
-    res.status(200).json({ success: true, message: "Announcement deleted successfully" });
+    if (isCreator) {
+      // Creator can permanently delete the announcement from system DB
+      await Announcement.findByIdAndDelete(req.params.id);
+      await AnnouncementRecipient.deleteMany({ announcementId: req.params.id });
+      return res.status(200).json({ success: true, message: "Announcement permanently deleted from system" });
+    } else {
+      // Non-creator: remove (hide) announcement ONLY from their own dashboard view
+      await AnnouncementRecipient.findOneAndUpdate(
+        { announcementId: req.params.id, userId: req.user._id },
+        { isDismissed: true },
+        { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true }
+      );
+      return res.status(200).json({ success: true, message: "Announcement removed from your dashboard view", dismissedFromView: true });
+    }
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

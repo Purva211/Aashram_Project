@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const initAuth = async () => {
-      const token = sessionStorage.getItem("token");
+      const token = localStorage.getItem("token") || sessionStorage.getItem("token") || localStorage.getItem("documentAdminToken") || sessionStorage.getItem("documentAdminToken");
       if (token) {
         try {
           api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
@@ -21,6 +21,9 @@ export const AuthProvider = ({ children }) => {
         } catch (error) {
           console.error("Token verification failed:", error);
           sessionStorage.removeItem("token");
+          localStorage.removeItem("token");
+          sessionStorage.removeItem("documentAdminToken");
+          localStorage.removeItem("documentAdminToken");
           delete api.defaults.headers.common["Authorization"];
         }
       }
@@ -32,12 +35,12 @@ export const AuthProvider = ({ children }) => {
 
   const login = (token, userData) => {
     sessionStorage.setItem("token", token);
+    localStorage.setItem("token", token);
     api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     setUser(userData);
   };
 
   const logout = async () => {
-
     sessionStorage.clear();
     localStorage.removeItem("token");
     localStorage.removeItem("documentAdminToken");

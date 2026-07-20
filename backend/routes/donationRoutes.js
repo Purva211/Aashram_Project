@@ -8,6 +8,7 @@ const checkPermission = require("../middleware/permissionMiddleware");
 
 // Public route to verify receipts
 router.get("/verify/:receiptNumber", donationController.verifyReceipt);
+router.get("/verify-receipt/:receiptNumber", donationController.verifyReceipt);
 
 // User creating a donation (can be public or authenticated, let's assume public since they provide email/phone)
 router.post("/create", optionalAuthMiddleware, upload.single("screenshot"), donationController.createDonation);

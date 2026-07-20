@@ -191,9 +191,11 @@ const ManageGallery = () => {
               
               <div className="relative h-40 md:h-56 overflow-hidden shrink-0 bg-gray-100 flex items-center justify-center">
                 {item.type === 'video' ? (
-                  <div className="absolute inset-0 bg-gray-900 flex items-center justify-center group-hover:scale-105 transition-transform duration-700">
-                    <FaVideo className="text-4xl md:text-5xl text-gray-600" />
-                  </div>
+                  item.url && (item.url.includes('youtube.com') || item.url.includes('youtu.be')) ? (
+                    <iframe src={item.url.replace("watch?v=", "embed/").replace("youtu.be/", "youtube.com/embed/")} className="w-full h-full object-cover pointer-events-none" />
+                  ) : (
+                    <video src={getImageUrl(item.url)} className="w-full h-full object-cover" muted preload="metadata" />
+                  )
                 ) : (
                   <img src={getImageUrl(item.url)} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                 )}

@@ -265,8 +265,11 @@ const Announcements = () => {
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (id) => {
-    if(window.confirm("Delete this announcement permanently?")) {
+  const handleDelete = async (id, isCreator) => {
+    const confirmMessage = isCreator
+      ? "Are you sure you want to PERMANENTLY DELETE this announcement from the system?"
+      : "Remove this announcement from your dashboard view?";
+    if (window.confirm(confirmMessage)) {
       try {
         await api.delete(`/announcements/${id}`);
         fetchAnnouncements();
@@ -439,8 +442,16 @@ const Announcements = () => {
                         </div>
                         
                         <div className="flex items-center gap-2">
-                          <button onClick={() => handleEdit(ann)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors" title="Edit"><FiEdit2 size={16} /></button>
-                          <button onClick={() => handleDelete(ann._id)} className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-full transition-colors" title="Delete"><FiTrash2 size={16} /></button>
+                          {(ann.isCreator || String(ann.createdBy?._id || ann.createdBy) === String(user?._id)) && (
+                            <button onClick={() => handleEdit(ann)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors" title="Permanently Edit Announcement"><FiEdit2 size={16} /></button>
+                          )}
+                          <button 
+                            onClick={() => handleDelete(ann._id, ann.isCreator || String(ann.createdBy?._id || ann.createdBy) === String(user?._id))} 
+                            className={`p-2 rounded-full transition-colors ${ann.isCreator || String(ann.createdBy?._id || ann.createdBy) === String(user?._id) ? 'text-slate-400 hover:text-rose-600 hover:bg-rose-50' : 'text-slate-400 hover:text-amber-600 hover:bg-amber-50'}`} 
+                            title={ann.isCreator || String(ann.createdBy?._id || ann.createdBy) === String(user?._id) ? "Permanently Delete from System" : "Remove from My View"}
+                          >
+                            <FiTrash2 size={16} />
+                          </button>
                         </div>
                       </div>
 

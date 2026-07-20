@@ -126,6 +126,7 @@ const RoleProtectedRoute = ({ children, allowedRoles }) => {
     if (user.role === 'Devotee') return <Navigate to="/devotee/dashboard" />;
     if (user.role === 'BranchManager') return <Navigate to="/branch/dashboard" />;
     if (user.role === 'Accountant') return <Navigate to="/accountant/dashboard" />;
+    if (user.role === 'DocumentHandler' || user.role === 'document_admin') return <Navigate to="/document-handler/dashboard" />;
     return <Navigate to="/" />;
   }
 

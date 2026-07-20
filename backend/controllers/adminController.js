@@ -316,3 +316,54 @@ exports.getAllDocuments = async (req, res) => {
 
 
 exports.getAllAdmins = async (req, res) => { try { const admins = await require('../models/Admin').find().select('-password'); res.json({ success: true, data: admins }); } catch (err) { res.status(500).json({ success: false }); } };
+
+// Update Admin Profile
+exports.updateProfile = async (req, res) => {
+  try {
+    const admin = await Admin.findById(req.user._id);
+    if (!admin) return res.status(404).json({ success: false, message: "Admin not found" });
+
+    if (req.body.name) admin.name = req.body.name;
+    if (req.body.mobile !== undefined) admin.mobile = req.body.mobile;
+    if (req.body.address !== undefined) admin.address = req.body.address;
+    if (req.file) admin.profilePhoto = req.file.path;
+
+    await admin.save();
+
+    const responseData = admin.toObject();
+    delete responseData.password;
+
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      data: responseData
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// Update Admin Password
+exports.updatePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const admin = await Admin.findById(req.user._id);
+    if (!admin) return res.status(404).json({ success: false, message: "Admin not found" });
+
+    const isMatch = await admin.matchPassword(currentPassword);
+    if (!isMatch) {
+      return res.status(400).json({ success: false, message: "Incorrect current password" });
+    }
+
+    admin.password = newPassword;
+    await admin.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Password updated successfully"
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
