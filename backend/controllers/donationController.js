@@ -482,6 +482,7 @@ exports.verifyReceipt = async (req, res) => {
 exports.downloadReceipt = async (req, res) => {
   try {
     const { id } = req.params;
+    const { disposition } = req.query;
     const donation = await Donation.findById(id);
 
     if (!donation) {
@@ -493,7 +494,7 @@ exports.downloadReceipt = async (req, res) => {
     }
 
     // Branch Managers should only access their branch's receipts
-    if (req.user.role === "BranchManager" && donation.branchId && donation.branchId.toString() !== req.user.branch.toString()) {
+    if (req.user.role === "BranchManager" && donation.branchId && donation.branchId.toString() !== req.user.branch?.toString()) {
       return res.status(403).json({ success: false, message: "Unauthorized to access this receipt." });
     }
 
@@ -503,8 +504,9 @@ exports.downloadReceipt = async (req, res) => {
 
     const pdfBuffer = await generateReceiptPdf(donation);
 
+    const isInline = disposition === 'inline';
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename=Donation_Receipt_${donation.receiptNumber || donation.donationReference}.pdf`);
+    res.setHeader("Content-Disposition", `${isInline ? 'inline' : 'attachment'}; filename=Donation_Receipt_${donation.receiptNumber || donation.donationReference}.pdf`);
     return res.send(pdfBuffer);
   } catch (err) {
     console.error("[donationController][ERROR] downloadReceipt:", err.message);

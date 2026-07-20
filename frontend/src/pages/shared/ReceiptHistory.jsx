@@ -119,7 +119,8 @@ const ReceiptHistory = ({ defaultCategory = 'All', hideTitle = false, hideCatego
     if (receipt.pdfUrl.startsWith('/api')) {
       const toastId = toast.loading("Loading document...");
       try {
-        const fetchUrl = receipt.pdfUrl.replace('/api', '');
+        const baseUrl = receipt.pdfUrl.replace('/api', '');
+        const fetchUrl = baseUrl + (baseUrl.includes('?') ? '&disposition=inline' : '?disposition=inline');
         const response = await api.get(fetchUrl, { responseType: 'blob' });
         const blob = new Blob([response.data], { type: 'application/pdf' });
         const url = window.URL.createObjectURL(blob);
