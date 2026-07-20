@@ -126,26 +126,28 @@ const Donations = () => {
           </h1>
           <p className="text-slate-600 font-medium text-sm mt-1">Track financial contributions and generate reports.</p>
         </div>
-        <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-          <div className="relative w-full sm:w-auto">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
+          <div className="relative w-full sm:w-64">
             <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input 
               type="text" 
               placeholder="Search donations..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 w-full sm:w-48 lg:w-full sm:w-64 shadow-sm transition-all"
+              className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 w-full shadow-sm transition-all"
             />
           </div>
-          <button onClick={() => setShowFilters(!showFilters)} className={`flex-1 sm:flex-none justify-center flex items-center gap-2 px-4 py-2 bg-white border ${showFilters ? 'border-emerald-500 text-emerald-600' : 'border-gray-200 text-gray-700'} hover:bg-gray-50 rounded-xl text-sm font-bold shadow-sm transition-colors`}>
-            <FiFilter /> Filter
-          </button>
-          <button onClick={handleExport} className="flex-1 sm:flex-none justify-center flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-black text-white rounded-xl text-sm font-black shadow-md transition-colors">
-            <FiDownload /> Export
-          </button>
-          <button onClick={handleGenerateReport} className="flex-1 sm:flex-none justify-center flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-black shadow-md transition-colors">
-            <FiDownload /> Report
-          </button>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <button onClick={() => setShowFilters(!showFilters)} className={`flex-1 sm:flex-none justify-center flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-black hover:bg-gray-100 rounded-xl text-sm font-black transition-colors shadow-sm`}>
+              <FiFilter /> Filter
+            </button>
+            <button onClick={handleExport} className="flex-1 sm:flex-none justify-center flex items-center gap-2 px-4 py-2.5 bg-gray-900 hover:bg-slate-900 text-white rounded-xl text-sm font-black shadow-md transition-colors">
+              <FiDownload /> Export
+            </button>
+            <button onClick={handleGenerateReport} className="flex-1 sm:flex-none justify-center flex items-center gap-2 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-black shadow-md transition-colors">
+              <FiDownload /> Report
+            </button>
+          </div>
         </div>
       </div>
 
@@ -239,9 +241,9 @@ const Donations = () => {
       )}
 
       {/* Table */}
-      <div className="md:bg-white md:border md:border-gray-100 md:shadow-sm md:rounded-2xl overflow-hidden relative z-10">
-        <div className="w-full overflow-hidden">
-          <table className="w-full text-left block md:table">
+      <div className="md:bg-white md:border md:border-gray-100 md:shadow-sm md:rounded-2xl overflow-hidden flex flex-col md:border-t-4 md:border-t-emerald-500">
+        <div className="table-responsive-wrapper">
+          <table className="w-full text-left border-collapse md:min-w-[900px] block md:table">
             <thead className="hidden md:table-header-group">
               <tr className="bg-slate-100 border-b border-slate-200 text-xs uppercase tracking-wider text-slate-700">
                 <th className="p-4 md:p-6 font-bold cursor-pointer hover:bg-slate-200 transition-colors" onClick={() => handleSort('donorName')}>

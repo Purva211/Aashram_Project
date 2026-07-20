@@ -187,11 +187,11 @@ const Annadaan = () => {
 
             <div className="flex flex-col sm:flex-row gap-4 no-print relative z-20">
               <button 
-                onClick={() => setBookingDetails(null)}
+                onClick={() => { setBookingDetails(null); navigate('/devotee/annadaan'); }}
                 className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-mahakal-saffron to-amber-500 text-white px-6 py-4 rounded-xl hover:from-orange-600 hover:to-orange-400 transition-all font-bold shadow-lg hover:-translate-y-1"
               >
                 <FaPrayingHands />
-                Go to Dashboard
+                Go to My Dashboard
               </button>
             </div>
           </motion.div>
