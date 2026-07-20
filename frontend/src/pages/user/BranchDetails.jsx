@@ -181,6 +181,7 @@ const BranchDetails = () => {
                           <div className="w-12 h-12 shrink-0 rounded-lg overflow-hidden bg-white shadow-sm relative">
                             <img 
                               src={event.featuredImage || 'https://via.placeholder.com/100'} 
+                              onError={(e) => { e.target.src = "/about_images/kolekar_real_1.jpg"; }}
                               className="w-full h-full object-cover object-top" 
                               alt="" 
                             />

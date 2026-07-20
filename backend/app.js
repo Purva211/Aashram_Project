@@ -15,16 +15,40 @@ app.use(cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use("/uploads", express.static(path.join(__dirname, "uploads"), {
-  setHeaders: (res, filePath) => {
-    if (filePath.endsWith('.mp4')) {
-      res.set('Accept-Ranges', 'bytes');
-      res.set('Content-Type', 'video/mp4');
-      // Optional: Prevent caching issues with Safari/Chrome on local dev
-      res.set('Cache-Control', 'no-cache');
-    }
+const fs = require("fs");
+app.use("/uploads", (req, res, next) => {
+  const localFilePath = path.join(__dirname, "uploads", req.path);
+  
+  // 1. If file exists locally, serve it statically
+  if (fs.existsSync(localFilePath) && fs.lstatSync(localFilePath).isFile()) {
+    return express.static(path.join(__dirname, "uploads"), {
+      setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.mp4')) {
+          res.set('Accept-Ranges', 'bytes');
+          res.set('Content-Type', 'video/mp4');
+          res.set('Cache-Control', 'no-cache');
+        }
+      }
+    })(req, res, next);
   }
-}));
+  
+  // 2. Otherwise redirect to Cloudinary
+  const relativePath = req.path.replace(/^\//, "");
+  const ext = path.extname(relativePath).toLowerCase();
+  
+  let resourceType = "image";
+  if ([".mp4", ".webm", ".mov", ".avi", ".mkv", ".mp3", ".wav", ".aac", ".ogg", ".flac", ".m4a"].includes(ext)) {
+    resourceType = "video";
+  } else if ([".pdf", ".vtt", ".docx", ".doc", ".xls", ".xlsx"].includes(ext)) {
+    resourceType = "raw";
+  }
+  
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME || "dkciljoot";
+  const cloudinaryUrl = `https://res.cloudinary.com/${cloudName}/${resourceType}/upload/aashram_uploads/${relativePath}`;
+  
+  res.redirect(cloudinaryUrl);
+});
+
 
 // Default auth routes
 app.use("/api/auth", require("./routes/authRoutes"));

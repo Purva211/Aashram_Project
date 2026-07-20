@@ -210,6 +210,7 @@ const Gallery = () => {
                       <img 
                         src={getImageUrl(image.url)} 
                         alt={image.title} 
+                        onError={(e) => { e.target.src = "/about_images/kolekar_real_1.jpg"; }}
                         className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-[1.5s] ease-out"
                         loading="lazy"
                       />

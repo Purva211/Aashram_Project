@@ -10,9 +10,8 @@ exports.createDocument = async (req, res) => {
 
     const { title, description, category } = req.body;
     
-    // Create URL path for database
-    // Path will be like /uploads/documents/doc-123.pdf
-    const fileUrl = `/uploads/documents/${req.file.filename}`;
+    // Create URL path for database (Cloudinary URL)
+    const fileUrl = req.file.path;
 
     const document = new Document({
       title,
@@ -28,10 +27,6 @@ exports.createDocument = async (req, res) => {
     await document.save();
     res.status(201).json({ success: true, document });
   } catch (error) {
-    // If error occurs, remove the uploaded file to prevent orphans
-    if (req.file) {
-      fs.unlinkSync(req.file.path);
-    }
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -94,7 +89,6 @@ exports.updateDocument = async (req, res) => {
   try {
     const document = await Document.findOne({ _id: req.params.id });
     if (!document) {
-      if (req.file) fs.unlinkSync(req.file.path);
       return res.status(404).json({ success: false, message: "Document not found" });
     }
 
@@ -107,7 +101,7 @@ exports.updateDocument = async (req, res) => {
     // document.branch is strictly bound to req.user.branch
 
     if (req.file) {
-      // Delete old file
+      // Delete old file if it was a local file
       const oldFilePath = path.join(__dirname, "..", document.pdfUrl);
       if (fs.existsSync(oldFilePath)) {
         fs.unlinkSync(oldFilePath);
@@ -115,14 +109,13 @@ exports.updateDocument = async (req, res) => {
 
       // Update with new file
       document.pdfName = req.file.originalname;
-      document.pdfUrl = `/uploads/documents/${req.file.filename}`;
+      document.pdfUrl = req.file.path;
       document.fileSize = req.file.size;
     }
 
     await document.save();
     res.json({ success: true, document });
   } catch (error) {
-    if (req.file) fs.unlinkSync(req.file.path);
     res.status(500).json({ success: false, message: error.message });
   }
 };

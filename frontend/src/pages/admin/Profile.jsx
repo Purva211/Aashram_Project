@@ -91,7 +91,7 @@ const AdminProfile = () => {
         address: user.address || ''
       });
       if (user.profilePhoto) {
-        setImagePreview(`${API_URL}${user.profilePhoto}`);
+        setImagePreview(user.profilePhoto.startsWith('http') ? user.profilePhoto : `${API_URL}${user.profilePhoto.startsWith('/') ? '' : '/'}${user.profilePhoto}`);
       }
     }
   }, [user]);

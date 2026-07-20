@@ -97,6 +97,7 @@ const EventDetails = () => {
                   <img 
                     src={event.featuredImage || 'https://via.placeholder.com/1200x500'} 
                     alt={event.title}
+                    onError={(e) => { e.target.src = "/about_images/kolekar_real_1.jpg"; }}
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -148,7 +149,12 @@ const EventDetails = () => {
                         className="rounded-xl overflow-hidden cursor-pointer aspect-square shadow-sm border border-gray-200 hover:shadow-md transition-shadow group"
                         onClick={() => setLightboxImg(img)}
                       >
-                        <img src={img} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Gallery" />
+                        <img 
+                          src={img} 
+                          onError={(e) => { e.target.src = "/about_images/kolekar_real_1.jpg"; }}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                          alt="Gallery" 
+                        />
                       </div>
                     ))}
                   </div>

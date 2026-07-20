@@ -35,8 +35,8 @@ const getTransporter = () => {
     maxConnections: 5,
     maxMessages: 100,
     host:   process.env.EMAIL_HOST || "smtp.gmail.com",
-    port:   parseInt(process.env.EMAIL_PORT, 10) || 587,
-    secure: process.env.EMAIL_SECURE ? process.env.EMAIL_SECURE === "true" : false,
+    port:   parseInt(process.env.EMAIL_PORT, 10) || 465,
+    secure: process.env.EMAIL_SECURE !== undefined ? process.env.EMAIL_SECURE === "true" : true,
     auth: {
       user: emailUser,
       pass: emailPass,

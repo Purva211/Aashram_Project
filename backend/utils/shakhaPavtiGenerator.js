@@ -139,9 +139,9 @@ exports.generateShakhaPavtiPdf = async (rawDonation) => {
         return '';
     };
 
-    const logoPath = path.join(__dirname, '../../frontend/src/assets/shivling.jpeg');
-    const swamijiPath = path.join(__dirname, '../../frontend/src/assets/kolekar_SP_1.jpeg');
-    const swamijiPath2 = path.join(__dirname, '../../frontend/src/assets/kolekar_SP_2.jpeg');
+    const logoPath = path.join(__dirname, '../uploads/shiva_linga_logo.png');
+    const swamijiPath = path.join(__dirname, '../uploads/guru_swamiji.png');
+    const swamijiPath2 = path.join(__dirname, '../uploads/current_swamiji.png');
     
     const logoBase64 = encodeImage(logoPath);
     const swamijiBase64 = encodeImage(swamijiPath);

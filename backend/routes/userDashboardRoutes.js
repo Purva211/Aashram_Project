@@ -19,29 +19,18 @@ const express        = require("express");
 const router         = express.Router();
 const multer         = require("multer");
 const path           = require("path");
-const fs             = require("fs");
 const authMiddleware = require("../middleware/authMiddleware");
 const controller     = require("../controllers/userDashboardController");
+const makeCloudinaryStorage = require("../utils/cloudinaryHelper");
 
-// ─── Multer config for profile photo uploads ─────────────────────────────────
 
-const profileUploadDir = path.join(__dirname, "..", "uploads", "profiles");
-
-// Ensure directory exists
-if (!fs.existsSync(profileUploadDir)) {
-  fs.mkdirSync(profileUploadDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, profileUploadDir),
-  filename: (req, file, cb) => {
-    const uniqueName = `profile_${req.user._id}_${Date.now()}${path.extname(file.originalname)}`;
-    cb(null, uniqueName);
-  },
-});
+const filenameGenerator = (req, file, cb) => {
+  const uniqueName = `profile_${req.user._id}_${Date.now()}${path.extname(file.originalname)}`;
+  cb(null, uniqueName);
+};
 
 const upload = multer({
-  storage,
+  storage: makeCloudinaryStorage("profiles", filenameGenerator),
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
   fileFilter: (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|gif|webp/;

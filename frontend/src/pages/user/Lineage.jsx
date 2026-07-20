@@ -327,7 +327,10 @@ const Lineage = () => {
                 <div className="absolute inset-0 border-[2px] border-mahakal-saffron/20 rounded-full scale-[1.15] animate-[spin_10s_linear_infinite_reverse]"></div>
                 <div className="w-full h-full bg-stone-50 rounded-full overflow-hidden relative z-10 flex items-center justify-center">
                   {selectedNode.profileImage ? (
-                     <img src={getImageUrl(selectedNode.profileImage)} alt={selectedNode.name} className="w-full h-full object-cover" />
+                     <img src={getImageUrl(selectedNode.profileImage)} 
+                          alt={selectedNode.name} 
+                          onError={(e) => { e.target.src = defaultMahadevPic; }}
+                          className="w-full h-full object-cover" />
                   ) : (
                      <Crown className="w-10 h-10 text-mahakal-saffron/40" />
                   )}

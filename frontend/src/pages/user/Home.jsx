@@ -559,6 +559,7 @@ const Home = () => {
                       <img 
                         src={getImageUrl(news.coverImage)} 
                         alt={news.title || 'News image'} 
+                        onError={(e) => { e.target.src = "/about_images/kolekar_real_1.jpg"; }}
                         className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700"
                       />
                     </div>

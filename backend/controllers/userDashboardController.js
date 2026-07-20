@@ -77,7 +77,7 @@ exports.updateProfile = async (req, res) => {
 
     // Handle profile photo upload (multer file)
     if (req.file) {
-      // Delete old profile photo if it exists
+      // Delete old profile photo if it exists locally
       const currentUser = await Model.findById(req.user._id);
       if (currentUser.profilePhoto) {
         const oldPath = path.join(__dirname, "..", currentUser.profilePhoto);
@@ -85,7 +85,7 @@ exports.updateProfile = async (req, res) => {
           fs.unlinkSync(oldPath);
         }
       }
-      updateData.profilePhoto = `/uploads/profiles/${req.file.filename}`;
+      updateData.profilePhoto = req.file.path;
     }
 
     const updatedUser = await Model.findByIdAndUpdate(

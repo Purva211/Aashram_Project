@@ -17,7 +17,7 @@ exports.createGalleryItem = async (req, res) => {
     let url = req.body.url;
 
     if (req.file) {
-      url = `/uploads/${req.file.filename}`;
+      url = req.file.path;
     }
 
     if (!url) {
@@ -38,7 +38,7 @@ exports.updateGalleryItem = async (req, res) => {
     let url = req.body.url;
 
     if (req.file) {
-      url = `/uploads/${req.file.filename}`;
+      url = req.file.path;
     }
 
     const updateData = { title, type, category };

@@ -240,7 +240,7 @@ const VanshawalTree = ({
               >
                 {member.profilePhoto ? (
                   <img
-                    src={member.profilePhoto}
+                    src={member.profilePhoto.startsWith('http') ? member.profilePhoto : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${member.profilePhoto.startsWith('/') ? '' : '/'}${member.profilePhoto}`}
                     alt={member.name}
                     className="w-full h-full rounded-full object-cover"
                   />
@@ -314,7 +314,7 @@ const VanshawalTree = ({
                   >
                     {spouse.profilePhoto ? (
                       <img
-                        src={spouse.profilePhoto}
+                        src={spouse.profilePhoto.startsWith('http') ? spouse.profilePhoto : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${spouse.profilePhoto.startsWith('/') ? '' : '/'}${spouse.profilePhoto}`}
                         alt={spouse.name}
                         className="w-full h-full rounded-full object-cover"
                       />

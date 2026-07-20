@@ -54,19 +54,19 @@ exports.createEvent = async (req, res) => {
     // Process files if available
     if (req.files) {
       if (req.files['featuredImage']) {
-        eventData.featuredImage = `/uploads/${req.files['featuredImage'][0].filename}`;
+        eventData.featuredImage = req.files['featuredImage'][0].path;
       }
       
       if (req.files['galleryImages']) {
         const galleryUrls = [];
         for (const file of req.files['galleryImages']) {
-          galleryUrls.push(`/uploads/${file.filename}`);
+          galleryUrls.push(file.path);
         }
         eventData.galleryImages = galleryUrls;
       }
 
       if (req.files['videoFile']) {
-        eventData.videoFile = `/uploads/${req.files['videoFile'][0].filename}`;
+        eventData.videoFile = req.files['videoFile'][0].path;
       }
     }
     
@@ -95,19 +95,19 @@ exports.updateEvent = async (req, res) => {
     // Process files if available
     if (req.files) {
       if (req.files['featuredImage']) {
-        eventData.featuredImage = `/uploads/${req.files['featuredImage'][0].filename}`;
+        eventData.featuredImage = req.files['featuredImage'][0].path;
       }
       
       if (req.files['galleryImages']) {
         const galleryUrls = [];
         for (const file of req.files['galleryImages']) {
-          galleryUrls.push(`/uploads/${file.filename}`);
+          galleryUrls.push(file.path);
         }
         eventData.galleryImages = galleryUrls;
       }
 
       if (req.files['videoFile']) {
-        eventData.videoFile = `/uploads/${req.files['videoFile'][0].filename}`;
+        eventData.videoFile = req.files['videoFile'][0].path;
       }
     }
     

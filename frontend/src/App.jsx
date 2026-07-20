@@ -218,6 +218,8 @@ function AppRoutes() {
           <Route path="/admin/vanshawal" element={<RoleProtectedRoute allowedRoles={['Admin']}><DevoteeVanshawal /></RoleProtectedRoute>} />
           <Route path="/admin/vanshawal/dashboard" element={<RoleProtectedRoute allowedRoles={['Admin']}><FamilyDashboard /></RoleProtectedRoute>} />
           <Route path="/admin/vanshawal/reports" element={<RoleProtectedRoute allowedRoles={['Admin']}><FamilyReports /></RoleProtectedRoute>} />
+          <Route path="/admin/receipts" element={<RoleProtectedRoute allowedRoles={['Admin']}><ReceiptHistory /></RoleProtectedRoute>} />
+          <Route path="/admin/notice-generator" element={<RoleProtectedRoute allowedRoles={['Admin']}><NoticeGenerator /></RoleProtectedRoute>} />
 
           {/* Trustee Protected Routes */}
           <Route path="/trustee/dashboard" element={<RoleProtectedRoute allowedRoles={['Trustee']}><TrusteeDashboard /></RoleProtectedRoute>} />
@@ -240,6 +242,8 @@ function AppRoutes() {
           <Route path="/trustee/vanshawal/dashboard" element={<RoleProtectedRoute allowedRoles={['Trustee']}><FamilyDashboard /></RoleProtectedRoute>} />
           <Route path="/trustee/vanshawal/reports" element={<RoleProtectedRoute allowedRoles={['Trustee']}><FamilyReports /></RoleProtectedRoute>} />
           <Route path="/trustee/contact-enquiries" element={<RoleProtectedRoute allowedRoles={['Trustee', 'Admin']}><TrusteeContactEnquiries /></RoleProtectedRoute>} />
+          <Route path="/trustee/receipts" element={<RoleProtectedRoute allowedRoles={['Trustee']}><ReceiptHistory /></RoleProtectedRoute>} />
+          <Route path="/trustee/notice-generator" element={<RoleProtectedRoute allowedRoles={['Trustee']}><NoticeGenerator /></RoleProtectedRoute>} />
 
           {/* Branch Manager Protected Routes */}
           <Route path="/branch/dashboard" element={<RoleProtectedRoute allowedRoles={['BranchManager']}><BranchDashboard /></RoleProtectedRoute>} />

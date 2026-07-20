@@ -91,8 +91,7 @@ exports.importFromYoutube = async (req, res) => {
     const thumbnailFile = req.file;
     let thumbnailUrl = '';
     if (thumbnailFile) {
-      thumbnailUrl = await uploadToCloudinary(thumbnailFile.path, 'image');
-      try { fs.unlinkSync(thumbnailFile.path); } catch (e) {}
+      thumbnailUrl = thumbnailFile.path;
     }
 
     // 4. Save to DB
@@ -131,18 +130,10 @@ exports.uploadDirect = async (req, res) => {
     const audioFile = req.files['audioFile'][0];
     const thumbnailFile = req.files['thumbnail'] ? req.files['thumbnail'][0] : null;
 
-    const audioUrl = await uploadToCloudinary(audioFile.path, 'auto');
+    const audioUrl = audioFile.path;
     let thumbnailUrl = '';
     if (thumbnailFile) {
-      thumbnailUrl = await uploadToCloudinary(thumbnailFile.path, 'image');
-    }
-    
-    // Clean up local files safely
-    try {
-      if (fs.existsSync(audioFile.path)) fs.unlinkSync(audioFile.path);
-      if (thumbnailFile && fs.existsSync(thumbnailFile.path)) fs.unlinkSync(thumbnailFile.path);
-    } catch (err) {
-      console.warn("Failed to clean up local files:", err.message);
+      thumbnailUrl = thumbnailFile.path;
     }
 
     // Generate Lyrics using Deepgram API
@@ -232,9 +223,7 @@ exports.updateTrack = async (req, res) => {
     if (language) track.language = language;
 
     if (req.file) {
-      const thumbnailUrl = await uploadToCloudinary(req.file.path, 'image');
-      track.thumbnailUrl = thumbnailUrl;
-      try { fs.unlinkSync(req.file.path); } catch (e) {}
+      track.thumbnailUrl = req.file.path;
     }
 
     await track.save();

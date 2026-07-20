@@ -381,6 +381,7 @@ const RegisterDevotee = () => {
                       <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10" size={18} />
                       <input
                         required type={showPassword ? "text" : "password"}
+                        autoComplete="new-password"
                         pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}"
                         title="Password must be at least 8 chars long with 1 uppercase, 1 lowercase, 1 number, and 1 special character"
                         value={formData.password}
@@ -400,6 +401,7 @@ const RegisterDevotee = () => {
                       <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10" size={18} />
                       <input
                         required type={showConfirmPassword ? "text" : "password"}
+                        autoComplete="new-password"
                         value={formData.confirmPassword}
                         onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                         className="w-full bg-slate-50/50 backdrop-blur-sm border border-slate-200 text-slate-800 rounded-2xl pl-11 pr-12 py-4 outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-400/10 focus:bg-white transition-all placeholder:text-slate-400 font-bold shadow-sm"

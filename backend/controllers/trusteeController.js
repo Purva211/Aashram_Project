@@ -199,7 +199,7 @@ exports.updateProfile = async (req, res) => {
 
     if (name) trustee.name = name;
     if (mobile) trustee.mobile = mobile;
-    if (req.file) trustee.profilePhoto = '/uploads/' + req.file.filename;
+    if (req.file) trustee.profilePhoto = req.file.path;
     if (password) trustee.password = password;
 
     await trustee.save();

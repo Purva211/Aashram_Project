@@ -637,6 +637,7 @@ const UserEvents = () => {
                     <img 
                       src={getImageUrl(event.featuredImage)} 
                       alt={event.title}
+                      onError={(e) => { e.target.src = "/about_images/kolekar_real_1.jpg"; }}
                       className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                     />
                     
