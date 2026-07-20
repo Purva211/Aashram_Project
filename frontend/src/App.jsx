@@ -189,6 +189,8 @@ function AppRoutes() {
           <Route path="/trustee-board" element={<TrusteeBoard />} />
 
           <Route path="/math-history" element={<MathHistory />} />
+          <Route path="/monastery-importance" element={<Navigate to="/math-history" replace />} />
+          <Route path="/about/veerashaiva-philosophy" element={<Navigate to="/math-history" replace />} />
           <Route path="/lineage" element={<Lineage />} />
           <Route path="/lineage/:id" element={<LineageDetail />} />
           <Route path="/contact" element={<ContactUs />} />

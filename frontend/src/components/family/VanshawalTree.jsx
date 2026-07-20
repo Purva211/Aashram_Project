@@ -149,7 +149,7 @@ const VanshawalTree = ({
     );
   };
 
-  // Drag pan handlers
+  // Drag pan handlers (Mouse & Touch)
   const handleMouseDown = (e) => {
     if (e.target.closest("button") || e.target.closest(".card-interactive"))
       return;
@@ -169,6 +169,31 @@ const VanshawalTree = ({
   };
 
   const handleMouseUp = () => {
+    dragRef.current.isDragging = false;
+  };
+
+  const handleTouchStart = (e) => {
+    if (e.touches.length === 1) {
+      if (e.target.closest("button") || e.target.closest(".card-interactive")) return;
+      const touch = e.touches[0];
+      dragRef.current = {
+        isDragging: true,
+        startX: touch.clientX - position.x,
+        startY: touch.clientY - position.y,
+      };
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    if (!dragRef.current.isDragging || e.touches.length !== 1) return;
+    const touch = e.touches[0];
+    setPosition({
+      x: touch.clientX - dragRef.current.startX,
+      y: touch.clientY - dragRef.current.startY,
+    });
+  };
+
+  const handleTouchEnd = () => {
     dragRef.current.isDragging = false;
   };
 
@@ -398,6 +423,9 @@ const VanshawalTree = ({
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
       style={{ cursor: dragRef.current.isDragging ? "grabbing" : "grab" }}
     >
       {/* Dynamic Connector Canvas behind elements */}

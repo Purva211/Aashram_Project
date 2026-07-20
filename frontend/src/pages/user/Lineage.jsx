@@ -17,17 +17,14 @@ const getImageUrl = (url) => {
 const LineageNode = ({ node, displayIndex, guruNumber, originalIndex, onClick, isCurrent, isLast }) => {
    const isEven = displayIndex % 2 === 0;
 
-   // Interlocking layout to eliminate extra vertical space:
-   // Mobile: -mt-2 (slight overlap for continuous vertical line)
-   // Tablet: md:-mt-24
-   // Desktop: lg:-mt-32
-   const rowMargin = displayIndex !== 0 ? "-mt-2 md:-mt-24 lg:-mt-32" : "";
+   // Interlocking layout for desktop, proper spacing on mobile:
+   const rowMargin = displayIndex !== 0 ? "mt-4 md:-mt-24 lg:-mt-32" : "";
 
    return (
       <motion.div 
          initial={{ opacity: 0, y: 30 }}
          whileInView={{ opacity: 1, y: 0 }}
-         viewport={{ once: true, margin: "-100px" }}
+         viewport={{ once: true, margin: "-50px" }}
          transition={{ duration: 0.6, ease: "easeOut" }}
          className={`w-full flex items-stretch group cursor-pointer relative z-10 md:h-56 lg:h-64 ${rowMargin}`}
          onClick={() => onClick(node, originalIndex)}
@@ -52,7 +49,7 @@ const LineageNode = ({ node, displayIndex, guruNumber, originalIndex, onClick, i
                  <div className="flex justify-end items-center mb-4 relative z-10">
                      <div className="inline-flex items-center gap-2 bg-gradient-to-r from-mahakal-saffron to-amber-500 px-4 py-1.5 rounded-full shadow-[0_4px_12px_rgba(217,119,6,0.3)] ring-1 ring-white/30 text-white group-hover:shadow-[0_4px_16px_rgba(217,119,6,0.5)] transition-all">
                          <Crown size={14} className="text-amber-100 hidden lg:block" />
-                         <span className="text-xs lg:text-sm font-poppins font-bold tracking-[0.2em] uppercase">
+                         <span className="text-xs lg:text-sm font-poppins font-bold tracking-wider uppercase">
                              #{guruNumber} • {node.era}
                          </span>
                      </div>
@@ -63,10 +60,10 @@ const LineageNode = ({ node, displayIndex, guruNumber, originalIndex, onClick, i
           </div>
 
           {/* CENTER ZIG ZAG AREA / MOBILE SPINE */}
-          <div className="w-10 sm:w-16 md:w-48 lg:w-80 relative shrink-0 flex flex-col items-center md:block pt-6 md:pt-0">
+          <div className="w-8 sm:w-14 md:w-48 lg:w-80 relative shrink-0 flex flex-col items-center md:block pt-3 md:pt-0">
               {/* Straight line for Mobile (Vertical) */}
               {!isLast && (
-                  <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[3px] sm:w-1 h-[calc(100%+0.5rem)] bg-gradient-to-b from-amber-400 to-mahakal-saffron md:hidden z-0 rounded-full opacity-80"></div>
+                  <div className="absolute top-8 left-1/2 -translate-x-1/2 w-[3px] h-[calc(100%+1.5rem)] bg-gradient-to-b from-amber-400 to-mahakal-saffron md:hidden z-0 rounded-full opacity-80"></div>
               )}
 
               {/* Zig-Zag line for Desktop */}
@@ -88,8 +85,8 @@ const LineageNode = ({ node, displayIndex, guruNumber, originalIndex, onClick, i
               <div className={`relative md:absolute md:top-1/2 md:-translate-y-1/2 z-20 rounded-full border-[3px] md:border-[6px] border-white bg-stone-50 overflow-hidden transition-all duration-700 md:group-hover:scale-[1.15] shadow-[0_4px_15px_rgba(217,119,6,0.3)] md:shadow-[0_8px_30px_rgba(217,119,6,0.2)] group-hover:shadow-[0_0_40px_rgba(217,119,6,0.6)] ${
                   isEven ? 'md:left-0 md:-translate-x-1/2' : 'md:right-0 md:translate-x-1/2'
               } ${
-                  isCurrent ? 'w-12 h-12 md:w-24 md:h-24 ring-2 md:ring-4 ring-amber-400 ring-offset-2 md:ring-offset-4' 
-                  : 'w-10 h-10 sm:w-12 sm:h-12 md:w-20 md:h-20'
+                  isCurrent ? 'w-10 h-10 sm:w-14 sm:h-14 md:w-24 md:h-24 ring-2 md:ring-4 ring-amber-400 ring-offset-2 md:ring-offset-4' 
+                  : 'w-8 h-8 sm:w-12 sm:h-12 md:w-20 md:h-20'
               }`}>
                   <div className="absolute inset-0 rounded-full border-[1px] md:border-[2px] border-mahakal-saffron/20 m-[1px] md:m-[2px] z-30 pointer-events-none"></div>
                   <img src={node.profileImage ? getImageUrl(node.profileImage) : defaultMahadevPic} 
@@ -100,8 +97,8 @@ const LineageNode = ({ node, displayIndex, guruNumber, originalIndex, onClick, i
           </div>
 
           {/* RIGHT INFO (Visible on Mobile for ALL, Visible on Desktop for Odd nodes) */}
-          <div className={`flex-1 min-w-0 flex flex-col justify-center pl-3 sm:pl-6 md:pl-8 lg:pl-12 py-3 md:py-0 transition-all duration-500 md:group-hover:translate-x-2 ${isEven ? 'md:invisible' : ''}`}>
-             <div className="relative overflow-hidden text-left bg-gradient-to-br from-white/95 via-amber-50/90 to-[#FFF8EF]/95 backdrop-blur-2xl p-5 md:p-7 lg:p-8 rounded-2xl md:rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.06)] ring-1 ring-inset ring-amber-500/20 group-hover:ring-amber-500/50 group-hover:shadow-[0_20px_40px_rgba(217,119,6,0.25)] transition-all duration-500">
+          <div className={`flex-1 min-w-0 flex flex-col justify-center pl-2.5 sm:pl-6 md:pl-8 lg:pl-12 py-1 md:py-0 transition-all duration-500 md:group-hover:translate-x-2 ${isEven ? 'md:invisible' : ''}`}>
+             <div className="relative overflow-hidden text-left bg-gradient-to-br from-white/95 via-amber-50/90 to-[#FFF8EF]/95 backdrop-blur-2xl p-4 sm:p-6 md:p-7 lg:p-8 rounded-2xl md:rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.06)] ring-1 ring-inset ring-amber-500/20 group-hover:ring-amber-500/50 group-hover:shadow-[0_20px_40px_rgba(217,119,6,0.25)] transition-all duration-500">
                  
                  {/* Top Accent Line */}
                  <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-mahakal-burgundy via-mahakal-saffron to-amber-400 opacity-80 group-hover:opacity-100 transition-opacity"></div>
@@ -114,21 +111,21 @@ const LineageNode = ({ node, displayIndex, guruNumber, originalIndex, onClick, i
                  {/* Glassmorphism Pointer pointing Left (Desktop) */}
                  <div className="absolute top-1/2 -translate-y-1/2 -left-3 lg:-left-4 w-6 h-6 lg:w-8 lg:h-8 bg-amber-50/90 backdrop-blur-2xl border-b border-l border-amber-500/30 group-hover:border-amber-500/60 rotate-45 hidden md:block -z-10 transition-colors"></div>
                  
-                 {/* Mobile Pointer (Aligned perfectly with Avatar at pt-6) */}
-                 <div className="absolute top-[26px] -left-1.5 w-3 h-3 bg-amber-50/90 border-b border-l border-amber-500/30 rotate-45 md:hidden -z-10"></div>
+                 {/* Mobile Pointer */}
+                 <div className="absolute top-[18px] -left-1.5 w-3 h-3 bg-amber-50/90 border-b border-l border-amber-500/30 rotate-45 md:hidden -z-10"></div>
 
-                 <h4 className="text-xl md:text-2xl lg:text-3xl font-playfair font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-700 to-mahakal-burgundy leading-tight drop-shadow-sm mb-2.5 md:mb-3 group-hover:from-mahakal-burgundy group-hover:to-amber-600 transition-all duration-700">{node.name}</h4>
+                 <h4 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-playfair font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-700 to-mahakal-burgundy leading-tight drop-shadow-sm mb-2 md:mb-3 group-hover:from-mahakal-burgundy group-hover:to-amber-600 transition-all duration-700 break-words">{node.name}</h4>
                  
-                 <div className="flex justify-start items-center mb-3 md:mb-4 relative z-10">
-                     <div className="inline-flex items-center gap-1.5 sm:gap-2 bg-gradient-to-r from-amber-500 to-mahakal-saffron px-3 sm:px-4 py-1 md:py-1.5 rounded-full shadow-[0_4px_12px_rgba(217,119,6,0.3)] ring-1 ring-white/30 text-white group-hover:shadow-[0_4px_16px_rgba(217,119,6,0.5)] transition-all">
-                         <span className="text-xs lg:text-sm font-poppins font-bold tracking-[0.2em] uppercase">
+                 <div className="flex justify-start items-center mb-2.5 md:mb-4 relative z-10">
+                     <div className="inline-flex items-center gap-1.5 sm:gap-2 bg-gradient-to-r from-amber-500 to-mahakal-saffron px-2.5 sm:px-4 py-0.5 sm:py-1 md:py-1.5 rounded-full shadow-[0_4px_12px_rgba(217,119,6,0.3)] ring-1 ring-white/30 text-white group-hover:shadow-[0_4px_16px_rgba(217,119,6,0.5)] transition-all">
+                         <span className="text-[10px] sm:text-xs lg:text-sm font-poppins font-bold tracking-wider uppercase">
                              #{guruNumber} • {node.era}
                          </span>
-                         <Crown size={14} className="text-amber-100 hidden sm:block" />
+                         <Crown size={12} className="text-amber-100 hidden sm:block" />
                      </div>
                  </div>
                  
-                 <p className="text-stone-700 font-poppins text-sm lg:text-base font-medium line-clamp-3 leading-relaxed group-hover:text-stone-900 transition-colors relative z-10">{node.shortDescription}</p>
+                 <p className="text-stone-700 font-poppins text-xs sm:text-sm lg:text-base font-medium line-clamp-3 leading-relaxed group-hover:text-stone-900 transition-colors relative z-10 break-words">{node.shortDescription}</p>
              </div>
           </div>
       </motion.div>
@@ -266,7 +263,7 @@ const Lineage = () => {
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.02] mix-blend-multiply pointer-events-none"></div>
         <div className="absolute left-1/2 top-0 bottom-0 w-[300px] md:w-[600px] bg-gradient-to-b from-amber-300/10 via-orange-400/5 to-amber-300/10 blur-[80px] -translate-x-1/2 pointer-events-none"></div>
 
-        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="w-full max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 relative z-10">
           
           {/* SVG Definitions for Gradients used in Lines */}
           <svg width="0" height="0">

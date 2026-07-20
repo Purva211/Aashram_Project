@@ -166,7 +166,7 @@ const About = () => {
                 <p className="text-stone-600 text-lg leading-relaxed font-medium mb-6">
                   Rooted in profound devotion to Lord Shiva and the sacred Ishtalinga, our philosophy transcends worldly illusions. It embraces universal equality, spiritual awakening, and mandates that *Kayakave Kailasa* (Work is Worship), making Seva (service) the ultimate form of devotion.
                 </p>
-                <Link to="/about/veerashaiva-philosophy" className="inline-flex items-center gap-2 text-mahakal-saffron font-bold text-xs uppercase tracking-widest hover:text-amber-600 transition-colors">
+                <Link to="/math-history" className="inline-flex items-center gap-2 text-mahakal-saffron font-bold text-xs uppercase tracking-widest hover:text-amber-600 transition-colors">
                   Explore Philosophy <ArrowRight size={14} />
                 </Link>
               </div>
@@ -208,7 +208,7 @@ const About = () => {
             <p className="text-stone-600 mb-8 leading-relaxed font-medium">
               More than just a physical structure, the Monastery is a living sanctuary preserving ancient Vachana literature and radiating the divine grace of the Maharaj.
             </p>
-            <Link to="/monastery-importance" className="mt-auto px-6 py-3 w-full bg-mahakal-saffron text-white font-bold rounded-xl hover:bg-amber-600 transition-colors flex justify-center items-center gap-3 uppercase tracking-widest text-xs">
+            <Link to="/math-history" className="mt-auto px-6 py-3 w-full bg-mahakal-saffron text-white font-bold rounded-xl hover:bg-amber-600 transition-colors flex justify-center items-center gap-3 uppercase tracking-widest text-xs">
               Read Monastery Importance <ArrowRight className="w-4 h-4" />
             </Link>
           </ScrollReveal>

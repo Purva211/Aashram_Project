@@ -31,7 +31,7 @@ const Login = () => {
       
       if (response.data.success) {
         login(response.data.token, response.data.user);
-        navigate("/home");
+        navigate("/admin/dashboard");
       }
     } catch (err) {
       setError(err.response?.data?.message || "Failed to login. Please check credentials.");

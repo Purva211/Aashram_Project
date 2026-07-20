@@ -117,8 +117,8 @@ const Footer = () => {
             {t('footer.rights', { year: new Date().getFullYear() }) || `© ${new Date().getFullYear()} Kolekar Maharaj Trust. All rights reserved.`}
           </p>
           <div className="flex flex-wrap justify-center gap-4 text-[10px] text-mahakal-cream/60 font-medium tracking-wider uppercase">
-            <Link to="#" className="hover:text-white transition-colors">{t('footer.privacy') || 'Privacy Policy'}</Link>
-            <Link to="#" className="hover:text-white transition-colors">{t('footer.terms') || 'Terms of Service'}</Link>
+            <Link to="/about" className="hover:text-white transition-colors">{t('footer.privacy') || 'Privacy Policy'}</Link>
+            <Link to="/about" className="hover:text-white transition-colors">{t('footer.terms') || 'Terms of Service'}</Link>
           </div>
         </div>
       </div>

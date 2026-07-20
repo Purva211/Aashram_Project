@@ -97,4 +97,15 @@ if (fs.existsSync(frontendDist)) {
   });
 }
 
+// 404 handler for API and uploads routes
+app.use((req, res) => {
+  if (req.path.startsWith("/api/")) {
+    return res.status(404).json({ success: false, message: "API route not found" });
+  }
+  if (req.path.startsWith("/uploads/")) {
+    return res.status(404).json({ success: false, message: "File not found" });
+  }
+  res.status(404).send("Page Not Found");
+});
+
 module.exports = app;
