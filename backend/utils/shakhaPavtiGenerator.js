@@ -130,18 +130,27 @@ exports.generateShakhaPavtiPdf = async (rawDonation) => {
     let htmlContent = fs.readFileSync(templatePath, 'utf8');
 
     // Read and encode images in base64 so Puppeteer renders them reliably
+    const findAssetPath = (filename) => {
+      const p1 = path.join(__dirname, '../uploads', filename);
+      if (fs.existsSync(p1)) return p1;
+      const p2 = path.join(__dirname, '../../frontend/public', filename);
+      if (fs.existsSync(p2)) return p2;
+      return p1;
+    };
+
     const encodeImage = (filePath) => {
         if (fs.existsSync(filePath)) {
-            const ext = path.extname(filePath).substring(1);
+            const ext = path.extname(filePath).substring(1).toLowerCase();
+            const mimeType = (ext === 'jpg' || ext === 'jpeg') ? 'image/jpeg' : `image/${ext}`;
             const base64Data = fs.readFileSync(filePath, 'base64');
-            return `data:image/${ext};base64,${base64Data}`;
+            return `data:${mimeType};base64,${base64Data}`;
         }
         return '';
     };
 
-    const logoPath = path.join(__dirname, '../../frontend/src/assets/shivling.jpeg');
-    const swamijiPath = path.join(__dirname, '../../frontend/src/assets/kolekar_SP_1.jpeg');
-    const swamijiPath2 = path.join(__dirname, '../../frontend/src/assets/kolekar_SP_2.jpeg');
+    const logoPath = findAssetPath('shiva_linga_logo.png');
+    const swamijiPath = findAssetPath('guru_swamiji.png');
+    const swamijiPath2 = findAssetPath('current_swamiji.png');
     
     const logoBase64 = encodeImage(logoPath);
     const swamijiBase64 = encodeImage(swamijiPath);
@@ -167,15 +176,15 @@ exports.generateShakhaPavtiPdf = async (rawDonation) => {
     const page = await browser.newPage();
     await page.emulateMediaType('print');
     
-    // Set viewport to the same size as the PDF layout for accurate rendering
-    await page.setViewport({ width: 520, height: 420, deviceScaleFactor: 2 });
+    // Set viewport to standard A5 landscape for accurate rendering
+    await page.setViewport({ width: 794, height: 559, deviceScaleFactor: 2 });
     await page.setContent(htmlContent, { waitUntil: 'load' });
 
     const pdfBuffer = await page.pdf({
-      width: '520px',
-      height: '420px',
+      format: 'A5',
+      landscape: true,
       printBackground: true,
-      margin: { top: 0, right: 0, bottom: 0, left: 0 }
+      margin: { top: '0px', right: '0px', bottom: '0px', left: '0px' }
     });
 
     await page.close();

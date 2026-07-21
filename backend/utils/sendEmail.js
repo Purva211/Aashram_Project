@@ -16,7 +16,9 @@ const sendEmail = async (options) => {
       // Force IPv4 to prevent ENETUNREACH on IPv6-deprived networks
       tls: {
         rejectUnauthorized: false
-      }
+      },
+      // Fix for Render/Node 20+: Nodemailer ignores loopback IPv4 interfaces by default and uses IPv6, causing ENETUNREACH.
+      allowInternalNetworkInterfaces: true
     });
 
     const mailOptions = {

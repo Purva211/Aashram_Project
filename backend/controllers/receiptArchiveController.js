@@ -5,14 +5,18 @@ const { issueReceipt } = require("../utils/receiptEngine");
 // Create an ad-hoc Notice
 exports.generateNotice = async (req, res) => {
   try {
-    const { subject, noticeContent, targetBranches, outwardNo, date, to } = req.body;
-    
-    // In a real application, you might save an `Announcement` model first,
-    // but here we just generate a receipt log directly for the notice.
+    if (!['Admin', 'Trustee'].includes(req.user?.role)) {
+      return res.status(403).json({ success: false, message: "Unauthorized: Only Main Admin and authorized Trust members can issue letterheads." });
+    }
+
+    const { subject, noticeContent, targetBranches, outwardNo, date, to, signatoryTitle, customSignatoryTitle } = req.body;
+    const finalSignatory = signatoryTitle === 'Custom' ? (customSignatoryTitle || 'सचिव') : (signatoryTitle || 'सचिव');
+
     const dynamicData = {
       subject: subject,
       noticeContent: noticeContent,
       to: to,
+      signatoryTitle: finalSignatory,
       outwardNo: outwardNo || 'NOT-' + Date.now(),
       date: date || new Date().toLocaleDateString("en-IN", { day: '2-digit', month: '2-digit', year: 'numeric' }),
       authorName: req.user.name || "Admin",
@@ -24,7 +28,7 @@ exports.generateNotice = async (req, res) => {
       year: new Date().getFullYear(),
       dynamicData,
       generatedBy: req.user._id,
-      generatedByModel: req.user.role || 'Trustee' // Fallback to Trustee if undefined
+      generatedByModel: req.user.role || 'Trustee'
     });
 
     res.status(201).json({ success: true, data: archive });
@@ -132,6 +136,8 @@ exports.getReceipts = async (req, res) => {
         if (effectiveCategory === "Jama Pavti") donationQuery.donationType = "jama_pavti";
         if (effectiveCategory === "Dengi Pavti") donationQuery.donationType = "dengi_pavti";
         if (effectiveCategory === "Branch Pavti") donationQuery.donationType = "shakha_pavti";
+      } else if (effectiveCategory === "All" && ["Admin", "Trustee", "Accountant"].includes(req.user.role)) {
+        donationQuery.donationType = { $in: ["jama_pavti", "dengi_pavti", "shakha_pavti"] };
       } else if (effectiveCategory.$in) {
         const dTypes = [];
         if (effectiveCategory.$in.includes("Jama Pavti")) dTypes.push("jama_pavti");
@@ -196,6 +202,29 @@ exports.getReceipts = async (req, res) => {
     }
 
     res.status(200).json({ success: true, data: mergedReceipts });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Delete a receipt/notice (Owner or Admin authorization required)
+exports.deleteReceipt = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const archive = await ReceiptArchive.findById(id);
+    if (!archive) {
+      return res.status(404).json({ success: false, message: "Notice/Receipt not found." });
+    }
+
+    const isCreator = String(archive.generatedBy) === String(req.user._id);
+    const isAdmin = req.user.role === "Admin";
+
+    if (!isCreator && !isAdmin) {
+      return res.status(403).json({ success: false, message: "Unauthorized: Only the original creator can delete this notice." });
+    }
+
+    await ReceiptArchive.findByIdAndDelete(id);
+    res.status(200).json({ success: true, message: "Notice deleted successfully." });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

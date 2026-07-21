@@ -81,7 +81,7 @@ export default {
         'float': 'float 6s ease-in-out infinite',
         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'glow-spin': 'glow-spin 10s linear infinite',
-        'marquee': 'marquee 30s linear infinite',
+        'marquee': 'marquee 18s linear infinite',
       },
       keyframes: {
         float: {

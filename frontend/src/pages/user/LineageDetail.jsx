@@ -5,6 +5,7 @@ import { ArrowLeft, Crown } from 'lucide-react';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import api from '../../utils/api';
+import defaultMahadevPic from '../../assets/kolekar1.jpeg';
 
 const getImageUrl = (url) => {
   if (!url) return '';
@@ -103,7 +104,10 @@ const LineageDetail = () => {
               <div className="absolute inset-0 border-[2px] border-mahakal-saffron/20 rounded-full scale-[1.15] animate-[spin_10s_linear_infinite_reverse]"></div>
               <div className="w-full h-full bg-stone-50 rounded-full flex items-center justify-center border-[8px] border-white shadow-[0_10px_30px_rgba(0,0,0,0.15)] overflow-hidden relative z-10">
                  {guru.profileImage ? (
-                    <img src={getImageUrl(guru.profileImage)} alt={guru.name} className="w-full h-full object-cover" />
+                    <img src={getImageUrl(guru.profileImage)} 
+                         alt={guru.name} 
+                         onError={(e) => { e.target.src = defaultMahadevPic; }}
+                         className="w-full h-full object-cover" />
                  ) : (
                     <Crown className="w-24 h-24 text-mahakal-saffron/30" />
                  )}
@@ -160,6 +164,7 @@ const LineageDetail = () => {
                     <img 
                       src={getImageUrl(img)} 
                       alt={`${guru.name} gallery ${idx + 1}`} 
+                      onError={(e) => { e.target.src = defaultMahadevPic; }}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                     />
                   </div>

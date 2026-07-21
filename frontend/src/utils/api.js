@@ -7,7 +7,7 @@ const api = axios.create({
 // Request interceptor to add the Firebase token
 api.interceptors.request.use(
   (config) => {
-    const token = sessionStorage.getItem("token") || sessionStorage.getItem("documentAdminToken");
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token") || localStorage.getItem("documentAdminToken") || sessionStorage.getItem("documentAdminToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

@@ -195,7 +195,7 @@ exports.updateProfile = async (req, res) => {
     if (address !== undefined) admin.address = address;
 
     if (req.file) {
-      admin.profilePhoto = `/uploads/${req.file.filename}`;
+      admin.profilePhoto = req.file.path;
     }
 
     await admin.save();

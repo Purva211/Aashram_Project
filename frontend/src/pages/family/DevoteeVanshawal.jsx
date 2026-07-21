@@ -49,7 +49,6 @@ const DevoteeVanshawal = () => {
 
   // Dynamic filter state from URL
   const initSurname = searchParams.get("surname") || "";
-  const initGotra = searchParams.get("gotra") || "";
   const initMinMembers = searchParams.get("minMembers") || "";
   const initMaxMembers = searchParams.get("maxMembers") || "";
   const initGenCount = searchParams.get("generationCount") || "";
@@ -67,7 +66,6 @@ const DevoteeVanshawal = () => {
   // Advanced Filter state
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
   const [surnameFilter, setSurnameFilter] = useState(initSurname);
-  const [gotraFilter, setGotraFilter] = useState(initGotra);
   const [minMembers, setMinMembers] = useState(initMinMembers);
   const [maxMembers, setMaxMembers] = useState(initMaxMembers);
   const [generationFilter, setGenerationFilter] = useState(initGenCount);
@@ -112,7 +110,6 @@ const DevoteeVanshawal = () => {
     aadhaar: "",
     address: "",
     branch: "",
-    gotra: "",
     kuldevta: "",
     bloodGroup: "",
     maritalStatus: "Single",
@@ -278,7 +275,6 @@ const DevoteeVanshawal = () => {
         village: selectedVillage,
         branchId: selectedBranchFilter,
         surname: surnameFilter,
-        gotra: gotraFilter,
         minMembers,
         maxMembers,
         generationCount: generationFilter,
@@ -310,7 +306,6 @@ const DevoteeVanshawal = () => {
       village: selectedVillage,
       branchId: selectedBranchFilter,
       surname: surnameFilter,
-      gotra: gotraFilter,
       minMembers,
       maxMembers,
       generationCount: generationFilter,
@@ -427,7 +422,6 @@ const DevoteeVanshawal = () => {
     setFormData({
       ...initialFormState,
       gender: defaultGender,
-      gotra: relative.gotra || "",
       kuldevta: relative.kuldevta || "",
       address: relative.address || "",
       village: relative.village || "",
@@ -689,17 +683,7 @@ const DevoteeVanshawal = () => {
                         className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:outline-none"
                       />
                     </div>
-                    <div>
-                      <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1.5">
-                        Gotra
-                      </label>
-                      <input
-                        type="text"
-                        value={gotraFilter}
-                        onChange={(e) => setGotraFilter(e.target.value)}
-                        className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:outline-none"
-                      />
-                    </div>
+
                     <div>
                       <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1.5">
                         Min Family Members
@@ -1161,19 +1145,7 @@ const DevoteeVanshawal = () => {
                       className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-saffron-500"
                     />
                   </div>
-                  <div>
-                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1.5">
-                      Gotra
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.gotra}
-                      onChange={(e) =>
-                        setFormData({ ...formData, gotra: e.target.value })
-                      }
-                      className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-saffron-500"
-                    />
-                  </div>
+
                   <div>
                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1.5">
                       Kuldevta
@@ -1506,19 +1478,7 @@ const DevoteeVanshawal = () => {
                       className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:outline-none"
                     />
                   </div>
-                  <div>
-                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1.5">
-                      Gotra
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.gotra}
-                      onChange={(e) =>
-                        setFormData({ ...formData, gotra: e.target.value })
-                      }
-                      className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:outline-none"
-                    />
-                  </div>
+
                   <div>
                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1.5">
                       Kuldevta

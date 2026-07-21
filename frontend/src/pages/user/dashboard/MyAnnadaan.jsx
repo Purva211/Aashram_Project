@@ -7,7 +7,10 @@ import { FaCalendarAlt, FaClock, FaPhoneAlt, FaEnvelope, FaUtensils, FaInfoCircl
 import { motion } from 'framer-motion';
 import { toast, Toaster } from 'react-hot-toast';
 
+import { useNavigate } from 'react-router-dom';
+
 export const MyAnnadaan = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [annadaans, setAnnadaans] = useState([]);
 
@@ -144,6 +147,22 @@ export const MyAnnadaan = () => {
     <div className="space-y-6">
       <Toaster position="top-center" />
 
+      {/* Header action bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 sm:p-6 rounded-2xl border border-stone-200 shadow-sm">
+        <div>
+          <h2 className="text-xl font-bold font-serif text-slate-900 flex items-center gap-2">
+            <FaUtensils className="text-amber-600" /> My Annadaan Registrations
+          </h2>
+          <p className="text-xs text-slate-500 font-medium mt-0.5">Track and manage all your sacred meal offerings.</p>
+        </div>
+        <button
+          onClick={() => navigate('/annadaan')}
+          className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-black text-xs shadow-md transition-all flex items-center justify-center gap-2 shrink-0"
+        >
+          <FaUtensils /> Register New Annadaan
+        </button>
+      </div>
+
       {loading ? (
         <RowSkeleton count={4} />
       ) : annadaans.length === 0 ? (
@@ -152,7 +171,7 @@ export const MyAnnadaan = () => {
             title="No Annadaan Registrations Found"
             description="Annadaan is the sacred offering of food. Register to distribute food to devotees and seekers."
             actionText="Register for Annadaan"
-            onAction={() => window.location.href = '/annadaan'}
+            onAction={() => navigate('/annadaan')}
             icon={FaUtensils}
           />
         </div>

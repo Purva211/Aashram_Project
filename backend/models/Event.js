@@ -22,7 +22,8 @@ const eventSchema = new mongoose.Schema({
   },
   featuredImage: {
     type: String,
-    required: [true, 'Featured image is required']
+    required: false,
+    default: ""
   },
   galleryImages: [{
     type: String

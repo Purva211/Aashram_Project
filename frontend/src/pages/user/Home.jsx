@@ -545,10 +545,23 @@ const Home = () => {
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-gray-900">News & Announcements</h2>
           </div>
 
-          {sliderNews.length > 0 ? (
+          {sliderNews.length === 1 ? (
+            <div className="max-w-md mx-auto px-4 py-4">
+              <div 
+                className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 h-[280px] sm:h-[350px] relative group/card border border-stone-100 cursor-pointer"
+                onClick={() => setSelectedNewsImageIndex(0)}
+              >
+                <img 
+                  src={getImageUrl(sliderNews[0].coverImage)} 
+                  alt={sliderNews[0].title || 'News image'} 
+                  onError={(e) => { e.target.src = "/about_images/kolekar_real_1.jpg"; }}
+                  className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700"
+                />
+              </div>
+            </div>
+          ) : sliderNews.length > 1 ? (
             <div className="relative w-full overflow-hidden flex flex-col group py-4">
               <div className="flex w-max animate-marquee group-hover:[animation-play-state:paused]">
-                {/* Render the array twice for seamless looping */}
                 {[...sliderNews, ...sliderNews].map((news, idx) => (
                   <div 
                     key={idx}
@@ -559,6 +572,7 @@ const Home = () => {
                       <img 
                         src={getImageUrl(news.coverImage)} 
                         alt={news.title || 'News image'} 
+                        onError={(e) => { e.target.src = "/about_images/kolekar_real_1.jpg"; }}
                         className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700"
                       />
                     </div>
@@ -805,8 +819,25 @@ const Home = () => {
                     transition={{ duration: 0.6, delay: idx * 0.1 }}
                     className="flex flex-col sm:flex-row bg-white rounded-2xl overflow-hidden group shadow-lg border border-gray-200 hover:shadow-2xl transition-all duration-500"
                   >
-                    <div className="sm:w-2/5 relative min-h-[250px] overflow-hidden">
-                      <div className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-700" style={{ backgroundImage: `url(${getImageUrl(event.featuredImage)})` }}></div>
+                    <div className="sm:w-2/5 relative min-h-[250px] overflow-hidden bg-black flex items-center justify-center">
+                      {event.featuredImage ? (
+                        <div className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-700" style={{ backgroundImage: `url(${getImageUrl(event.featuredImage)})` }}>
+                          {event.videoFile && (
+                            <div className="absolute bottom-3 right-3 bg-black/70 text-white px-2.5 py-1 rounded-md text-[10px] uppercase font-bold tracking-wider flex items-center gap-1.5 border border-white/20">
+                              <FaVideo className="text-red-400" /> Video Included
+                            </div>
+                          )}
+                        </div>
+                      ) : event.videoFile ? (
+                        <video 
+                          src={getImageUrl(event.videoFile)} 
+                          controls 
+                          preload="metadata"
+                          className="w-full h-full object-cover" 
+                        />
+                      ) : (
+                        <div className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-700" style={{ backgroundImage: `url('/about_images/kolekar_real_1.jpg')` }}></div>
+                      )}
                     </div>
                     <div className="p-8 sm:w-3/5 flex flex-col justify-center relative z-10 bg-gray-50 border-l border-gray-200">
                       <div className="text-primary font-bold text-xs mb-3 flex items-center gap-2 tracking-widest uppercase">

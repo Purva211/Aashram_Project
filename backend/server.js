@@ -1,11 +1,11 @@
 // Force Node.js to resolve IPv4 addresses first to prevent ENETUNREACH IPv6 errors with Gmail SMTP
 require('dns').setDefaultResultOrder('ipv4first');
+require("dotenv").config();
 
 const app = require("./app");
 const connectDB = require("./config/db");
 const startCronJobs = require("./utils/cronJobs");
 
-require("dotenv").config();
 console.log("ENV FILE TEST");
 console.log(process.env.EMAIL_USER);
 

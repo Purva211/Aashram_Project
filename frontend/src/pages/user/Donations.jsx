@@ -428,7 +428,13 @@ const Donation = () => {
                     <p className="flex justify-between"><span className="text-stone-500 font-bold text-sm">Amount</span> <span className="font-bold text-mahakal-burgundy">₹{amount}</span></p>
                     <p className="flex justify-between"><span className="text-stone-500 font-bold text-sm">UTR</span> <span className="font-mono font-bold text-mahakal-burgundy">{utrNumber}</span></p>
                   </div>
-                  <p className="text-stone-500 text-sm mt-8">Please check your dashboard later for the verified receipt.</p>
+                  <p className="text-stone-500 text-sm mt-6">Please check your dashboard later for the verified receipt.</p>
+                  <button 
+                    onClick={() => navigate('/devotee/donations')} 
+                    className="mt-4 px-8 py-3.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold shadow-lg transition-all flex items-center gap-2"
+                  >
+                    <FaCheckCircle /> Go to My Dashboard
+                  </button>
                 </motion.div>
               )}
             </AnimatePresence>

@@ -414,14 +414,20 @@ exports.getFamilyTree = async (req, res) => {
   try {
     const { rootId } = req.params;
     
-    if (req.user.role === 'Devotee') {
-      if (req.user.familyRootId && req.user.familyRootId.toString() !== rootId) {
-        return res.status(403).json({ success: false, message: "Access denied. You can only view your own family tree." });
+    let resolvedRootId = rootId;
+    // Resolve if rootId is a familyId string (e.g. FAM-000026)
+    if (rootId && rootId.startsWith('FAM-')) {
+      const rootDevotee = await Devotee.findOne({ familyId: rootId });
+      if (!rootDevotee) {
+        return res.status(404).json({ success: false, message: "Family not found" });
       }
+      resolvedRootId = rootDevotee._id.toString();
     }
     
+    // Access check removed: allow Devotees to view any family tree for discovery
+    
     const members = await Devotee.find({
-      familyRootId: rootId,
+      familyRootId: resolvedRootId,
       isDeleted: { $ne: true }
     }).populate('branch');
     
@@ -441,11 +447,7 @@ exports.getMemberDetails = async (req, res) => {
       return res.status(404).json({ success: false, message: "Member not found" });
     }
     
-    if (req.user.role === 'Devotee') {
-      if (req.user.familyRootId && devotee.familyRootId && req.user.familyRootId.toString() !== devotee.familyRootId.toString()) {
-        return res.status(403).json({ success: false, message: "Access denied. You can only view members of your own family." });
-      }
-    }
+    // Access check removed: allow Devotees to view any member details for discovery
     
     const father = devotee.fatherId ? await Devotee.findById(devotee.fatherId) : null;
     const mother = devotee.motherId ? await Devotee.findById(devotee.motherId) : null;
@@ -576,7 +578,6 @@ exports.createSelfRoot = async (req, res) => {
     }
     
     devotee.isFamilyHead = true;
-    devotee.gotra = req.body.gotra;
     devotee.kuldevta = req.body.kuldevta;
     devotee.village = req.body.village;
     devotee.taluka = req.body.taluka;
@@ -793,7 +794,6 @@ exports.getFamilyReportsData = async (req, res) => {
             headName: head.name,
             memberCount: fc.memberCount,
             size: fc.memberCount,
-            gotra: head.gotra || "N/A",
             state: head.state || "N/A",
             city: head.city || "N/A",
             branch: head.branch?.name || "Main Trust",

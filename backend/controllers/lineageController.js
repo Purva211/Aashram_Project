@@ -36,13 +36,13 @@ exports.createMember = async (req, res) => {
 
     if (req.files) {
       if (req.files.profileImage) {
-        newMemberData.profileImage = `/uploads/${req.files.profileImage[0].filename}`;
+        newMemberData.profileImage = req.files.profileImage[0].path;
       }
       if (req.files.galleryImages) {
-        newMemberData.galleryImages = req.files.galleryImages.map(f => `/uploads/${f.filename}`);
+        newMemberData.galleryImages = req.files.galleryImages.map(f => f.path);
       }
       if (req.files.documents) {
-        newMemberData.documents = req.files.documents.map(f => `/uploads/${f.filename}`);
+        newMemberData.documents = req.files.documents.map(f => f.path);
       }
     }
 
@@ -64,13 +64,13 @@ exports.updateMember = async (req, res) => {
     const updateData = { name, era, shortDescription, biography, status, parentId: parentId || null };
     if (req.files) {
       if (req.files.profileImage) {
-        updateData.profileImage = `/uploads/${req.files.profileImage[0].filename}`;
+        updateData.profileImage = req.files.profileImage[0].path;
       }
       if (req.files.galleryImages) {
-        updateData.galleryImages = req.files.galleryImages.map(f => `/uploads/${f.filename}`);
+        updateData.galleryImages = req.files.galleryImages.map(f => f.path);
       }
       if (req.files.documents) {
-        updateData.documents = req.files.documents.map(f => `/uploads/${f.filename}`);
+        updateData.documents = req.files.documents.map(f => f.path);
       }
     }
 

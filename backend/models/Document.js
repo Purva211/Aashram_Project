@@ -63,7 +63,16 @@ const documentSchema = new mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId },
     role: { type: String, enum: ['document_admin', 'Trustee'] },
     date: { type: Date, default: Date.now }
-  }]
+  }],
+  pendingUpdates: {
+    title: { type: String },
+    description: { type: String },
+    category: { type: String },
+    pdfName: { type: String },
+    pdfUrl: { type: String },
+    fileSize: { type: Number },
+    updatedAt: { type: Date }
+  }
 }, { timestamps: true });
 
 module.exports = mongoose.model("Document", documentSchema);

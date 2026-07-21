@@ -15,16 +15,40 @@ app.use(cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use("/uploads", express.static(path.join(__dirname, "uploads"), {
-  setHeaders: (res, filePath) => {
-    if (filePath.endsWith('.mp4')) {
-      res.set('Accept-Ranges', 'bytes');
-      res.set('Content-Type', 'video/mp4');
-      // Optional: Prevent caching issues with Safari/Chrome on local dev
-      res.set('Cache-Control', 'no-cache');
-    }
+const fs = require("fs");
+app.use("/uploads", (req, res, next) => {
+  const localFilePath = path.join(__dirname, "uploads", req.path);
+  
+  // 1. If file exists locally, serve it statically
+  if (fs.existsSync(localFilePath) && fs.lstatSync(localFilePath).isFile()) {
+    return express.static(path.join(__dirname, "uploads"), {
+      setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.mp4')) {
+          res.set('Accept-Ranges', 'bytes');
+          res.set('Content-Type', 'video/mp4');
+          res.set('Cache-Control', 'no-cache');
+        }
+      }
+    })(req, res, next);
   }
-}));
+  
+  // 2. Otherwise redirect to Cloudinary
+  const relativePath = req.path.replace(/^\//, "");
+  const ext = path.extname(relativePath).toLowerCase();
+  
+  let resourceType = "image";
+  if ([".mp4", ".webm", ".mov", ".avi", ".mkv", ".mp3", ".wav", ".aac", ".ogg", ".flac", ".m4a"].includes(ext)) {
+    resourceType = "video";
+  } else if ([".pdf", ".vtt", ".docx", ".doc", ".xls", ".xlsx"].includes(ext)) {
+    resourceType = "raw";
+  }
+  
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME || "dkciljoot";
+  const cloudinaryUrl = `https://res.cloudinary.com/${cloudName}/${resourceType}/upload/aashram_uploads/${relativePath}`;
+  
+  res.redirect(cloudinaryUrl);
+});
+
 
 // Default auth routes
 app.use("/api/auth", require("./routes/authRoutes"));
@@ -57,8 +81,31 @@ app.use("/api/audio", require("./routes/audioRoutes"));
 app.use("/api/receipts", require("./routes/receiptArchiveRoutes"));
 app.use("/api/correspondence", require("./routes/correspondenceRoutes"));
 
-app.get("/", (req, res) => {
-  res.send("Temple Management System API is running...");
+// Serve static frontend build if dist directory exists
+const frontendDist = path.join(__dirname, "../frontend/dist");
+if (fs.existsSync(frontendDist)) {
+  app.use(express.static(frontendDist));
+  app.get("*", (req, res, next) => {
+    if (req.path.startsWith("/api/") || req.path.startsWith("/uploads/")) {
+      return next();
+    }
+    res.sendFile(path.join(frontendDist, "index.html"));
+  });
+} else {
+  app.get("/", (req, res) => {
+    res.send("Temple Management System API is running...");
+  });
+}
+
+// 404 handler for API and uploads routes
+app.use((req, res) => {
+  if (req.path.startsWith("/api/")) {
+    return res.status(404).json({ success: false, message: "API route not found" });
+  }
+  if (req.path.startsWith("/uploads/")) {
+    return res.status(404).json({ success: false, message: "File not found" });
+  }
+  res.status(404).send("Page Not Found");
 });
 
 module.exports = app;

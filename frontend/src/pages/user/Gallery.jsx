@@ -1,6 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Camera, X, ZoomIn, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Camera, X, ZoomIn, ChevronRight, ChevronLeft, Play } from 'lucide-react';
+
+const isEmbedUrl = (url) => {
+  if (!url) return false;
+  const lower = url.toLowerCase();
+  return lower.includes('youtube.com') || lower.includes('youtu.be') || lower.includes('vimeo.com');
+};
+
+const getEmbedUrl = (url) => {
+  if (!url) return '';
+  if (url.includes('youtube.com') || url.includes('youtu.be')) {
+    return url.replace("watch?v=", "embed/").replace("youtu.be/", "youtube.com/embed/");
+  }
+  return getImageUrl(url);
+};
 import { Link, useLocation } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
@@ -200,16 +214,33 @@ const Gallery = () => {
                     onClick={() => openLightbox(index)}
                   >
                     {image.type === 'video' ? (
-                      <iframe 
-                        src={image.url?.includes('youtube.com') || image.url?.includes('youtu.be') ? image.url.replace("watch?v=", "embed/").replace("youtu.be/", "youtube.com/embed/") : getImageUrl(image.url)} 
-                        title={image.title} 
-                        className="w-full aspect-video object-cover group-hover:scale-105 transition-transform duration-[1.5s] ease-out pointer-events-none"
-                        loading="lazy"
-                      />
+                      isEmbedUrl(image.url) ? (
+                        <iframe 
+                          src={getEmbedUrl(image.url)} 
+                          title={image.title} 
+                          className="w-full aspect-video object-cover group-hover:scale-105 transition-transform duration-[1.5s] ease-out pointer-events-none"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="relative aspect-video bg-black flex items-center justify-center overflow-hidden">
+                          <video 
+                            src={getImageUrl(image.url)} 
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                            muted 
+                            preload="metadata"
+                          />
+                          <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 flex items-center justify-center transition-colors">
+                            <div className="w-12 h-12 rounded-full bg-[#f27415] text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                              <Play className="w-5 h-5 fill-current ml-0.5" />
+                            </div>
+                          </div>
+                        </div>
+                      )
                     ) : (
                       <img 
                         src={getImageUrl(image.url)} 
                         alt={image.title} 
+                        onError={(e) => { e.target.src = "/about_images/kolekar_real_1.jpg"; }}
                         className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-[1.5s] ease-out"
                         loading="lazy"
                       />
@@ -260,12 +291,21 @@ const Gallery = () => {
               onClick={(e) => e.stopPropagation()} // Prevent clicking image from closing
             >
               {imagesToDisplay[selectedImageIndex].type === 'video' ? (
-                <iframe
-                  src={imagesToDisplay[selectedImageIndex].url?.includes('youtube.com') || imagesToDisplay[selectedImageIndex].url?.includes('youtu.be') ? imagesToDisplay[selectedImageIndex].url.replace("watch?v=", "embed/").replace("youtu.be/", "youtube.com/embed/") : getImageUrl(imagesToDisplay[selectedImageIndex].url)}
-                  title={imagesToDisplay[selectedImageIndex].title}
-                  className="w-full md:w-[80vw] h-[50vh] md:h-[80vh] object-contain rounded-sm shadow-[0_20px_50px_rgba(0,0,0,0.5)] ring-1 ring-white/10 bg-black"
-                  allowFullScreen
-                />
+                isEmbedUrl(imagesToDisplay[selectedImageIndex].url) ? (
+                  <iframe
+                    src={getEmbedUrl(imagesToDisplay[selectedImageIndex].url)}
+                    title={imagesToDisplay[selectedImageIndex].title}
+                    className="w-full md:w-[80vw] h-[50vh] md:h-[80vh] object-contain rounded-sm shadow-[0_20px_50px_rgba(0,0,0,0.5)] ring-1 ring-white/10 bg-black"
+                    allowFullScreen
+                  />
+                ) : (
+                  <video
+                    src={getImageUrl(imagesToDisplay[selectedImageIndex].url)}
+                    controls
+                    autoPlay
+                    className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl bg-black border border-white/10"
+                  />
+                )
               ) : (
                 <motion.img
                   key={selectedImageIndex} // forces re-animation on change

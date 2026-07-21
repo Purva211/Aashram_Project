@@ -36,7 +36,7 @@ exports.createRecord = async (req, res) => {
         else if (file.mimetype.startsWith('video/')) type = 'video';
         
         return {
-          url: `/uploads/${file.filename}`,
+          url: file.path,
           type
         };
       });
@@ -74,7 +74,7 @@ exports.updateRecord = async (req, res) => {
         else if (file.mimetype.startsWith('video/')) type = 'video';
         
         return {
-          url: `/uploads/${file.filename}`,
+          url: file.path,
           type
         };
       });

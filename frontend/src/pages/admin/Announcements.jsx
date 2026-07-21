@@ -273,8 +273,11 @@ const Announcements = () => {
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (id) => {
-    if(window.confirm("Delete this announcement permanently?")) {
+  const handleDelete = async (id, isCreator) => {
+    const confirmMessage = isCreator
+      ? "Are you sure you want to PERMANENTLY DELETE this announcement from the system?"
+      : "Remove this announcement from your dashboard view?";
+    if (window.confirm(confirmMessage)) {
       try {
         await api.delete(`/announcements/${id}`);
         fetchAnnouncements();
@@ -424,7 +427,7 @@ const Announcements = () => {
                         <div className="flex gap-2 md:gap-3 items-center">
                           <div className="w-10 h-10 md:w-12 md:h-12 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 font-bold overflow-hidden border border-slate-200 shrink-0">
                             {ann.createdBy?.profilePhoto ? (
-                               <img src={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${ann.createdBy.profilePhoto}`} className="w-full h-full object-cover" />
+                               <img src={ann.createdBy.profilePhoto.startsWith('http') ? ann.createdBy.profilePhoto : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${ann.createdBy.profilePhoto.startsWith('/') ? '' : '/'}${ann.createdBy.profilePhoto}`} className="w-full h-full object-cover" />
                             ) : (
                                <img src="/logo.png" className="w-full h-full object-contain p-1.5" />
                             )}
@@ -447,8 +450,16 @@ const Announcements = () => {
                         </div>
                         
                         <div className="flex items-center gap-2">
-                          <button onClick={() => handleEdit(ann)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors" title="Edit"><FiEdit2 size={16} /></button>
-                          <button onClick={() => handleDelete(ann._id)} className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-full transition-colors" title="Delete"><FiTrash2 size={16} /></button>
+                          {(ann.isCreator || String(ann.createdBy?._id || ann.createdBy) === String(user?._id)) && (
+                            <button onClick={() => handleEdit(ann)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors" title="Permanently Edit Announcement"><FiEdit2 size={16} /></button>
+                          )}
+                          <button 
+                            onClick={() => handleDelete(ann._id, ann.isCreator || String(ann.createdBy?._id || ann.createdBy) === String(user?._id))} 
+                            className={`p-2 rounded-full transition-colors ${ann.isCreator || String(ann.createdBy?._id || ann.createdBy) === String(user?._id) ? 'text-slate-400 hover:text-rose-600 hover:bg-rose-50' : 'text-slate-400 hover:text-amber-600 hover:bg-amber-50'}`} 
+                            title={ann.isCreator || String(ann.createdBy?._id || ann.createdBy) === String(user?._id) ? "Permanently Delete from System" : "Remove from My View"}
+                          >
+                            <FiTrash2 size={16} />
+                          </button>
                         </div>
                       </div>
 

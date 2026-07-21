@@ -149,14 +149,25 @@ exports.updateTrustee = async (req, res) => {
     if (permissions && typeof permissions === 'string') {
       try { permissions = JSON.parse(permissions); } catch(e){}
     }
-    
-    const updateData = { name, email, mobile, designation, address, systemRole, permissions, status };
-    if (password) {
-      updateData.password = password; // In a real app this should be hashed if handled here, but Schema usually handles it
+
+    const trustee = await Trustee.findById(req.params.id);
+    if (!trustee) return res.status(404).json({ success: false, message: "Trustee not found" });
+
+    if (name) trustee.name = name;
+    if (email) trustee.email = email;
+    if (mobile) trustee.mobile = mobile;
+    if (designation) trustee.designation = designation;
+    if (address) trustee.address = address;
+    if (systemRole) trustee.systemRole = systemRole;
+    if (permissions) trustee.permissions = permissions;
+    if (status) trustee.status = status;
+    if (req.file) trustee.profilePhoto = `/uploads/${req.file.filename}`;
+
+    if (password && password.trim() !== "") {
+      trustee.password = password; // Triggers pre-save hook to hash password
     }
 
-    const trustee = await Trustee.findByIdAndUpdate(req.params.id, updateData, { returnDocument: 'after' });
-    if (!trustee) return res.status(404).json({ success: false, message: "Trustee not found" });
+    await trustee.save();
 
     const response = trustee.toObject();
     delete response.password;
@@ -316,3 +327,54 @@ exports.getAllDocuments = async (req, res) => {
 
 
 exports.getAllAdmins = async (req, res) => { try { const admins = await require('../models/Admin').find().select('-password'); res.json({ success: true, data: admins }); } catch (err) { res.status(500).json({ success: false }); } };
+
+// Update Admin Profile
+exports.updateProfile = async (req, res) => {
+  try {
+    const admin = await Admin.findById(req.user._id);
+    if (!admin) return res.status(404).json({ success: false, message: "Admin not found" });
+
+    if (req.body.name) admin.name = req.body.name;
+    if (req.body.mobile !== undefined) admin.mobile = req.body.mobile;
+    if (req.body.address !== undefined) admin.address = req.body.address;
+    if (req.file) admin.profilePhoto = req.file.path;
+
+    await admin.save();
+
+    const responseData = admin.toObject();
+    delete responseData.password;
+
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      data: responseData
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// Update Admin Password
+exports.updatePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const admin = await Admin.findById(req.user._id);
+    if (!admin) return res.status(404).json({ success: false, message: "Admin not found" });
+
+    const isMatch = await admin.matchPassword(currentPassword);
+    if (!isMatch) {
+      return res.status(400).json({ success: false, message: "Incorrect current password" });
+    }
+
+    admin.password = newPassword;
+    await admin.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Password updated successfully"
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+

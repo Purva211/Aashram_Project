@@ -177,9 +177,9 @@ const CreateLetter = () => {
              <div className="flex justify-between items-stretch border-b-2 border-[#be1e4d] pb-2 mb-4">
                 <div className="w-1/5 text-center flex flex-col items-center justify-end">
                    <div className="text-[10pt] text-[#1e3a8a] font-bold mb-1">२९ वे पिठाधिपती</div>
-                   <div className="w-[80px] h-[80px] rounded-full border border-[#be1e4d] mx-auto bg-gray-100 flex items-center justify-center text-xs text-gray-400 overflow-hidden">
-                      <img src="http://localhost:5000/uploads/swami29.jpg" alt="Swami 29" className="w-full h-full object-cover" />
-                   </div>
+                    <div className="w-[80px] h-[80px] rounded-full border-2 border-[#be1e4d] bg-gray-100 flex items-center justify-center overflow-hidden">
+                       <img src={`${import.meta.env.VITE_ASSETS_URL || 'http://localhost:5000'}/uploads/swami29.jpg`} alt="Swami 29" className="w-full h-full object-cover" onError={(e) => { e.target.onerror = null; e.target.src = "/guru_swamiji.png"; }} />
+                    </div>
                 </div>
                 <div className="w-3/5 text-center">
                    <div className="text-[12pt] text-[#be1e4d] font-bold">॥ ॐ श्री गुरुनिर्वाण रुद्रपशुपति प्रसन्न ॥</div>
@@ -192,7 +192,7 @@ const CreateLetter = () => {
                    <div className="text-[10pt] text-[#be1e4d] font-bold mb-1">ट्रस्ट नं. ए/१७५० - सांगली</div>
                    <div className="text-[10pt] text-[#1e3a8a] font-bold mb-1">३० वे पिठाधिपती</div>
                    <div className="w-[80px] h-[80px] rounded-full border border-[#be1e4d] mx-auto bg-gray-100 flex items-center justify-center text-xs text-gray-400 overflow-hidden">
-                      <img src="http://localhost:5000/uploads/swami30.jpg" alt="Swami 30" className="w-full h-full object-cover" />
+                      <img src={`${import.meta.env.VITE_ASSETS_URL || 'http://localhost:5000'}/uploads/swami30.jpg`} alt="Swami 30" className="w-full h-full object-cover" onError={(e) => { e.target.onerror = null; e.target.src = "/current_swamiji.png"; }} />
                    </div>
                 </div>
              </div>

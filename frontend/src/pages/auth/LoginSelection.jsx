@@ -24,7 +24,18 @@ const LoginSelection = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const returnUrl = location.state?.returnUrl;
-  const { login } = useAuth();
+  const { user, login } = useAuth();
+  
+  useEffect(() => {
+    if (user) {
+      if (user.role === 'Admin') navigate('/admin/dashboard', { replace: true });
+      else if (user.role === 'Trustee') navigate('/trustee/dashboard', { replace: true });
+      else if (user.role === 'BranchManager') navigate('/branch/dashboard', { replace: true });
+      else if (user.role === 'Accountant') navigate('/accountant/dashboard', { replace: true });
+      else if (user.role === 'DocumentHandler' || user.role === 'document_admin') navigate('/document-handler/dashboard', { replace: true });
+      else navigate(returnUrl || '/devotee/dashboard', { replace: true });
+    }
+  }, [user, navigate, returnUrl]);
   
   const [selectedRole, setSelectedRole] = useState('Devotee');
   const [isAdminUnlocked, setIsAdminUnlocked] = useState(false);
@@ -318,7 +329,7 @@ const LoginSelection = () => {
                     )}
                   </div>
                   <div className="relative">
-                    <input required type={showPassword ? "text" : "password"} value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} className="w-full bg-slate-50/50 backdrop-blur-sm border border-slate-200 text-slate-800 rounded-2xl px-5 py-4 outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-400/10 focus:bg-white transition-all placeholder:text-slate-400 shadow-sm font-medium" placeholder="Enter your password" />
+                    <input required autoComplete="current-password" type={showPassword ? "text" : "password"} value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} className="w-full bg-slate-50/50 backdrop-blur-sm border border-slate-200 text-slate-800 rounded-2xl px-5 py-4 outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-400/10 focus:bg-white transition-all placeholder:text-slate-400 shadow-sm font-medium" placeholder="Enter your password" />
                     <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-orange-500 transition-colors p-1">
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>

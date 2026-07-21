@@ -308,33 +308,35 @@ const ManageNews = () => {
       {error && <div className="bg-red-50 text-red-500 p-4 rounded-xl text-sm font-bold mb-6">{error}</div>}
 
       {/* FILTERS */}
-      <div className="flex flex-wrap items-center gap-4 mb-10">
-        <div className="relative flex-1 min-w-[250px]">
+      <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 mb-6 sm:mb-8">
+        <div className="relative flex-1 min-w-[200px] w-full sm:w-auto">
           <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
           <input 
             type="text" 
             placeholder="Search news..." 
             value={searchTerm} 
             onChange={(e) => setSearchTerm(e.target.value)} 
-            className="w-full bg-white border border-gray-200 rounded-xl pl-12 pr-4 py-3 outline-none focus:border-saffron-500 shadow-sm" 
+            className="w-full bg-white border border-gray-200 rounded-xl pl-12 pr-4 py-2.5 outline-none focus:border-saffron-500 shadow-sm text-sm" 
           />
         </div>
         
-        <select 
-          onChange={(e) => {
-            if(e.target.value) handleSort(e.target.value);
-          }} 
-          className="px-4 py-3 bg-white border border-gray-200 rounded-xl outline-none focus:border-saffron-500 shadow-sm cursor-pointer text-sm"
-        >
-          <option value="">Sort By...</option>
-          <option value="title">Title</option>
-          <option value="publishDate">Publish Date</option>
-          <option value="category">Category</option>
-        </select>
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <select 
+            onChange={(e) => {
+              if(e.target.value) handleSort(e.target.value);
+            }} 
+            className="flex-1 sm:flex-none px-4 py-2.5 bg-white border border-gray-200 rounded-xl outline-none focus:border-saffron-500 shadow-sm cursor-pointer text-xs font-bold"
+          >
+            <option value="">Sort By...</option>
+            <option value="title">Title</option>
+            <option value="publishDate">Publish Date</option>
+            <option value="category">Category</option>
+          </select>
 
-        <button onClick={() => setShowFilters(!showFilters)} className={`flex items-center gap-2 px-6 py-3 bg-white border ${showFilters ? 'border-saffron-500 text-saffron-600' : 'border-gray-200 text-gray-700'} hover:bg-gray-50 rounded-xl text-sm font-bold shadow-sm transition-colors`}>
-          <FaFilter /> Filters
-        </button>
+          <button onClick={() => setShowFilters(!showFilters)} className={`flex-1 sm:flex-none justify-center flex items-center gap-2 px-5 py-2.5 bg-white border ${showFilters ? 'border-saffron-500 text-saffron-600' : 'border-gray-200 text-gray-700'} hover:bg-gray-50 rounded-xl text-xs font-bold shadow-sm transition-colors`}>
+            <FaFilter /> Filters
+          </button>
+        </div>
       </div>
 
       {showFilters && (

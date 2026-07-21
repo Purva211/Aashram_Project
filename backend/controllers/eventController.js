@@ -1,7 +1,27 @@
 const Event = require("../models/Event");
 // Removed Cloudinary as per strict requirement for physical uploads
 
-// Status is now manually managed by Admin, no dynamic override needed.
+// Helper to automatically update past event status to 'completed'
+const autoUpdateEventStatuses = async () => {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    await Event.updateMany(
+      {
+        $or: [
+          { eventEndDate: { $lt: today } },
+          { eventDate: { $lt: today }, eventEndDate: { $exists: false } },
+          { eventDate: { $lt: today }, eventEndDate: null }
+        ],
+        status: 'upcoming'
+      },
+      { $set: { status: 'completed' } }
+    );
+  } catch (err) {
+    console.error("Error auto-updating event statuses:", err);
+  }
+};
 
 const processEvents = (events) => {
   return events.map(e => e.toObject ? e.toObject() : e);
@@ -15,6 +35,7 @@ const processSingleEvent = (event) => {
 // ADMIN: Get all events (with filters)
 exports.getAllEventsAdmin = async (req, res) => {
   try {
+    await autoUpdateEventStatuses();
     const { search } = req.query;
     
     let query = {};
@@ -54,19 +75,19 @@ exports.createEvent = async (req, res) => {
     // Process files if available
     if (req.files) {
       if (req.files['featuredImage']) {
-        eventData.featuredImage = `/uploads/${req.files['featuredImage'][0].filename}`;
+        eventData.featuredImage = req.files['featuredImage'][0].path;
       }
       
       if (req.files['galleryImages']) {
         const galleryUrls = [];
         for (const file of req.files['galleryImages']) {
-          galleryUrls.push(`/uploads/${file.filename}`);
+          galleryUrls.push(file.path);
         }
         eventData.galleryImages = galleryUrls;
       }
 
       if (req.files['videoFile']) {
-        eventData.videoFile = `/uploads/${req.files['videoFile'][0].filename}`;
+        eventData.videoFile = req.files['videoFile'][0].path;
       }
     }
     
@@ -95,19 +116,19 @@ exports.updateEvent = async (req, res) => {
     // Process files if available
     if (req.files) {
       if (req.files['featuredImage']) {
-        eventData.featuredImage = `/uploads/${req.files['featuredImage'][0].filename}`;
+        eventData.featuredImage = req.files['featuredImage'][0].path;
       }
       
       if (req.files['galleryImages']) {
         const galleryUrls = [];
         for (const file of req.files['galleryImages']) {
-          galleryUrls.push(`/uploads/${file.filename}`);
+          galleryUrls.push(file.path);
         }
         eventData.galleryImages = galleryUrls;
       }
 
       if (req.files['videoFile']) {
-        eventData.videoFile = `/uploads/${req.files['videoFile'][0].filename}`;
+        eventData.videoFile = req.files['videoFile'][0].path;
       }
     }
     
@@ -180,6 +201,7 @@ exports.toggleFeatured = async (req, res) => {
 // USER: Get Published Events (with optional filters)
 exports.getPublishedEvents = async (req, res) => {
   try {
+    await autoUpdateEventStatuses();
     const { search, limit = 10, page = 1, branchId, filterStatus } = req.query;
     let query = { isPublished: true };
     

@@ -112,7 +112,24 @@ exports.reviewDocument = async (req, res) => {
       return res.status(404).json({ success: false, message: "Document not found" });
     }
 
-    doc.status = status;
+    if (status === "Approved") {
+      if (doc.pendingUpdates && doc.pendingUpdates.title) {
+        doc.title = doc.pendingUpdates.title;
+        doc.description = doc.pendingUpdates.description;
+        doc.category = doc.pendingUpdates.category;
+        doc.pdfName = doc.pendingUpdates.pdfName;
+        doc.pdfUrl = doc.pendingUpdates.pdfUrl;
+        doc.fileSize = doc.pendingUpdates.fileSize;
+        doc.pendingUpdates = undefined;
+      }
+      doc.status = "Approved";
+    } else if (status === "Rejected") {
+      doc.pendingUpdates = undefined;
+      doc.status = "Rejected";
+    } else {
+      doc.status = status;
+    }
+
     doc.reviewComment = reviewComment || "";
     doc.reviewedBy = req.user._id;
 
@@ -149,39 +166,21 @@ exports.reviewDeletionRequest = async (req, res) => {
     }
 
     if (status === "Approved") {
-      // Check if this user already approved
-      const alreadyApproved = doc.deletionApprovals.some(
-        (approval) => approval.user.toString() === req.user._id.toString()
-      );
-      if (!alreadyApproved) {
-        doc.deletionApprovals.push({
-          user: req.user._id,
-          role: 'Trustee'
-        });
-      }
-
-      // Check thresholds: at least 1 document_admin and 1 Trustee
-      const hasAdminApproval = doc.deletionApprovals.some(a => a.role === 'document_admin');
-      const hasTrusteeApproval = doc.deletionApprovals.some(a => a.role === 'Trustee');
-
-      if (hasAdminApproval && hasTrusteeApproval) {
-        const fs = require('fs');
-        const path = require('path');
+      const fs = require('fs');
+      const path = require('path');
+      if (doc.pdfUrl) {
         const filePath = path.join(__dirname, "..", doc.pdfUrl);
         if (fs.existsSync(filePath)) {
           fs.unlinkSync(filePath);
         }
-        await doc.deleteOne();
-        return res.status(200).json({ success: true, message: "Deletion request fully approved and document deleted" });
-      } else {
-        await doc.save();
-        return res.status(200).json({ success: true, message: "Approval recorded. Waiting for Document Handler approval." });
       }
+      await doc.deleteOne();
+      return res.status(200).json({ success: true, message: "Deletion request approved and document deleted from system" });
     } else {
-      doc.deleteStatus = status;
-      doc.deleteRequested = false; // Reset request if rejected so they can request again if needed
+      doc.deleteStatus = "Rejected";
+      doc.deleteRequested = false;
       await doc.save();
-      return res.status(200).json({ success: true, data: doc, message: `Deletion request ${status}` });
+      return res.status(200).json({ success: true, data: doc, message: "Deletion request rejected" });
     }
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -199,7 +198,7 @@ exports.updateProfile = async (req, res) => {
 
     if (name) trustee.name = name;
     if (mobile) trustee.mobile = mobile;
-    if (req.file) trustee.profilePhoto = '/uploads/' + req.file.filename;
+    if (req.file) trustee.profilePhoto = req.file.path;
     if (password) trustee.password = password;
 
     await trustee.save();

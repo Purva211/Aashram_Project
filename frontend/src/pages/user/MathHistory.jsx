@@ -168,9 +168,6 @@ const MathHistory = () => {
                                             className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-[2s] ease-out"
                                             autoPlay muted loop playsInline
                                           />
-                                          <div className="absolute inset-0 flex items-center justify-center z-20">
-                                            <PlayCircle className="w-20 h-20 text-white/80 group-hover:text-mahakal-saffron transition-colors duration-500 drop-shadow-md" />
-                                          </div>
                                         </div>
                                     ) : (
                                         <div className="w-full h-full flex flex-col items-center justify-center bg-stone-50 group-hover:bg-orange-50 transition-colors duration-500">

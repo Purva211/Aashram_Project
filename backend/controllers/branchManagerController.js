@@ -20,7 +20,7 @@ exports.updateProfile = async (req, res) => {
     if (password !== undefined) manager.password = password; // Will be hashed by pre-save hook
 
     if (req.file) {
-      manager.profilePhoto = `/uploads/${req.file.filename}`;
+      manager.profilePhoto = req.file.path;
     }
 
     await manager.save();

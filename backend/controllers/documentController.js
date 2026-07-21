@@ -10,9 +10,8 @@ exports.createDocument = async (req, res) => {
 
     const { title, description, category } = req.body;
     
-    // Create URL path for database
-    // Path will be like /uploads/documents/doc-123.pdf
-    const fileUrl = `/uploads/documents/${req.file.filename}`;
+    // Create URL path for database (Cloudinary URL)
+    const fileUrl = req.file.path;
 
     const document = new Document({
       title,
@@ -28,10 +27,6 @@ exports.createDocument = async (req, res) => {
     await document.save();
     res.status(201).json({ success: true, document });
   } catch (error) {
-    // If error occurs, remove the uploaded file to prevent orphans
-    if (req.file) {
-      fs.unlinkSync(req.file.path);
-    }
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -97,35 +92,27 @@ exports.updateDocument = async (req, res) => {
   try {
     const document = await Document.findOne({ _id: req.params.id });
     if (!document) {
-      if (req.file) fs.unlinkSync(req.file.path);
       return res.status(404).json({ success: false, message: "Document not found" });
     }
 
     const { title, description, category } = req.body;
 
-    if (title) document.title = title;
-    if (description) document.description = description;
-    if (category) document.category = category;
-    // We no longer allow changing the branch during update
-    // document.branch is strictly bound to req.user.branch
+    const pending = {
+      title: title || document.title,
+      description: description || document.description,
+      category: category || document.category,
+      pdfName: req.file ? req.file.originalname : document.pdfName,
+      pdfUrl: req.file ? req.file.path : document.pdfUrl,
+      fileSize: req.file ? req.file.size : document.fileSize,
+      updatedAt: new Date()
+    };
 
-    if (req.file) {
-      // Delete old file
-      const oldFilePath = path.join(__dirname, "..", document.pdfUrl);
-      if (fs.existsSync(oldFilePath)) {
-        fs.unlinkSync(oldFilePath);
-      }
-
-      // Update with new file
-      document.pdfName = req.file.originalname;
-      document.pdfUrl = `/uploads/documents/${req.file.filename}`;
-      document.fileSize = req.file.size;
-    }
-
+    document.pendingUpdates = pending;
+    document.status = "Pending";
     await document.save();
-    res.json({ success: true, document });
+
+    res.json({ success: true, message: "Update request submitted to Trust panel for approval.", document });
   } catch (error) {
-    if (req.file) fs.unlinkSync(req.file.path);
     res.status(500).json({ success: false, message: error.message });
   }
 };

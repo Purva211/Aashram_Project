@@ -57,13 +57,13 @@ const createLiveStream = async (req, res) => {
 
     if (req.files) {
       if (req.files.thumbnail && req.files.thumbnail[0]) {
-        finalThumbnail = `/uploads/${req.files.thumbnail[0].filename}`;
+        finalThumbnail = req.files.thumbnail[0].path;
       } else if (req.body.thumbnail) {
         finalThumbnail = req.body.thumbnail;
       }
       
       if (req.files.videoFile && req.files.videoFile[0]) {
-        finalVideoFile = `/uploads/${req.files.videoFile[0].filename}`;
+        finalVideoFile = req.files.videoFile[0].path;
       }
     } else {
       if (req.body.thumbnail) finalThumbnail = req.body.thumbnail;
@@ -119,13 +119,13 @@ const updateLiveStream = async (req, res) => {
     
     if (req.files) {
       if (req.files.thumbnail && req.files.thumbnail[0]) {
-        stream.thumbnail = `/uploads/${req.files.thumbnail[0].filename}`;
+        stream.thumbnail = req.files.thumbnail[0].path;
       } else if (req.body.thumbnail) {
         stream.thumbnail = req.body.thumbnail;
       }
       
       if (req.files.videoFile && req.files.videoFile[0]) {
-        stream.videoFile = `/uploads/${req.files.videoFile[0].filename}`;
+        stream.videoFile = req.files.videoFile[0].path;
       }
     } else {
       if (req.body.thumbnail) stream.thumbnail = req.body.thumbnail;

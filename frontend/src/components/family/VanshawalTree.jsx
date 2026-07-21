@@ -145,12 +145,11 @@ const VanshawalTree = ({
     return (
       member.name.toLowerCase().includes(term) ||
       member.devoteeId.toLowerCase().includes(term) ||
-      (member.mobile && member.mobile.includes(term)) ||
-      (member.gotra && member.gotra.toLowerCase().includes(term))
+      (member.mobile && member.mobile.includes(term))
     );
   };
 
-  // Drag pan handlers
+  // Drag pan handlers (Mouse & Touch)
   const handleMouseDown = (e) => {
     if (e.target.closest("button") || e.target.closest(".card-interactive"))
       return;
@@ -170,6 +169,31 @@ const VanshawalTree = ({
   };
 
   const handleMouseUp = () => {
+    dragRef.current.isDragging = false;
+  };
+
+  const handleTouchStart = (e) => {
+    if (e.touches.length === 1) {
+      if (e.target.closest("button") || e.target.closest(".card-interactive")) return;
+      const touch = e.touches[0];
+      dragRef.current = {
+        isDragging: true,
+        startX: touch.clientX - position.x,
+        startY: touch.clientY - position.y,
+      };
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    if (!dragRef.current.isDragging || e.touches.length !== 1) return;
+    const touch = e.touches[0];
+    setPosition({
+      x: touch.clientX - dragRef.current.startX,
+      y: touch.clientY - dragRef.current.startY,
+    });
+  };
+
+  const handleTouchEnd = () => {
     dragRef.current.isDragging = false;
   };
 
@@ -213,7 +237,7 @@ const VanshawalTree = ({
       matchesSearch(member) || (spouse && matchesSearch(spouse));
 
     return (
-      <li key={member._id} className="relative flex flex-col items-center px-4">
+      <li key={member._id} className="relative flex flex-col items-center px-4 shrink-0">
         {/* Connection line helper */}
         <div className="absolute top-0 h-4 border-l border-slate-300"></div>
 
@@ -227,7 +251,7 @@ const VanshawalTree = ({
               e.preventDefault();
               setContextMenu({ x: e.clientX, y: e.clientY, member: member });
             }}
-            className={`card-interactive flex flex-col p-4 w-44 rounded-2xl border bg-white shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer ${
+            className={`card-interactive shrink-0 flex flex-col p-3 w-48 rounded-2xl border bg-white shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer ${
               isSelected
                 ? "ring-2 ring-saffron-500 border-saffron-500 scale-105"
                 : highlight
@@ -235,13 +259,13 @@ const VanshawalTree = ({
                   : "border-gray-200"
             }`}
           >
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-start gap-2 mb-2">
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-black ${member.gender === "Male" ? "bg-orange-500" : "bg-rose-500"}`}
               >
                 {member.profilePhoto ? (
                   <img
-                    src={member.profilePhoto}
+                    src={member.profilePhoto.startsWith('http') ? member.profilePhoto : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${member.profilePhoto.startsWith('/') ? '' : '/'}${member.profilePhoto}`}
                     alt={member.name}
                     className="w-full h-full rounded-full object-cover"
                   />
@@ -249,8 +273,8 @@ const VanshawalTree = ({
                   <FiUser />
                 )}
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-black text-slate-800 truncate leading-tight">
+              <div className="flex-1 min-w-0 pt-0.5">
+                <p className="text-xs font-black text-slate-800 break-words leading-tight">
                   {member.name}
                 </p>
                 <p className="text-[9px] text-slate-400 font-bold mt-0.5">
@@ -301,7 +325,7 @@ const VanshawalTree = ({
                     member: spouse,
                   });
                 }}
-                className={`card-interactive flex flex-col p-4 w-44 rounded-2xl border bg-white shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer ${
+                className={`card-interactive shrink-0 flex flex-col p-3 w-48 rounded-2xl border bg-white shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer ${
                   selectedMemberId === spouse._id
                     ? "ring-2 ring-saffron-500 border-saffron-500 scale-105"
                     : highlight
@@ -309,13 +333,13 @@ const VanshawalTree = ({
                       : "border-gray-200"
                 }`}
               >
-                <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-start gap-2 mb-2">
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-black ${spouse.gender === "Male" ? "bg-orange-500" : "bg-rose-500"}`}
                   >
                     {spouse.profilePhoto ? (
                       <img
-                        src={spouse.profilePhoto}
+                        src={spouse.profilePhoto.startsWith('http') ? spouse.profilePhoto : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${spouse.profilePhoto.startsWith('/') ? '' : '/'}${spouse.profilePhoto}`}
                         alt={spouse.name}
                         className="w-full h-full rounded-full object-cover"
                       />
@@ -323,10 +347,10 @@ const VanshawalTree = ({
                       <FiUser />
                     )}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-black text-slate-800 truncate leading-tight">
-                      {spouse.name}
-                    </p>
+              <div className="flex-1 min-w-0 pt-0.5">
+                <p className="text-xs font-black text-slate-800 break-words leading-tight">
+                  {spouse.name}
+                </p>
                     <p className="text-[9px] text-slate-400 font-bold mt-0.5">
                       {spouse.devoteeId}
                     </p>
@@ -399,6 +423,9 @@ const VanshawalTree = ({
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
       style={{ cursor: dragRef.current.isDragging ? "grabbing" : "grab" }}
     >
       {/* Dynamic Connector Canvas behind elements */}
@@ -422,23 +449,53 @@ const VanshawalTree = ({
       </div>
 
       {/* Floating Header Toolbar */}
-      <div className="absolute top-6 left-6 right-6 z-30 flex flex-col sm:flex-row justify-between items-center gap-4 bg-white/80 backdrop-blur-md px-6 py-4 rounded-2xl border border-slate-200/50 shadow-lg">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-saffron-50 flex items-center justify-center text-saffron-500 font-bold">
-            <FaCrown />
+      <div className="absolute top-3 left-3 right-3 sm:top-6 sm:left-6 sm:right-6 z-30 flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-3 sm:gap-4 bg-white/90 backdrop-blur-md p-3 sm:px-6 sm:py-4 rounded-2xl border border-slate-200/50 shadow-lg pointer-events-auto">
+        <div className="flex items-center justify-between lg:justify-start gap-3 w-full lg:w-auto">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-saffron-50 flex items-center justify-center text-saffron-500 font-bold shrink-0">
+              <FaCrown size={14} />
+            </div>
+            <div>
+              <h3 className="text-xs sm:text-sm font-black text-slate-800 tracking-wide uppercase leading-tight">
+                Vanshawal <span className="hidden sm:inline">Explorer</span>
+              </h3>
+              <p className="text-[8px] sm:text-[10px] text-slate-400 font-semibold mt-0.5 hidden sm:block">
+                Drag to pan • Click to select
+              </p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-sm font-black text-slate-800 tracking-wide uppercase">
-              Interactive Vanshawal
-            </h3>
-            <p className="text-[10px] text-slate-400 font-semibold mt-0.5">
-              Drag to pan • Click to select devotee
-            </p>
+
+          {/* Zoom controls on mobile (shown next to title) */}
+          <div className="flex lg:hidden items-center gap-1 shrink-0">
+            <button
+              onClick={zoomIn}
+              className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
+            >
+              <FiZoomIn size={14} />
+            </button>
+            <button
+              onClick={zoomOut}
+              className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
+            >
+              <FiZoomOut size={14} />
+            </button>
+            <button
+              onClick={resetZoom}
+              className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
+            >
+              <FiRefreshCw size={14} />
+            </button>
+            <button
+              onClick={toggleFullScreen}
+              className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
+            >
+              {isFullScreen ? <FiMinimize size={14} /> : <FiMaximize size={14} />}
+            </button>
           </div>
         </div>
 
         {/* Tree Inner Searching */}
-        <div className="relative w-full sm:w-64">
+        <div className="relative w-full lg:w-64">
           <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
@@ -449,7 +506,7 @@ const VanshawalTree = ({
               setShowTreeSuggestions(true);
             }}
             onFocus={() => setShowTreeSuggestions(true)}
-            className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-saffron-500/20 focus:border-saffron-500 transition-all text-slate-700"
+            className="w-full pl-10 pr-4 py-2 sm:py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-saffron-500/20 focus:border-saffron-500 transition-all text-slate-700"
           />
 
           {showTreeSuggestions && searchTerm && (
@@ -460,8 +517,7 @@ const VanshawalTree = ({
                   return (
                     m.name.toLowerCase().includes(term) ||
                     (m.devoteeId && m.devoteeId.toLowerCase().includes(term)) ||
-                    (m.mobile && m.mobile.includes(term)) ||
-                    (m.gotra && m.gotra.toLowerCase().includes(term))
+                    (m.mobile && m.mobile.includes(term))
                   );
                 })
                 .slice(0, 5)
@@ -486,8 +542,7 @@ const VanshawalTree = ({
                 return (
                   m.name.toLowerCase().includes(term) ||
                   (m.devoteeId && m.devoteeId.toLowerCase().includes(term)) ||
-                  (m.mobile && m.mobile.includes(term)) ||
-                  (m.gotra && m.gotra.toLowerCase().includes(term))
+                  (m.mobile && m.mobile.includes(term))
                 );
               }).length === 0 && (
                 <div className="px-4 py-3 text-xs text-slate-400 font-medium text-center">
@@ -498,8 +553,8 @@ const VanshawalTree = ({
           )}
         </div>
 
-        {/* View Zoom Control Action Bar */}
-        <div className="flex items-center gap-2">
+        {/* View Zoom Control Action Bar (Desktop only) */}
+        <div className="hidden lg:flex items-center gap-2">
           <button
             onClick={zoomIn}
             title="Zoom In"
@@ -533,15 +588,15 @@ const VanshawalTree = ({
 
       {/* Main Drag-Pan Tree Body Container */}
       <div
-        className="absolute origin-center transition-transform duration-75 select-none"
+        className="absolute transition-transform duration-75 select-none"
         style={{
-          transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
+          transform: `translate(calc(-50% + ${position.x}px), ${position.y}px) scale(${scale})`,
           left: "50%",
           top: "30%",
-          transformOrigin: "0 0",
+          transformOrigin: "50% 0",
         }}
       >
-        <ul className="flex items-start justify-center gap-8 pr-[300px]">
+        <ul className="flex items-start justify-center gap-6 sm:gap-8 pr-4 sm:pr-8">
           {rootMembers.map((root) => renderTreeNode(root))}
           {rootMembers.length === 0 && (
             <div className="text-center py-20 text-slate-400 font-bold">

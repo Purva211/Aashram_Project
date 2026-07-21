@@ -1,11 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../utils/api";
+import { useAuth } from "../../context/AuthContext";
 import { FaUser, FaEnvelope, FaLock, FaPhone, FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import OtpInput from "../../components/OTPInput";
 
 const Register = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      if (user.role === 'Admin') navigate('/admin/dashboard', { replace: true });
+      else if (user.role === 'Trustee') navigate('/trustee/dashboard', { replace: true });
+      else if (user.role === 'BranchManager') navigate('/branch/dashboard', { replace: true });
+      else if (user.role === 'Accountant') navigate('/accountant/dashboard', { replace: true });
+      else if (user.role === 'DocumentHandler' || user.role === 'document_admin') navigate('/document-handler/dashboard', { replace: true });
+      else navigate('/devotee/dashboard', { replace: true });
+    }
+  }, [user, navigate]);
   
   // UI State
   const [showPassword, setShowPassword] = useState(false);

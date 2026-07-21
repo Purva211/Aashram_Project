@@ -15,7 +15,7 @@ exports.createBranch = async (req, res) => {
 
     let image = "";
     if (req.file) {
-      image = `/uploads/${req.file.filename}`;
+      image = req.file.path;
     }
 
     const branch = new Branch({ name, location, contact, description, image });
@@ -61,7 +61,7 @@ exports.updateBranch = async (req, res) => {
     }
 
     if (req.file) {
-      updateData.image = `/uploads/${req.file.filename}`;
+      updateData.image = req.file.path;
     }
 
     const branch = await Branch.findByIdAndUpdate(

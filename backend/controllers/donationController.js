@@ -71,29 +71,22 @@ exports.createDonation = async (req, res) => {
     let finalDonationType = donationType || "dengi_pavti";
 
     if (!utrNumber) {
-      if (req.file) fs.unlinkSync(req.file.path);
       return res.status(400).json({ success: false, message: "UTR Number is required." });
     }
 
     if (!/^\d{12}$/.test(utrNumber)) {
-      if (req.file) fs.unlinkSync(req.file.path);
       return res.status(400).json({ success: false, message: "Invalid UTR Number. Must be exactly 12 numeric digits." });
     }
 
     // Check for duplicate UTR
     const existingUtr = await Donation.findOne({ utrNumber });
     if (existingUtr) {
-      if (req.file) fs.unlinkSync(req.file.path);
       return res.status(400).json({ success: false, message: "This UTR Number has already been submitted." });
     }
 
     let screenshotUrl = null;
     if (req.file) {
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: "trust_donations",
-      });
-      screenshotUrl = result.secure_url;
-      fs.unlinkSync(req.file.path);
+      screenshotUrl = req.file.path;
     }
 
     let donationReference;
@@ -139,9 +132,6 @@ exports.createDonation = async (req, res) => {
     
     res.status(201).json({ success: true, data: donation });
   } catch (error) {
-    if (req.file && fs.existsSync(req.file.path)) {
-      fs.unlinkSync(req.file.path);
-    }
     res.status(400).json({ success: false, message: error.message });
   }
 };
@@ -197,41 +187,32 @@ exports.submitPayment = async (req, res) => {
     const { utrNumber, upiId, paymentApp } = req.body;
 
     if (!utrNumber) {
-      if (req.file) fs.unlinkSync(req.file.path);
       return res.status(400).json({ success: false, message: "UTR Number is required." });
     }
 
     if (!/^\d{12}$/.test(utrNumber)) {
-      if (req.file) fs.unlinkSync(req.file.path);
       return res.status(400).json({ success: false, message: "Invalid UTR Number. Must be exactly 12 numeric digits." });
     }
 
     // Check for duplicate UTR
     const existingUtr = await Donation.findOne({ utrNumber });
     if (existingUtr && existingUtr._id.toString() !== id) {
-      if (req.file) fs.unlinkSync(req.file.path);
       return res.status(400).json({ success: false, message: "This UTR Number has already been submitted." });
     }
 
     const donation = await Donation.findById(id);
     if (!donation) {
-      if (req.file) fs.unlinkSync(req.file.path);
       return res.status(404).json({ success: false, message: "Donation not found" });
     }
 
     if (donation.status !== "PENDING_PAYMENT" && donation.status !== "REJECTED") {
-       if (req.file) fs.unlinkSync(req.file.path);
        return res.status(400).json({ success: false, message: "Donation is already in processing." });
     }
 
     let screenshotUrl = donation.screenshotUrl;
 
     if (req.file) {
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: "trust_donations",
-      });
-      screenshotUrl = result.secure_url;
-      fs.unlinkSync(req.file.path);
+      screenshotUrl = req.file.path;
     }
 
     donation.utrNumber = utrNumber;
@@ -244,9 +225,6 @@ exports.submitPayment = async (req, res) => {
 
     res.status(200).json({ success: true, message: "Payment submitted successfully. Awaiting verification.", data: donation });
   } catch (error) {
-    if (req.file && fs.existsSync(req.file.path)) {
-       fs.unlinkSync(req.file.path);
-    }
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -335,19 +313,44 @@ exports.approveDonation = async (req, res) => {
     donation.approvalDate = new Date();
     donation.approvalRemarks = remarks;
     
-    let pdfUrl = `/api/donations/${donation._id}/receipt`;
+    let pdfUrl = `/api/donations/${donation._id}/receipt`; // default fallback
     donation.receiptNumber = donation.donationReference;
+
+    let pdfBuffer;
+    try {
+      pdfBuffer = await generateReceiptPdf(donation.toObject());
+      const uploadResult = await new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          {
+            folder: "receipts",
+            resource_type: "raw",
+            public_id: `Donation_Receipt_${donation.receiptNumber || donation.donationReference}.pdf`,
+            use_filename: true,
+            unique_filename: false
+          },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          }
+        );
+        uploadStream.end(pdfBuffer);
+      });
+      if (uploadResult && uploadResult.secure_url) {
+        pdfUrl = uploadResult.secure_url;
+      }
+    } catch (pdfErr) {
+      console.error("Failed to generate or upload receipt PDF to Cloudinary:", pdfErr.message);
+    }
+
     donation.receiptPdfUrl = pdfUrl;
-    
     await donation.save();
 
     try {
-      if (donation.email && pdfUrl) {
-        const pdfBuffer = await generateReceiptPdf(donation.toObject());
+      if (donation.email && pdfBuffer) {
         await sendEmail({
           email: donation.email,
           subject: "Your Donation Receipt - Kolekar Maha Swamiji Monastery",
-          message: `Dear ${donation.donorName},\n\nWe sincerely thank you for your generous donation of INR ${donation.amount}/-. Your payment has been successfully verified and approved.\n\nPlease find your official donation receipt attached to this email.\n\nYou can also download it from our portal here: ${pdfUrl}\n\nMay the divine blessings of Kolekar Maha Swamiji be always with you and your family.\n\nRegards,\nShri Gurumurti Rudrapashupati Lingayat Monastery Trust`,
+          message: `Dear ${donation.donorName},\n\nWe sincerely thank you for your generous donation of INR ${donation.amount}/-. Your payment has been successfully verified and approved.\n\nPlease find your official donation receipt attached to this email.\n\nYou can also download/view it here: ${pdfUrl}\n\nMay the divine blessings of Kolekar Maha Swamiji be always with you and your family.\n\nRegards,\nShri Gurumurti Rudrapashupati Lingayat Monastery Trust`,
           attachments: [
             {
               filename: `Donation_Receipt_${donation.receiptNumber || donation.donationReference}.pdf`,
@@ -479,6 +482,7 @@ exports.verifyReceipt = async (req, res) => {
 exports.downloadReceipt = async (req, res) => {
   try {
     const { id } = req.params;
+    const { disposition } = req.query;
     const donation = await Donation.findById(id);
 
     if (!donation) {
@@ -490,7 +494,7 @@ exports.downloadReceipt = async (req, res) => {
     }
 
     // Branch Managers should only access their branch's receipts
-    if (req.user.role === "BranchManager" && donation.branchId && donation.branchId.toString() !== req.user.branch.toString()) {
+    if (req.user.role === "BranchManager" && donation.branchId && donation.branchId.toString() !== req.user.branch?.toString()) {
       return res.status(403).json({ success: false, message: "Unauthorized to access this receipt." });
     }
 
@@ -500,8 +504,9 @@ exports.downloadReceipt = async (req, res) => {
 
     const pdfBuffer = await generateReceiptPdf(donation);
 
+    const isInline = disposition === 'inline';
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename=Donation_Receipt_${donation.receiptNumber || donation.donationReference}.pdf`);
+    res.setHeader("Content-Disposition", `${isInline ? 'inline' : 'attachment'}; filename=Donation_Receipt_${donation.receiptNumber || donation.donationReference}.pdf`);
     return res.send(pdfBuffer);
   } catch (err) {
     console.error("[donationController][ERROR] downloadReceipt:", err.message);

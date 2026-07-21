@@ -126,7 +126,7 @@ export const DashboardHome = () => {
       icon: <FaDonate className="text-2xl text-amber-500" />,
       bg: "bg-amber-50",
       border: "border-amber-100",
-      link: null
+      link: "/devotee/donations"
     },
     {
       title: "Annadaan Participation",
@@ -157,13 +157,39 @@ export const DashboardHome = () => {
           <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-1">
             Welcome back, {user?.name || 'Devotee'} 🙏
           </h1>
-          <p className="text-sm font-medium text-slate-600">
+          <p className="text-sm font-medium text-slate-600 mb-3">
             Manage your annadaan registrations and track your generous contributions.
           </p>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => navigate('/devotee/annadaan')}
+              className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg font-bold text-xs shadow transition-all flex items-center gap-1.5"
+            >
+              <FaUtensils /> My Annadan Seva
+            </button>
+            <button
+              onClick={() => navigate('/devotee/donations')}
+              className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg font-bold text-xs shadow transition-all flex items-center gap-1.5"
+            >
+              <FaDonate /> My Donations
+            </button>
+            <button
+              onClick={() => navigate('/devotee/requests')}
+              className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg font-bold text-xs shadow transition-all flex items-center gap-1.5"
+            >
+              <FaClipboardList /> My Requests
+            </button>
+            <button
+              onClick={() => navigate('/devotee/vanshawal')}
+              className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg font-bold text-xs shadow transition-all flex items-center gap-1.5"
+            >
+              <FaUsers /> My Family Tree
+            </button>
+          </div>
         </div>
         <button
           onClick={() => navigate('/devotee/settings')}
-          className="px-5 py-2.5 bg-slate-900 text-white border border-transparent rounded-lg font-black shadow-md hover:bg-slate-800 transition-all duration-300"
+          className="px-5 py-2.5 bg-slate-900 text-white border border-transparent rounded-lg font-black shadow-md hover:bg-slate-800 transition-all duration-300 w-full md:w-auto text-center shrink-0"
         >
           View Profile
         </button>
@@ -287,19 +313,32 @@ export const DashboardHome = () => {
           <div>
             <h3 className="text-lg font-bold text-slate-900 mb-4">Quick Actions</h3>
             <div className="space-y-3">
-
               <button 
-                onClick={() => navigate('/donate')} 
+                onClick={() => navigate('/devotee/annadaan')} 
                 className="w-full text-left p-3.5 rounded-lg border border-transparent bg-slate-900 hover:bg-slate-800 transition-all text-sm font-black text-white flex items-center justify-between shadow-md"
               >
-                <span>Make a Donation</span>
+                <span>My Annadan Seva</span>
                 <span className="text-white/70">→</span>
               </button>
               <button 
-                onClick={() => navigate('/annadaan')} 
+                onClick={() => navigate('/devotee/donations')} 
                 className="w-full text-left p-3.5 rounded-lg border border-transparent bg-slate-900 hover:bg-slate-800 transition-all text-sm font-black text-white flex items-center justify-between shadow-md"
               >
-                <span>Register for Annadaan</span>
+                <span>My Donations</span>
+                <span className="text-white/70">→</span>
+              </button>
+              <button 
+                onClick={() => navigate('/devotee/requests')} 
+                className="w-full text-left p-3.5 rounded-lg border border-transparent bg-slate-900 hover:bg-slate-800 transition-all text-sm font-black text-white flex items-center justify-between shadow-md"
+              >
+                <span>My Requests</span>
+                <span className="text-white/70">→</span>
+              </button>
+              <button 
+                onClick={() => navigate('/devotee/vanshawal')} 
+                className="w-full text-left p-3.5 rounded-lg border border-transparent bg-slate-900 hover:bg-slate-800 transition-all text-sm font-black text-white flex items-center justify-between shadow-md"
+              >
+                <span>My Family Tree</span>
                 <span className="text-white/70">→</span>
               </button>
             </div>

@@ -91,14 +91,29 @@ const EventDetails = () => {
                 </div>
               </div>
 
-              {/* Right: Image */}
+              {/* Right: Media */}
               <div className="w-full lg:w-1/2">
-                <div className="rounded-2xl overflow-hidden shadow-md border border-gray-200 bg-gray-50 aspect-video lg:aspect-[4/3] w-full">
-                  <img 
-                    src={event.featuredImage || 'https://via.placeholder.com/1200x500'} 
-                    alt={event.title}
-                    className="w-full h-full object-cover"
-                  />
+                <div className="rounded-2xl overflow-hidden shadow-md border border-gray-200 bg-black aspect-video lg:aspect-[4/3] w-full flex items-center justify-center">
+                  {event.featuredImage ? (
+                    <img 
+                      src={event.featuredImage} 
+                      alt={event.title}
+                      onError={(e) => { e.target.src = "/about_images/kolekar_real_1.jpg"; }}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : event.videoFile ? (
+                    <video 
+                      src={event.videoFile.startsWith('http') ? event.videoFile : `${import.meta.env.VITE_ASSETS_URL || 'http://localhost:5000'}${event.videoFile.startsWith('/') ? '' : '/'}${event.videoFile}`} 
+                      controls 
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <img 
+                      src="/about_images/kolekar_real_1.jpg" 
+                      alt={event.title}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
                 </div>
               </div>
 
@@ -148,7 +163,12 @@ const EventDetails = () => {
                         className="rounded-xl overflow-hidden cursor-pointer aspect-square shadow-sm border border-gray-200 hover:shadow-md transition-shadow group"
                         onClick={() => setLightboxImg(img)}
                       >
-                        <img src={img} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Gallery" />
+                        <img 
+                          src={img} 
+                          onError={(e) => { e.target.src = "/about_images/kolekar_real_1.jpg"; }}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                          alt="Gallery" 
+                        />
                       </div>
                     ))}
                   </div>

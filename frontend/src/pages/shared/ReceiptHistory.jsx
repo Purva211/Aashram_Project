@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
-import { Search, Download, Share2, Printer, Eye, Info, X } from 'lucide-react';
+import { Search, Download, Share2, Printer, Eye, Info, X, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const ReceiptHistory = ({ defaultCategory = 'All', hideTitle = false, hideCategoryFilter = false }) => {
@@ -17,12 +17,23 @@ const ReceiptHistory = ({ defaultCategory = 'All', hideTitle = false, hideCatego
   const [selectedInfo, setSelectedInfo] = useState(null);
   const { user } = useAuth();
 
+  const handleDeleteReceipt = async (receiptId) => {
+    if (!window.confirm("Are you sure you want to delete this notice permanently?")) return;
+    try {
+      const res = await api.delete(`/receipts/${receiptId}`);
+      if (res.data.success) {
+        toast.success("Notice deleted successfully");
+        setReceipts(prev => prev.filter(r => r._id !== receiptId));
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to delete notice");
+    }
+  };
+
   const [showFilters, setShowFilters] = useState(false);
 
-  let categories = ['All', 'Notice', 'Jama Pavti', 'Branch Pavti', 'Dengi Pavti', 'Donation', 'Branch Donation', 'Annadan', 'Prasad', 'Payment', 'Expense'];
-  if (user?.role === 'Accountant') {
-    categories = ['All', 'Jama Pavti', 'Branch Pavti', 'Dengi Pavti'];
-  } else if (user?.role === 'BranchManager') {
+  let categories = ['All', 'Jama Pavti', 'Branch Pavti', 'Dengi Pavti', 'Notice'];
+  if (user?.role === 'BranchManager') {
     categories = ['All', 'Branch Donation', 'Annadan', 'Prasad'];
   }
   
@@ -108,7 +119,8 @@ const ReceiptHistory = ({ defaultCategory = 'All', hideTitle = false, hideCatego
     if (receipt.pdfUrl.startsWith('/api')) {
       const toastId = toast.loading("Loading document...");
       try {
-        const fetchUrl = receipt.pdfUrl.replace('/api', '');
+        const baseUrl = receipt.pdfUrl.replace('/api', '');
+        const fetchUrl = baseUrl + (baseUrl.includes('?') ? '&disposition=inline' : '?disposition=inline');
         const response = await api.get(fetchUrl, { responseType: 'blob' });
         const blob = new Blob([response.data], { type: 'application/pdf' });
         const url = window.URL.createObjectURL(blob);
@@ -293,6 +305,11 @@ const ReceiptHistory = ({ defaultCategory = 'All', hideTitle = false, hideCatego
                               <button className="flex-1 md:flex-none p-2 flex items-center justify-center bg-indigo-50 md:bg-transparent text-indigo-600 border md:border-none border-indigo-200 hover:bg-indigo-100 rounded-lg shadow-sm md:shadow-none" title="More Info" onClick={() => setSelectedInfo(receipt)}>
                                 <Info className="w-4 h-4 md:w-5 md:h-5" />
                               </button>
+                              {(receipt.category === 'Notice' || defaultCategory === 'Notice') && (String(receipt.generatedBy?._id || receipt.generatedBy) === String(user?._id) || user?.role === 'Admin') && (
+                                <button className="flex-1 md:flex-none p-2 flex items-center justify-center bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 rounded-lg shadow-sm" title="Delete Notice" onClick={() => handleDeleteReceipt(receipt._id)}>
+                                  <Trash2 className="w-4 h-4 md:w-5 md:h-5" />
+                                </button>
+                              )}
                             </>
                           ) : (
                             <span className="text-xs text-gray-400 w-full text-center md:text-right py-2 md:py-0">PDF Pending</span>

@@ -184,13 +184,13 @@ exports.createNews = async (req, res) => {
     // Handle uploaded files
     if (req.files) {
       if (req.files['coverImage']) {
-        newsData.coverImage = `/uploads/${req.files['coverImage'][0].filename}`;
+        newsData.coverImage = req.files['coverImage'][0].path;
       }
       
       if (req.files['galleryImages']) {
         const galleryUrls = [];
         for (const file of req.files['galleryImages']) {
-          galleryUrls.push(`/uploads/${file.filename}`);
+          galleryUrls.push(file.path);
         }
         newsData.galleryImages = galleryUrls;
       }
@@ -252,7 +252,7 @@ exports.updateNews = async (req, res) => {
     // Handle files upload
     if (req.files) {
       if (req.files['coverImage']) {
-        newsData.coverImage = `/uploads/${req.files['coverImage'][0].filename}`;
+        newsData.coverImage = req.files['coverImage'][0].path;
       }
       
       // Retain or replace gallery images
@@ -272,7 +272,7 @@ exports.updateNews = async (req, res) => {
 
       if (req.files['galleryImages']) {
         for (const file of req.files['galleryImages']) {
-          galleryUrls.push(`/uploads/${file.filename}`);
+          galleryUrls.push(file.path);
         }
       }
       newsData.galleryImages = galleryUrls;

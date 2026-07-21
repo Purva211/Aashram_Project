@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Temple Management Portal</title>
+    <script type="text/javascript">
+      // SPA Fallback: Redirect 404 route back to index.html preserving pathname
+      var pathSegmentsToKeep = 0;
+      var l = window.location;
+      l.replace(
+        l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+        l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?/' +
+        l.pathname.slice(1).split('&').join('~and~') +
+        (l.search ? '&' + l.search.slice(1).split('&').join('~and~') : '') +
+        l.hash
+      );
+    </script>
+  </head>
+  <body>
+    <script type="text/javascript">
+      // Direct fallback to root index.html
+      window.location.href = "/index.html";
+    </script>
+  </body>
+</html>

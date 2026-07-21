@@ -97,7 +97,12 @@ const TrusteeBoard = () => {
                   <div className="p-6 pb-0 flex flex-col items-center">
                     <div className="w-40 h-40 rounded-full overflow-hidden mb-5 border-[6px] border-stone-50 shadow-md group-hover:border-[#FF8C00]/30 transition-colors duration-500 relative shrink-0">
                       <div className="absolute inset-0 bg-[#FF8C00]/0 group-hover:bg-[#FF8C00]/10 transition-colors duration-500 z-10 pointer-events-none"></div>
-                      <img src={imageUrl} alt={trustee.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                      <img 
+                        src={imageUrl} 
+                        alt={trustee.name} 
+                        onError={(e) => { e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(trustee.name)}&background=8D5B2F&color=fff&size=200`; }}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                      />
                     </div>
                     
                     <h3 className="text-lg md:text-xl font-bold font-serif text-[#4A0E0E] mb-2 text-center group-hover:text-[#FF8C00] transition-colors line-clamp-1 w-full px-2">{trustee.name}</h3>

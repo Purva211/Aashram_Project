@@ -31,4 +31,8 @@ router.get("/documents", adminController.getAllDocuments);
 
 router.get('/admins-list', adminController.getAllAdmins);
 
+// Profile and Password management
+router.put("/profile", upload.single('profileImage'), adminController.updateProfile);
+router.put("/password", adminController.updatePassword);
+
 module.exports = router;

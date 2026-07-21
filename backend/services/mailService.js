@@ -35,16 +35,21 @@ const getTransporter = () => {
     maxConnections: 5,
     maxMessages: 100,
     host:   process.env.EMAIL_HOST || "smtp.gmail.com",
-    port:   parseInt(process.env.EMAIL_PORT, 10) || 587,
-    secure: process.env.EMAIL_SECURE === "true", // true → port 465, false → STARTTLS
+    port:   parseInt(process.env.EMAIL_PORT, 10) || 465,
+    secure: process.env.EMAIL_SECURE !== undefined ? process.env.EMAIL_SECURE === "true" : true,
     auth: {
       user: emailUser,
       pass: emailPass,
     },
-    // Prevent the connection from hanging indefinitely
-    connectionTimeout: 10_000,
-    greetingTimeout:   10_000,
-    socketTimeout:     15_000,
+    // Force Node.js to use IPv4 only, preventing ENETUNREACH on Render's IPv6 interfaces
+    family: 4,
+    // Fix for Render/Node 20+: Nodemailer ignores loopback IPv4 interfaces by default and uses IPv6, causing ENETUNREACH.
+    // Setting this to true forces Nodemailer to resolve IPv4 addresses.
+    allowInternalNetworkInterfaces: true,
+    // Increased timeouts for Render cloud environment (cold starts and network latency)
+    connectionTimeout: 60_000, // 60 seconds
+    greetingTimeout:   30_000, // 30 seconds
+    socketTimeout:     60_000, // 60 seconds
   });
 
   return _transporter;

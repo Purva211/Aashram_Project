@@ -126,6 +126,7 @@ const RoleProtectedRoute = ({ children, allowedRoles }) => {
     if (user.role === 'Devotee') return <Navigate to="/devotee/dashboard" />;
     if (user.role === 'BranchManager') return <Navigate to="/branch/dashboard" />;
     if (user.role === 'Accountant') return <Navigate to="/accountant/dashboard" />;
+    if (user.role === 'DocumentHandler' || user.role === 'document_admin') return <Navigate to="/document-handler/dashboard" />;
     return <Navigate to="/" />;
   }
 
@@ -188,6 +189,8 @@ function AppRoutes() {
           <Route path="/trustee-board" element={<TrusteeBoard />} />
 
           <Route path="/math-history" element={<MathHistory />} />
+          <Route path="/monastery-importance" element={<Navigate to="/math-history" replace />} />
+          <Route path="/about/veerashaiva-philosophy" element={<Navigate to="/math-history" replace />} />
           <Route path="/lineage" element={<Lineage />} />
           <Route path="/lineage/:id" element={<LineageDetail />} />
           <Route path="/contact" element={<ContactUs />} />
@@ -218,6 +221,8 @@ function AppRoutes() {
           <Route path="/admin/vanshawal" element={<RoleProtectedRoute allowedRoles={['Admin']}><DevoteeVanshawal /></RoleProtectedRoute>} />
           <Route path="/admin/vanshawal/dashboard" element={<RoleProtectedRoute allowedRoles={['Admin']}><FamilyDashboard /></RoleProtectedRoute>} />
           <Route path="/admin/vanshawal/reports" element={<RoleProtectedRoute allowedRoles={['Admin']}><FamilyReports /></RoleProtectedRoute>} />
+          <Route path="/admin/receipts" element={<RoleProtectedRoute allowedRoles={['Admin']}><ReceiptHistory /></RoleProtectedRoute>} />
+          <Route path="/admin/notice-generator" element={<RoleProtectedRoute allowedRoles={['Admin']}><NoticeGenerator /></RoleProtectedRoute>} />
 
           {/* Trustee Protected Routes */}
           <Route path="/trustee/dashboard" element={<RoleProtectedRoute allowedRoles={['Trustee']}><TrusteeDashboard /></RoleProtectedRoute>} />
@@ -240,6 +245,8 @@ function AppRoutes() {
           <Route path="/trustee/vanshawal/dashboard" element={<RoleProtectedRoute allowedRoles={['Trustee']}><FamilyDashboard /></RoleProtectedRoute>} />
           <Route path="/trustee/vanshawal/reports" element={<RoleProtectedRoute allowedRoles={['Trustee']}><FamilyReports /></RoleProtectedRoute>} />
           <Route path="/trustee/contact-enquiries" element={<RoleProtectedRoute allowedRoles={['Trustee', 'Admin']}><TrusteeContactEnquiries /></RoleProtectedRoute>} />
+          <Route path="/trustee/receipts" element={<RoleProtectedRoute allowedRoles={['Trustee']}><ReceiptHistory /></RoleProtectedRoute>} />
+          <Route path="/trustee/notice-generator" element={<RoleProtectedRoute allowedRoles={['Trustee']}><NoticeGenerator /></RoleProtectedRoute>} />
 
           {/* Branch Manager Protected Routes */}
           <Route path="/branch/dashboard" element={<RoleProtectedRoute allowedRoles={['BranchManager']}><BranchDashboard /></RoleProtectedRoute>} />
@@ -259,7 +266,9 @@ function AppRoutes() {
           <Route path="/devotee/dashboard" element={<DevoteeLayout allowedRoles={['Devotee']}><DevoteeDashboardHome /></DevoteeLayout>} />
           <Route path="/devotee/orders" element={<DevoteeLayout allowedRoles={['Devotee']}><DevoteeOrders /></DevoteeLayout>} />
           <Route path="/devotee/donations" element={<DevoteeLayout allowedRoles={['Devotee']}><DevoteeDonations /></DevoteeLayout>} />
+          <Route path="/devotee/receipts" element={<DevoteeLayout allowedRoles={['Devotee']}><DevoteeDonations /></DevoteeLayout>} />
           <Route path="/devotee/annadaan" element={<DevoteeLayout allowedRoles={['Devotee']}><DevoteeAnnadaan /></DevoteeLayout>} />
+          <Route path="/devotee/requests" element={<DevoteeLayout allowedRoles={['Devotee']}><DevoteeAnnadaan /></DevoteeLayout>} />
           <Route path="/devotee/settings" element={<DevoteeLayout allowedRoles={['Devotee']}><DevoteeSettings /></DevoteeLayout>} />
           <Route path="/devotee/vanshawal" element={<DevoteeLayout allowedRoles={['Devotee']}><DevoteeVanshawal /></DevoteeLayout>} />
 

@@ -55,7 +55,6 @@ const FamilyReports = () => {
     const matchesSearch = searchTerm ? (
       d.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       d.devoteeId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (d.gotra && d.gotra.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (d.mobile && d.mobile.includes(searchTerm))
     ) : true;
     return matchesBranch && matchesSearch;
@@ -63,12 +62,11 @@ const FamilyReports = () => {
 
   // Export CSV
   const exportExcel = () => {
-    let headers = ["Devotee ID", "Full Name", "Gender", "Gotra", "Mobile", "Marital Status", "Generation", "Branch"];
+    let headers = ["Devotee ID", "Full Name", "Gender", "Mobile", "Marital Status", "Generation", "Branch"];
     let rows = filteredData.map(d => [
       d.devoteeId,
       d.name,
       d.gender,
-      d.gotra || "N/A",
       d.mobile || "N/A",
       d.maritalStatus || "Single",
       `Level ${d.generationLevel}`,
@@ -109,21 +107,19 @@ const FamilyReports = () => {
     // Table Content
     let tableHeaders, tableBody;
     if (reportType === 'largest') {
-      tableHeaders = [["Family ID", "Family Head", "Branch", "Gotra", "Size"]];
+      tableHeaders = [["Family ID", "Family Head", "Branch", "Size"]];
       tableBody = largestFamilies.map(fam => [
         fam.familyId,
         fam.headName,
         fam.branch,
-        fam.gotra,
         `${fam.size} Members`
       ]);
     } else {
-      tableHeaders = [["ID", "Name", "Gender", "Gotra", "Mobile", "Gen", "Branch"]];
+      tableHeaders = [["ID", "Name", "Gender", "Mobile", "Gen", "Branch"]];
       tableBody = filteredData.map(d => [
         d.devoteeId,
         d.name,
         d.gender,
-        d.gotra || "N/A",
         d.mobile || "N/A",
         `Lvl ${d.generationLevel}`,
         d.branch?.name || "Main Trust"
@@ -157,21 +153,21 @@ const FamilyReports = () => {
     <div className="w-full space-y-8 pb-10 print:bg-white print:p-0">
       
       {/* Header */}
-      <div className="flex justify-between items-center print:hidden">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 print:hidden">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center gap-2">
             <FiFileText className="text-saffron-500" /> Vanshawal Report Generator
           </h1>
-          <p className="text-slate-500 font-medium text-sm mt-1">Export, filter, and print customized lists of families, branches, and devotee registers.</p>
+          <p className="text-slate-500 font-medium text-xs sm:text-sm mt-1">Export, filter, and print customized lists of families, branches, and devotee registers.</p>
         </div>
-        <div className="flex gap-2">
-          <button onClick={exportPDF} className="px-5 py-2.5 bg-slate-900 hover:bg-black text-white text-xs font-bold rounded-xl shadow-md transition-colors flex items-center gap-2">
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full md:w-auto">
+          <button onClick={exportPDF} className="flex-1 sm:flex-none justify-center px-4 py-2.5 bg-slate-900 hover:bg-black text-white text-xs font-bold rounded-xl shadow-md transition-colors flex items-center gap-2">
             <FiDownload /> Export PDF
           </button>
-          <button onClick={exportExcel} className="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-md transition-colors flex items-center gap-2">
+          <button onClick={exportExcel} className="flex-1 sm:flex-none justify-center px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-md transition-colors flex items-center gap-2">
             <FiDownload /> Export Excel
           </button>
-          <button onClick={printReport} className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl shadow-sm transition-colors flex items-center gap-2">
+          <button onClick={printReport} className="w-full sm:w-auto justify-center px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl shadow-sm transition-colors flex items-center gap-2">
             <FiPrinter /> Print Friendly
           </button>
         </div>
@@ -211,7 +207,7 @@ const FamilyReports = () => {
             <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
             <input 
               type="text"
-              placeholder="Search by name, ID, gotra..."
+              placeholder="Search by name, ID, mobile..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-saffron-500/20 focus:border-saffron-500 outline-none transition-all text-slate-700"
@@ -238,7 +234,6 @@ const FamilyReports = () => {
                   <th className="p-5 font-bold">Family ID (Head)</th>
                   <th className="p-5 font-bold">Family Head</th>
                   <th className="p-5 font-bold">Branch</th>
-                  <th className="p-5 font-bold">Gotra</th>
                   <th className="p-5 font-bold">Size</th>
                 </tr>
               </thead>
@@ -248,7 +243,6 @@ const FamilyReports = () => {
                     <td className="p-5 text-saffron-600 font-black">{fam.familyId}</td>
                     <td className="p-5 text-slate-900 text-sm font-black">{fam.headName}</td>
                     <td className="p-5 text-slate-600">{fam.branch}</td>
-                    <td className="p-5 text-slate-500">{fam.gotra}</td>
                     <td className="p-5">
                       <span className="bg-orange-50 text-orange-600 border border-orange-100 px-3 py-1 rounded-full text-[10px] font-black uppercase">
                         {fam.size} Members
@@ -270,7 +264,6 @@ const FamilyReports = () => {
                   <th className="p-5 font-bold">Devotee ID</th>
                   <th className="p-5 font-bold">Full Name</th>
                   <th className="p-5 font-bold">Gender</th>
-                  <th className="p-5 font-bold">Gotra</th>
                   <th className="p-5 font-bold">Mobile</th>
                   <th className="p-5 font-bold">Marital Status</th>
                   <th className="p-5 font-bold">Generation</th>
@@ -287,7 +280,6 @@ const FamilyReports = () => {
                         {d.gender}
                       </span>
                     </td>
-                    <td className="p-5 text-slate-500">{d.gotra || "N/A"}</td>
                     <td className="p-5 text-slate-600">{d.mobile || "N/A"}</td>
                     <td className="p-5">{d.maritalStatus || "Single"}</td>
                     <td className="p-5 flex items-center gap-1 mt-1 text-slate-500"><FiLayers /> Level {d.generationLevel}</td>
