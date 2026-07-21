@@ -70,8 +70,11 @@ exports.getDocuments = async (req, res) => {
       query.category = category;
     }
 
-    // Populate branch to send branch name to frontend
-    const documents = await Document.find(query).populate("branch", "name").sort({ createdAt: -1 });
+    // Populate uploadedBy and branch to send sender and branch details to frontend
+    const documents = await Document.find(query)
+      .populate("uploadedBy", "name username email role fullName")
+      .populate("branch", "name")
+      .sort({ createdAt: -1 });
     res.json({ success: true, documents });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

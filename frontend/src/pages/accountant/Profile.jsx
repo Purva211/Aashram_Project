@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../utils/api';
-import { User, Phone, MapPin, Mail, Shield, Lock, Save, Camera, Globe, Moon, Sun, Bell, Activity } from 'lucide-react';
+import { User, Phone, MapPin, Mail, Shield, Lock, Save, Camera, Globe, Bell, Activity } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 
@@ -18,7 +18,7 @@ const Profile = () => {
   const [imagePreview, setImagePreview] = useState(null);
   
   const [preferences, setPreferences] = useState({
-    language: 'English', theme: 'Light',
+    language: 'English',
     showActivities: true, showBranches: true, showDonations: true, showEvents: true
   });
   
@@ -58,10 +58,6 @@ const Profile = () => {
       window.dispatchEvent(new Event('preferencesUpdated'));
       return updated;
     });
-  };
-
-  const handleThemeChange = (newTheme) => {
-    toast.success("Dark Mode is coming soon! Stay tuned.", { icon: '🌙' });
   };
 
   const Toggle = ({ enabled, onChange }) => (
@@ -291,25 +287,6 @@ const Profile = () => {
                     <option value="Hindi">Hindi (हिंदी)</option>
                     <option value="Marathi">Marathi (मराठी)</option>
                   </select>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Interface Theme</label>
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <button 
-                      type="button"
-                      onClick={() => handleThemeChange('Light')}
-                      className={`w-full flex items-center justify-center gap-2 py-3 sm:py-2.5 rounded-lg border font-medium transition-all ${preferences.theme === 'Light' ? 'bg-indigo-50 border-indigo-500 text-indigo-700 shadow-sm' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
-                    >
-                      <Sun className="w-4 h-4" /> Light
-                    </button>
-                    <button 
-                      type="button"
-                      onClick={() => handleThemeChange('Dark')}
-                      className={`w-full flex items-center justify-center gap-2 py-3 sm:py-2.5 rounded-lg border font-medium transition-all ${preferences.theme === 'Dark' ? 'bg-indigo-50 border-indigo-500 text-indigo-700 shadow-sm' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
-                    >
-                      <Moon className="w-4 h-4" /> Dark
-                    </button>
-                  </div>
                 </div>
               </div>
             </section>

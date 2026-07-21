@@ -386,9 +386,9 @@ const DocumentAdminDashboard = () => {
                 <tr className="bg-slate-50 border-b border-slate-100 text-slate-500 text-sm">
                   <th className="px-6 py-4 font-medium">Document Info</th>
                   <th className="px-6 py-4 font-medium">Category</th>
-                  <th className="px-6 py-4 font-medium">Branch</th>
-                  <th className="px-6 py-4 font-medium">Size</th>
-                  <th className="px-6 py-4 font-medium">Uploaded</th>
+                  <th className="px-6 py-4 font-medium">Sender</th>
+                  <th className="px-6 py-4 font-medium">Branch & Size</th>
+                  <th className="px-6 py-4 font-medium">Uploaded Date</th>
                   <th className="px-6 py-4 font-medium text-right">Actions</th>
                 </tr>
               </thead>
@@ -449,11 +449,7 @@ const DocumentAdminDashboard = () => {
                               </div>
                             </div>
                             <div className="md:hidden mt-2 text-xs text-slate-600 flex flex-wrap gap-2 items-center">
-                                {doc.branch ? (
-                                   <span className="font-semibold">Branch: <span className="text-indigo-600">{doc.branch.name}</span></span>
-                                ) : (
-                                   <span className="font-semibold">Branch: <span className="text-slate-500">Global</span></span>
-                                )}
+                                <span className="font-semibold">Sender: <span className="text-slate-800">{doc.uploadedBy?.name || doc.uploadedBy?.fullName || doc.uploadedBy?.username || doc.uploadedBy?.email || 'User / Handler'}</span></span>
                                 <span className="text-slate-300">•</span>
                                 <span>{formatFileSize(doc.fileSize)}</span>
                                 <span className="text-slate-300">•</span>
@@ -467,22 +463,23 @@ const DocumentAdminDashboard = () => {
                           {doc.category}
                         </span>
                       </td>
+                      <td className="hidden md:table-cell px-6 py-4 text-sm text-slate-700 font-semibold">
+                        {doc.uploadedBy?.name || doc.uploadedBy?.fullName || doc.uploadedBy?.username || doc.uploadedBy?.email || 'User / Handler'}
+                      </td>
                       <td className="hidden md:table-cell px-6 py-4 text-sm text-slate-600">
                         {doc.branch ? (
-                           <span className="px-2 py-1 bg-indigo-50 text-indigo-600 rounded text-xs font-semibold flex items-center w-max gap-1">
+                           <span className="px-2 py-1 bg-indigo-50 text-indigo-600 rounded text-xs font-semibold flex items-center w-max gap-1 mb-1">
                              {doc.branch.name}
                            </span>
                         ) : (
-                           <span className="px-2 py-1 bg-gray-100 text-gray-500 rounded text-xs font-semibold w-max">
+                           <span className="px-2 py-1 bg-gray-100 text-gray-500 rounded text-xs font-semibold w-max block mb-1">
                              Global
                            </span>
                         )}
+                        <span className="text-xs text-slate-400">{formatFileSize(doc.fileSize)}</span>
                       </td>
                       <td className="hidden md:table-cell px-6 py-4 text-sm text-slate-600">
-                        {formatFileSize(doc.fileSize)}
-                      </td>
-                      <td className="hidden md:table-cell px-6 py-4 text-sm text-slate-600">
-                        {new Date(doc.createdAt).toLocaleDateString()}
+                        {new Date(doc.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                       </td>
                       <td className="p-3 md:px-6 md:py-4 md:text-right block md:table-cell bg-slate-50 md:bg-transparent rounded-b-xl md:rounded-none">
                         <div className="flex justify-between items-center w-full">
@@ -491,7 +488,7 @@ const DocumentAdminDashboard = () => {
                             <button onClick={() => openViewModal(doc)} className="p-2 w-10 h-10 md:w-auto md:h-auto flex items-center justify-center bg-white md:bg-transparent border border-slate-200 md:border-none text-indigo-600 hover:bg-indigo-50 rounded-lg tooltip transition-colors shadow-sm md:shadow-none" title="View">
                               <FiEye />
                             </button>
-                            <a href={`${ASSETS_URL}${doc.pdfUrl}`} target="_blank" rel="noopener noreferrer" className="p-2 w-10 h-10 md:w-auto md:h-auto flex items-center justify-center bg-white md:bg-transparent border border-slate-200 md:border-none text-emerald-600 hover:bg-emerald-50 rounded-lg tooltip transition-colors shadow-sm md:shadow-none" title="Download">
+                            <a href={`${ASSETS_URL}${doc.pdfUrl}`} download={doc.pdfName || `${doc.title}.pdf`} target="_blank" rel="noopener noreferrer" className="p-2 w-10 h-10 md:w-auto md:h-auto flex items-center justify-center bg-white md:bg-transparent border border-slate-200 md:border-none text-emerald-600 hover:bg-emerald-50 rounded-lg tooltip transition-colors shadow-sm md:shadow-none" title="Download">
                               <FiDownload />
                             </a>
                             <button onClick={() => openEditModal(doc)} className="p-2 w-10 h-10 md:w-auto md:h-auto flex items-center justify-center bg-white md:bg-transparent border border-slate-200 md:border-none text-amber-600 hover:bg-amber-50 rounded-lg tooltip transition-colors shadow-sm md:shadow-none" title="Edit">

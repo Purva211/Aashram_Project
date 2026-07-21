@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { FiUser, FiMail, FiPhone, FiMapPin, FiShield, FiSave, FiEdit2, FiCamera, FiLock, FiBell, FiEye, FiEyeOff } from 'react-icons/fi';
-import { Globe, Sun, Moon, Clock, Activity, ChevronDown } from 'lucide-react';
+import { Globe, Clock, Activity, ChevronDown } from 'lucide-react';
 import api from '../../utils/api';
 
 const AdminProfile = () => {
@@ -35,7 +35,7 @@ const AdminProfile = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const [preferences, setPreferences] = useState({
-    language: 'English', theme: 'Light',
+    language: 'English',
     showActivities: true, showBranches: true, showDonations: true
   });
   
@@ -57,20 +57,6 @@ const AdminProfile = () => {
       window.dispatchEvent(new Event('preferencesUpdated'));
       return updated;
     });
-  };
-
-  const handleThemeChange = (newTheme) => {
-    setPreferences(prev => {
-      const updated = { ...prev, theme: newTheme };
-      localStorage.setItem('adminPreferences', JSON.stringify(updated));
-      return updated;
-    });
-    if (newTheme === 'Dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    window.dispatchEvent(new Event('preferencesUpdated'));
   };
   
   const Toggle = ({ enabled, onChange }) => (
@@ -380,9 +366,7 @@ const AdminProfile = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {/* Removed Notifications Section */}
-
-                  {/* Section 2: Dashboard Items */}
+                  {/* Section: Dashboard Items */}
                   <section className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100 space-y-6">
                     <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2"><Activity className="w-5 h-5 text-sky-500"/> Dashboard Items</h3>
                     <div className="space-y-4">
@@ -401,7 +385,7 @@ const AdminProfile = () => {
                     </div>
                   </section>
 
-                  {/* Section 3: Localization */}
+                  {/* Section: Localization */}
                   <section className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100 space-y-6">
                     <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2"><Globe className="w-5 h-5 text-sky-500"/> Localization</h3>
                     <div className="space-y-5">
@@ -418,24 +402,6 @@ const AdminProfile = () => {
                             <option value="Marathi">Marathi (मराठी)</option>
                           </select>
                           <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700">Interface Theme</label>
-                        <div className="flex gap-3">
-                          <button 
-                            onClick={() => handleThemeChange('Light')}
-                            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg border font-medium transition-all ${preferences.theme === 'Light' ? 'bg-sky-50 border-sky-500 text-sky-700' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
-                          >
-                            <Sun className="w-4 h-4" /> Light
-                          </button>
-                          <button 
-                            onClick={() => handleThemeChange('Dark')}
-                            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg border font-medium transition-all ${preferences.theme === 'Dark' ? 'bg-sky-50 border-sky-500 text-sky-700' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
-                          >
-                            <Moon className="w-4 h-4" /> Dark
-                          </button>
                         </div>
                       </div>
                     </div>

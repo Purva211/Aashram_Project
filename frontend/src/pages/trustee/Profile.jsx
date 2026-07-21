@@ -448,7 +448,7 @@ const Profile = () => {
                   </div>
                 </section>
 
-                {/* Section 2 & 3: Language and Theme */}
+                {/* Section 2 & 3: Language */}
                 <section className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100 space-y-6">
                   <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2"><Globe className="w-5 h-5 text-sky-500"/> Localization</h3>
                   <div className="space-y-5">
@@ -461,28 +461,10 @@ const Profile = () => {
                           className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 outline-none appearance-none transition-all"
                         >
                           <option value="English">English</option>
-                          <option value="Hindi">Hindi (à¤¹à¤¿à¤‚à¤¦à¥€)</option>
-                          <option value="Marathi">Marathi (à¤®à¤°à¤¾à¤ à¥€)</option>
+                          <option value="Hindi">Hindi (हिंदी)</option>
+                          <option value="Marathi">Marathi (मराठी)</option>
                         </select>
                         <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">Interface Theme</label>
-                      <div className="flex gap-3">
-                        <button 
-                          onClick={() => handleThemeChange('Light')}
-                          className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg border font-medium transition-all ${preferences.theme === 'Light' ? 'bg-sky-50 border-sky-500 text-sky-700' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
-                        >
-                          <Sun className="w-4 h-4" /> Light
-                        </button>
-                        <button 
-                          onClick={() => handleThemeChange('Dark')}
-                          className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg border font-medium transition-all ${preferences.theme === 'Dark' ? 'bg-sky-50 border-sky-500 text-sky-700' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
-                        >
-                          <Moon className="w-4 h-4" /> Dark
-                        </button>
                       </div>
                     </div>
                   </div>

@@ -208,12 +208,7 @@ const Annadaan = () => {
                         <span className="md:hidden text-xs text-gray-500 uppercase tracking-wider font-semibold px-1">Actions</span>
                         <div className="flex flex-wrap md:justify-end gap-2 w-full md:w-auto justify-end">
                           {hasManage ? (
-                            <>
-                              <button onClick={() => handleEdit(record)} className="p-2 w-10 h-10 md:w-auto md:h-auto flex-1 md:flex-none flex items-center justify-center bg-white md:bg-blue-50 border border-gray-200 md:border-none text-blue-500 hover:bg-blue-100 rounded-lg transition-colors shadow-sm md:shadow-none"><FaEdit /></button>
-                              {record.status === 'pending' && (
-                                <button onClick={() => handleDelete(record._id)} className="p-2 w-10 h-10 md:w-auto md:h-auto flex-1 md:flex-none flex items-center justify-center bg-white md:bg-red-50 border border-gray-200 md:border-none text-red-500 hover:bg-red-100 rounded-lg transition-colors shadow-sm md:shadow-none"><FaTrash /></button>
-                              )}
-                            </>
+                            <button onClick={() => handleEdit(record)} className="p-2 w-10 h-10 md:w-auto md:h-auto flex-1 md:flex-none flex items-center justify-center bg-white md:bg-blue-50 border border-gray-200 md:border-none text-blue-500 hover:bg-blue-100 rounded-lg transition-colors shadow-sm md:shadow-none"><FaEdit /></button>
                           ) : (
                             <div className="text-xs text-gray-400 font-bold inline-block w-full text-right md:w-auto">View Only</div>
                           )}
